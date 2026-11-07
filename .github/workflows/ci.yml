@@ -10,24 +10,32 @@ jobs:
     steps:
       - name: Preuzmi repozitorijum
         uses: actions/checkout@v4
+
+      - name: Podesi pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.16.1
+
       - name: Podesi Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: pnpm
-      - name: Podesi pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 12.16.1
+
       - name: Instaliraj zaključane zavisnosti
         run: pnpm install --frozen-lockfile
+
       - name: Proveri tipove
         run: pnpm typecheck
+
       - name: Proveri stil koda
         run: pnpm lint
+
       - name: Izgradi aplikaciju
         run: pnpm build
+
       - name: Pokreni offline testove
         run: pnpm test
+
       - name: Pokreni sintetičku evaluaciju
         run: pnpm eval:offline
