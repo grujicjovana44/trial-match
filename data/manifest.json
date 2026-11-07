@@ -1,0 +1,13 @@
+{
+  "name": "TrialMatch sintetički demonstracioni skup",
+  "version": "synthetic-trials-v1",
+  "date": "2026-11-07",
+  "origin": "Ručno definisani sintetički primeri; nisu preuzeti iz registra studija.",
+  "license": "Nije primenljivo na sintetičke primere.",
+  "transformations": "Ručno strukturisanje probnih kriterijuma radi testiranja toka.",
+  "limitations": [
+    "Nisu stvarne kliničke studije niti medicinski savet.",
+    "Pragovi su sintetički i služe isključivo testiranju softvera."
+  ],
+  "synthetic": true
+}

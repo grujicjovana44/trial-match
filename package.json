@@ -2,9 +2,25 @@
   "name": "trialmatch",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@12.16.1",
   "engines": {
     "node": "24.22.1"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "tsc -p tsconfig.build.json && vite build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke": "vitest run apps/server/test/smoke",
+    "data:prepare": "node dist/scripts/prepare-trials.js",
+    "eval:offline": "node dist/eval/runner/cli.js",
+    "eval:live": "node scripts/live-eval-disabled.mjs",
+    "eval:compare": "node dist/eval/runner/compare.js",
+    "gold:metrics": "node dist/eval/runner/gold-metrics.js"
   },
   "dependencies": {
     "fastify": "5.12.5",

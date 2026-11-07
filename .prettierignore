@@ -1,0 +1,13 @@
+node_modules/
+dist/
+build/
+coverage/
+pnpm-lock.yaml
+eval/results/
+eval/traces/
+eval/*.jsonl
+.agents/
+.specify/
+specs/
+docs/project-brief.md
+docs/decisions.md

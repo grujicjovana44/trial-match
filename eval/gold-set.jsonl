@@ -1,0 +1,8 @@
+{"case_id":"G-01","input":"Muškarac, 62 godine.","expected":{"age":62,"sex":"male"}}
+{"case_id":"G-02","input":"Žena, 70 godina.","expected":{"age":70,"sex":"female"}}
+{"case_id":"G-03","input":"HbA1c 8,1%.","expected":{"hba1c":{"value":8.1,"unit":"%"}}}
+{"case_id":"G-04","input":"Kreatinin 1,3 mg/dL.","expected":{"creatinine":{"value":1.3,"unit":"mg/dL"}}}
+{"case_id":"G-05","input":"Visina 178 cm.","expected":{"height":{"value":178,"unit":"cm"}}}
+{"case_id":"G-06","input":"Težina 92 kg.","expected":{"weight":{"value":92,"unit":"kg"}}}
+{"case_id":"G-07","input":"Bez insulina u poslednja 3 meseca.","expected":{"insulin_last_3_months":false}}
+{"case_id":"G-08","input":"Dijabetes tip 2.","expected":{"stated_diagnoses":["dijabetes tip 2"]}}

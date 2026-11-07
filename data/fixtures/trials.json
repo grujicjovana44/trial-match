@@ -1,0 +1,177 @@
+[
+  {
+    "trialId": "T-A",
+    "title": "Sintetička studija T-A za dijabetes tip 2",
+    "conditions": ["Dijabetes tip 2"],
+    "overallStatus": "SINTETIČKI PRIMER",
+    "phase": "Nije primenljivo",
+    "locations": [],
+    "eligibilityText": "Sintetički kriterijumi za demonstraciju; ne predstavljaju stvarnu studiju.",
+    "dataVersion": "synthetic-trials-v1",
+    "criteria": [
+      {
+        "id": "T-A#inc-1",
+        "trialId": "T-A",
+        "kind": "inclusion",
+        "field": "age",
+        "operator": "between",
+        "value": [18, 75],
+        "unit": "years",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
+        "text": "Uzrast od 18 do 75 godina.",
+        "sourceId": "T-A#inc-1",
+        "sourceQuote": "Uzrast od 18 do 75 godina."
+      },
+      {
+        "id": "T-A#inc-2",
+        "trialId": "T-A",
+        "kind": "inclusion",
+        "field": "hba1c",
+        "operator": "between",
+        "value": [7, 10.5],
+        "unit": "%",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
+        "text": "HbA1c od 7,0% do 10,5%.",
+        "sourceId": "T-A#inc-2",
+        "sourceQuote": "HbA1c od 7,0% do 10,5%."
+      },
+      {
+        "id": "T-A#inc-3",
+        "trialId": "T-A",
+        "kind": "inclusion",
+        "field": "egfr",
+        "operator": "gte",
+        "value": 45,
+        "unit": "mL/min/1.73 m²",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
+        "text": "eGFR najmanje 45 mL/min/1,73 m².",
+        "sourceId": "T-A#inc-3",
+        "sourceQuote": "eGFR najmanje 45 mL/min/1,73 m²."
+      },
+      {
+        "id": "T-A#inc-4",
+        "trialId": "T-A",
+        "kind": "inclusion",
+        "field": "insulin_last_3_months",
+        "operator": "is_false",
+        "value": false,
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
+        "text": "Bez insulina u poslednja 3 meseca.",
+        "sourceId": "T-A#inc-4",
+        "sourceQuote": "Bez insulina u poslednja 3 meseca."
+      }
+    ]
+  },
+  {
+    "trialId": "T-B",
+    "title": "Sintetička studija T-B za dijabetes tip 2",
+    "conditions": ["Dijabetes tip 2"],
+    "overallStatus": "SINTETIČKI PRIMER",
+    "phase": "Nije primenljivo",
+    "locations": [],
+    "eligibilityText": "Sintetički kriterijumi za demonstraciju; ne predstavljaju stvarnu studiju.",
+    "dataVersion": "synthetic-trials-v1",
+    "criteria": [
+      {
+        "id": "T-B#inc-1",
+        "trialId": "T-B",
+        "kind": "inclusion",
+        "field": "age",
+        "operator": "between",
+        "value": [18, 80],
+        "unit": "years",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
+        "text": "Uzrast od 18 do 80 godina.",
+        "sourceId": "T-B#inc-1",
+        "sourceQuote": "Uzrast od 18 do 80 godina."
+      },
+      {
+        "id": "T-B#inc-2",
+        "trialId": "T-B",
+        "kind": "inclusion",
+        "field": "hba1c",
+        "operator": "gte",
+        "value": 8.5,
+        "unit": "%",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
+        "text": "HbA1c najmanje 8,5%.",
+        "sourceId": "T-B#inc-2",
+        "sourceQuote": "HbA1c najmanje 8,5%."
+      },
+      {
+        "id": "T-B#inc-3",
+        "trialId": "T-B",
+        "kind": "inclusion",
+        "field": "egfr",
+        "operator": "gte",
+        "value": 30,
+        "unit": "mL/min/1.73 m²",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
+        "text": "eGFR najmanje 30 mL/min/1,73 m².",
+        "sourceId": "T-B#inc-3",
+        "sourceQuote": "eGFR najmanje 30 mL/min/1,73 m²."
+      }
+    ]
+  },
+  {
+    "trialId": "T-C",
+    "title": "Sintetička studija T-C za dijabetes tip 2",
+    "conditions": ["Dijabetes tip 2"],
+    "overallStatus": "SINTETIČKI PRIMER",
+    "phase": "Nije primenljivo",
+    "locations": [],
+    "eligibilityText": "Sintetički kriterijumi za demonstraciju; ne predstavljaju stvarnu studiju.",
+    "dataVersion": "synthetic-trials-v1",
+    "criteria": [
+      {
+        "id": "T-C#inc-1",
+        "trialId": "T-C",
+        "kind": "inclusion",
+        "field": "age",
+        "operator": "between",
+        "value": [40, 70],
+        "unit": "years",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
+        "text": "Uzrast od 40 do 70 godina.",
+        "sourceId": "T-C#inc-1",
+        "sourceQuote": "Uzrast od 40 do 70 godina."
+      },
+      {
+        "id": "T-C#inc-2",
+        "trialId": "T-C",
+        "kind": "inclusion",
+        "field": "bmi",
+        "operator": "between",
+        "value": [27, 40],
+        "unit": "kg/m²",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
+        "text": "BMI od 27 do 40 kg/m².",
+        "sourceId": "T-C#inc-2",
+        "sourceQuote": "BMI od 27 do 40 kg/m²."
+      },
+      {
+        "id": "T-C#inc-3",
+        "trialId": "T-C",
+        "kind": "inclusion",
+        "field": "hba1c",
+        "operator": "between",
+        "value": [7, 9.5],
+        "unit": "%",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
+        "text": "HbA1c od 7,0% do 9,5%.",
+        "sourceId": "T-C#inc-3",
+        "sourceQuote": "HbA1c od 7,0% do 9,5%."
+      }
+    ]
+  }
+]

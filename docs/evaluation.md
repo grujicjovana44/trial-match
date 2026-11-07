@@ -22,6 +22,10 @@ EV-06 uključuje dva različita događaja u istom izvršavanju: odgovor na pitan
 
 Faza 1 priprema offline/fault evaluator i zapis rezultata, ali ne izmišlja niti kreira živi baseline. Baseline nastaje tek u kasnijem odobrenom živom pokretanju i posle toga se ne prepisuje. Poređenje koristi iste ID-jeve slučajeva i prikazuje sve ishode i regresije.
 
+`pnpm eval:offline` izvršava samo EV-11–EV-16, a EV-07–EV-09 prikazuje kao `dry_run` bez PASS ishoda; EV-01–EV-06 i EV-10 ostaju preskočeni dok nema odobrenog stvarnog modela. Svako offline pokretanje pravi jedinstven direktorijum pod `eval/results/` sa `results.jsonl`, `summary.json` i minimalnim `traces/`; ne čuva sirov profil. `eval:compare` čita dva postojeća direktorijuma i ne menja ih. Nema baseline direktorijuma u Fazi 1.
+
+`pnpm gold:metrics` koristi osam sintetičkih primera iz `eval/gold-set.jsonl`. Ovaj mali skup je samo razvojna provera mock parsera i nije statistički dokaz kvaliteta.
+
 EV-01–EV-09 se grupišu kao funkcionalni slučajevi, EV-10 kao bezbednosni slučaj, a EV-11–EV-16 kao determinističke/fault provere; uz svaku grupu se vidi stvarni režim i da li je slučaj izvršen ili preskočen. Dodatne offline provere, uključujući EV-10-offline provera, prikazuju se odvojeno.
 
 Živi model može imati trošak. Živa evaluacija se pokreće samo uz izričitu potvrdu i odvojena je od testova i CI-ja. Rezultati nikada ne biraju samo najbolje pokušaje.
