@@ -21,18 +21,20 @@ Matcher, eGFR/BMI, jedinice, izbor pitanja, statusi, rangiranje, validacija cita
 
 ## Kriterijumi prihvatanja
 
-| ID    | Očekivano ponašanje                                                                                   |
-| ----- | ----------------------------------------------------------------------------------------------------- |
-| AC-01 | Sintetički profil se poredi sa lokalnim studijama, a rezultat ne predstavlja odobrenje ili podobnost. |
-| AC-02 | BMI/eGFR i podržane konverzije su deterministički, izvorno dokumentovani i testirani.                 |
-| AC-03 | Odsutni podaci ostaju nepoznati; statusi su trovalentni.                                              |
-| AC-04 | Izabere se najkorisnije jedno pitanje, uz stabilan tie-break.                                         |
-| AC-05 | Zabranjena namera se odbija; nema odgovora o činjenicama van izvora.                                  |
-| AC-06 | Tok ima validirane prelaze, dopunu i kontrolisane greške.                                             |
-| AC-07 | Ulazi, strukturisani izlazi, citati i argumenti alata proveravaju se tokom izvršavanja.               |
-| AC-08 | Citati se ograničavaju na stabilne ID-jeve i tekst iz tekuće provere.                                 |
-| AC-09 | Tekst studije ne može menjati matcher niti dozvoljene alate.                                          |
-| AC-10 | Resursi i ulazi su ograničeni; CI/testovi ne pozivaju plaćeni model.                                  |
-| AC-12 | Statusi su tekstualni, a glavne kontrole dostupne tastaturom i sa vidljivim fokusom.                  |
+| ID    | Očekivano ponašanje                                                                                                                                                                                           |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AC-01 | Dovoljno podataka daje `ok` sa rangiranim studijama; svaki kriterijum ima status i izvor iz dozvoljenog skupa; rezultat nije odluka o podobnosti.                                                             |
+| AC-02 | Kada postoje kreatinin, starost i pol, server deterministički računa eGFR; vrednost nosi naziv formule i izvor; isti ulaz daje isti izlaz.                                                                    |
+| AC-03 | Nedostajuća vrednost ostaje `unknown`; postavlja se tačno jedno pitanje; profil se čuva i ista provera se nastavlja bez izmišljene vrednosti; hipotetička izmena menja samo navedena polja pod istim `runId`. |
+| AC-04 | Među više nepoznanica bira se pitanje koje razrešava najviše studija, uz stabilno razrešavanje izjednačenja.                                                                                                  |
+| AC-05 | Bez podudaranja sledi `insufficient_evidence/no_matching_trial`; pitanje o činjenici van izvora daje `insufficient_evidence/not_in_sources`; nema izmišljene ponude ni odgovora iz opšteg znanja.             |
+| AC-06 | Zahtev za dijagnozu, savet o lečenju ili odluku o uključivanju odbija se (`rejected`) pre bilo kog poziva alata ili matchera.                                                                                 |
+| AC-07 | Nevažeći strukturisani izlaz modela ima jedan pokušaj ispravke, zatim kontrolisanu grešku; ne stiže do procene kriterijuma.                                                                                   |
+| AC-08 | Izvor koji nije bio dostupan u tekućoj proveri ne prikazuje se kao dokaz.                                                                                                                                     |
+| AC-09 | Instrukcija u tekstu studije ne menja ishod; izvršavaju se samo dozvoljene funkcije.                                                                                                                          |
+| AC-10 | Istek vremena, HTTP 429 i 5xx modela imaju najviše 2 ponovna pokušaja, zatim kontrolisanu grešku sa opcijom ponovnog pokušaja; ulaz, pozivi i trajanje su ograničeni; nikada lažan uspeh.                     |
+| AC-11 | Buduće proširenje, van osnovnog obima: nepotkrepljena navedena dijagnoza označava se „zahteva potvrdu lekara“.                                                                                                |
+| AC-12 | Ključne kontrole imaju dostupne nazive, dostupne su tastaturom logičnim redosledom i imaju vidljiv indikator fokusa; statusi su tekstualni.                                                                   |
+| AC-13 | Opciono: glasovni unos popunjava polje za unos; ništa se ne šalje dok korisnik ne potvrdi tekst; bez podrške pregledača unos tekstom radi nepromenjeno.                                                       |
 
-AC-11 ostaje van osnovnog obima.
+AC-11 ostaje van osnovnog obima. AC-13 je opcion i definisan u `specs/002-ui-role-a/spec.md`.

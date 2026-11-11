@@ -1,7 +1,18 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "../../src/App.js";
+import {
+  clarificationResponse as makeClarificationResponse,
+  jsonResponse,
+  okResponse,
+} from "../helpers/responses.js";
 
 afterEach(() => {
   cleanup();
@@ -90,9 +101,9 @@ describe("korisnički tok", () => {
     };
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce({ ok: true, json: async () => clarification })
-      .mockResolvedValueOnce({ ok: true, json: async () => completed })
-      .mockResolvedValueOnce({ ok: true, json: async () => hypothetical });
+      .mockResolvedValueOnce(jsonResponse(clarification))
+      .mockResolvedValueOnce(jsonResponse(completed))
+      .mockResolvedValueOnce(jsonResponse(hypothetical));
     vi.stubGlobal("fetch", fetchMock);
     render(<App />);
 
@@ -103,18 +114,26 @@ describe("korisnički tok", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Proveri kriterijume" }),
     );
-    await screen.findByText("Potrebna je dopuna");
+    await screen.findByRole("heading", {
+      level: 2,
+      name: "Potrebna je dopuna",
+    });
     expect(
       (screen.getByLabelText("Opis profila ili pitanje") as HTMLTextAreaElement)
         .value,
     ).toBe(profile);
 
     fireEvent.click(screen.getByRole("button", { name: "Ne" }));
-    fireEvent.click(screen.getByRole("button", { name: "Pošalji dopunu" }));
     expect(
       await screen.findByText("Uzrast od 18 do 75 godina.", { selector: "q" }),
     ).toBeTruthy();
     expect(fetchMock.mock.calls[1]?.[0]).toBe("/api/runs/run-1/answer");
+    expect(fetchMock.mock.calls[1]?.[1]).toMatchObject({
+      body: JSON.stringify({ answer: "Ne" }),
+    });
+    expect(
+      screen.getByText("Odgovor je sačuvan · ista provera je nastavljena"),
+    ).toBeTruthy();
 
     fireEvent.change(
       screen.getByLabelText("Unesite samo hipotetičku izmenu profila"),
@@ -123,5 +142,111 @@ describe("korisnički tok", () => {
     fireEvent.click(screen.getByRole("button", { name: "Ponovi proveru" }));
     await screen.findByText("Hipotetička izmena prikazana odvojeno.");
     expect(fetchMock.mock.calls[2]?.[0]).toBe("/api/runs/run-1/hypothesis");
+  });
+
+  it("šalje slobodan odgovor samo kada ima tekst", async () => {
+    const clarification = makeClarificationResponse();
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        jsonResponse({
+          ...clarification,
+          question: { ...clarification.question, options: [] },
+        }),
+      )
+      .mockResolvedValueOnce(jsonResponse(okResponse()));
+    vi.stubGlobal("fetch", fetchMock);
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+      target: { value: "Sintetički profil" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Proveri kriterijume" }),
+    );
+    await screen.findByRole("heading", {
+      level: 2,
+      name: "Potrebna je dopuna",
+    });
+    expect(
+      screen.queryByRole("group", { name: "Ponuđeni odgovori" }),
+    ).toBeNull();
+    const submit = screen.getByRole("button", { name: "Pošalji dopunu" });
+    expect((submit as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.change(
+      screen.getByLabelText("Da li je osoba koristila insulin?"),
+      { target: { value: "10 godina" } },
+    );
+    expect((submit as HTMLButtonElement).disabled).toBe(false);
+    fireEvent.click(submit);
+
+    await screen.findByRole("heading", {
+      level: 2,
+      name: "Preliminarna provera završena",
+    });
+    expect(fetchMock.mock.calls[1]?.[1]).toMatchObject({
+      body: JSON.stringify({ answer: "10 godina" }),
+    });
+  });
+
+  it("ignoriše dupli klik na ponuđeni odgovor dok se zahtev obrađuje", async () => {
+    let resolveAnswer: (response: Response) => void = () => {};
+    const pendingAnswer = new Promise<Response>((resolve) => {
+      resolveAnswer = resolve;
+    });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(makeClarificationResponse()))
+      .mockReturnValueOnce(pendingAnswer);
+    vi.stubGlobal("fetch", fetchMock);
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+      target: { value: "Sintetički profil" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Proveri kriterijume" }),
+    );
+    await screen.findByRole("heading", {
+      level: 2,
+      name: "Potrebna je dopuna",
+    });
+    const answer = screen.getByRole("button", { name: "Ne" });
+    fireEvent.click(answer);
+    fireEvent.click(answer);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    resolveAnswer(jsonResponse(okResponse()));
+    await screen.findByRole("heading", {
+      level: 2,
+      name: "Preliminarna provera završena",
+    });
+  });
+
+  it("vraća izbor dugmeta kada zahtev za dopunu ne uspe", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(makeClarificationResponse()))
+      .mockRejectedValueOnce(new Error("offline"));
+    vi.stubGlobal("fetch", fetchMock);
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+      target: { value: "Sintetički profil" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Proveri kriterijume" }),
+    );
+    await screen.findByRole("heading", {
+      level: 2,
+      name: "Potrebna je dopuna",
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Ne" }));
+    await screen.findByRole("alert");
+
+    const answer = screen.getByRole("button", { name: "Ne" });
+    await waitFor(() => {
+      expect(answer.getAttribute("aria-pressed")).toBe("false");
+    });
+    expect((answer as HTMLButtonElement).disabled).toBe(false);
   });
 });
