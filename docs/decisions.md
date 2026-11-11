@@ -118,3 +118,13 @@ Mrežni retry se primenjuje samo na model-provider pozive. Lokalna greška deter
 ### Status blokatora
 
 B-02 i B-04–B-11 su razrešeni odlukama u ovom dokumentu ili projektnom brief-u; njihove odredbe treba dosledno sprovesti kroz specifikaciju, plan, zadatke i testove. B-03 je razrešen korisnički dostavljenim izvorima, formulama i kontrolnim vrednostima; opsezi validacije su tehnički sanity check. `not_in_sources` je razrešen postojećim poljem `profileText` i intent klasifikacijom. B-01 verzije i lockfile su provereni; ostaje lokalna dostupnost izabranog Node.js `24.22.1` runtime-a. Commit lockfile-a je odložen do prvog implementacionog prolaza po korisničkom zahtevu. Pružalac/model za živu fazu i uslovi korišćenja stvarnog snimka ostaju ljudske odluke za Fazu 2, ne blokatori sintetičke Faze 1.
+
+## Interfejs (funkcionalnost 002)
+
+- Nova provera uklanja prethodni rezultat pri slanju, dok dopuna ili „Šta ako?“ zadržava prethodni rezultat označen kao zastareo, a nakon greške važi pravilo iz R-05 za njegovo čuvanje ili uklanjanje.
+- „Pokušaj ponovo“ ponavlja poslednji zahtev doslovno (ista putanja i telo), a `invalid_transition` ili `run_not_found` prikazuju „Provera više nije dostupna“ sa „Počni iznova“.
+- Vreme čekanja se čita iz zaglavlja `Retry-After` kao ceo broj sekundi, a ako ga nema ili nije ispravno koristi se 60 s.
+- Sve studije ostaju otvorene u redosledu servera, uz „Pregled studija“ sa vezama do svake studije i kašnjenje kartica najviše `8 × 0,04 s`.
+- Interfejs zove `${VITE_API_BASE_URL}/api/...`; prazna vrednost znači istu adresu, a primer podešavanja je u `apps/web/.env.example`.
+
+Tim je odobrio biblioteku `motion` 14.6.0, prema potvrdi vlasnika Uloge A od 2026-11-10 (REQ-T1; obrazloženje i pregled uticaja u research.md, R-16).
