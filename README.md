@@ -52,7 +52,7 @@ CI pokreće samo lokalne provere, bez modelskih API poziva.
 
 ## Podaci i izvori
 
-Poreklo i ograničenja podataka opisani su u [data/README.md](data/README.md) i [data/manifest.json](data/manifest.json). Pravi snimak nije uključen. Ako se kasnije odobri, čovek ga ručno postavlja u `data/raw/`; nijedna komanda ga ne preuzima.
+Poreklo i ograničenja podataka opisani su u [data/README.md](data/README.md) i [data/manifest.json](data/manifest.json). Korisnik je dostavio jedan raw snimak u `data/raw/`; on još nije potvrđen ili uvezen u matcher. Nijedna komanda ne preuzima niti skrejpuje podatke.
 
 Formule za eGFR, BMI i konverzije imaju izvore u kodu i potvrđene su u [docs/project-brief.md](docs/project-brief.md). Odluke i alternative su u [docs/decisions.md](docs/decisions.md).
 

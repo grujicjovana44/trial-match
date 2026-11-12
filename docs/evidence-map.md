@@ -37,3 +37,20 @@ data/fixtures/trials.json /tmp/trialmatch-trials-prepared.json` uspešno je
   stranicu i sintetički `POST /api/runs`; aplikacija je vratila `needs_clarification`.
 - GitHub Actions nije pokrenut u ovom okruženju. Živi model, živi baseline,
   pravi snimak studija i EV-01–EV-10 nisu provereni.
+
+## Faza 2: plan u funkcionalnosti 003
+
+[Početno stanje, razlike, budući task i provere](phase-2-readiness.md) i [feature 003](../specs/003-phase-2-live-integration/spec.md) su **planirani dokazi**. Postojanje ovih dokumenata dokazuje samo da je priprema urađena, ne da je ponašanje implementirano ili testirano.
+
+| CAP | Postojeća / istorijska evidence granica | Planirani dokaz 003 | Stanje 2026-11-12 |
+|---|---|---|---|
+| CAP-01 | Spec 001/002 i raniji planski dokumenti; njihovi checkboxi nisu izvršni dokaz | `specs/003-.../spec.md`, `plan.md`, `tasks.md`, `analysis.md` | Plan pripremljen; nema implementacije |
+| CAP-02 | Mock aplikacija; nema stvarnog poziva u ranijem baseline-u | T312–T314 ugovor, testovi i T331 odobren živi trag | Stvarni poziv nije izvršen |
+| CAP-03 | Manifest fixture-a je sintetički; korisnik je dostavio `data/raw/studies_50_recruiting_2026-11-12.json` sa 50 zapisa i jedinstvenim NCT ID-jevima | T317 importer, T319 izvor/upit/paginacija/uslovi korišćenja, T320 review, T321 manifest | Fajl i datum/vreme dostavljeni; preostalo poreklo i odobrenje čekaju čoveka |
+| CAP-04 | Raniji registar izlaže samo evaluate_criteria; test fajl nije sam po sebi aktuelni dokaz | T315 četiri registrovana/izvršena alata i EV-04/08/16 provera | Delimično prema statičkom pregledu |
+| CAP-05 | Istorijski offline rezultati i profilni gold nisu live baseline ili 30 criteria | T322/T323 odvojene kriterijumske metrike/oznake; T326–T331 approvals i prvi nepromenljivi baseline | Nije izvršeno; baseline nepoznat za sadašnji HEAD |
+| CAP-06 | Faza 1 threat/validation dokumenti i offline testovi | T311/T313/T316/T328/T334 live attempt redaction, fault/secret check | Delimično; live rizici neprovereni |
+| CAP-07 | README/lockfile/CI dokumentovani; 2026-11-07 offline komande su istorijske | T301/T310/T325/T334 sadašnji rezultati; clean checkout tek Faza 4 | Nema sadašnjeg kompletnog izvršnog dokaza |
+| CAP-08 | Commit authorship beleži samo ko je napravio commit; nije peer review | Potvrđeni istorijski doprinosi u `docs/team.md`; T325/T332 stvarni reviewer; pojedinačni AI primeri moraju se proveriti sa članovima | Delimično / čeka tim |
+
+Stari offline rezultat pod `eval/results/offline-2026-11-11...` je jedan versioned artifact; nije dokaz aktuelnog HEAD-a, stvarnog modela, pravog korpusa ili live EV prolaza. CAP-08 ne može se zameniti modelskim baseline-om: traži suštinski tehnički doprinos člana, pregled rada drugog člana i proverene primere pomoći za svakog člana.
