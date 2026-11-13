@@ -2,8 +2,8 @@
 
 **Funkcionalnost**: `003-phase-2-live-integration`
 **Datum**: 2026-11-12
-**Status**: Plan pripremljen; prvi paket B spreman uz polazne provere, živi koraci čekaju ljudske unose.
-**Ulaz**: `plan/prompt_plan.md`, [brief](../../docs/project-brief.md), specifikacije 001/002 i [readiness](../../docs/phase-2-readiness.md). Ovo je planiranje, ne implementacija niti izvršni dokaz.
+**Status**: Implementacija koda i offline evaluacione provere su zabeležene u [readiness](../../docs/phase-2-readiness.md); test-suite/smoke, ljudski korpus/gold pregled, live baseline i browser smoke su otvoreni.
+**Ulaz**: `plan/prompt_plan.md`, [brief](../../docs/project-brief.md), specifikacije 001/002 i [readiness](../../docs/phase-2-readiness.md). Specifikacija definiše zahteve; izvršni dokazi se vode odvojeno.
 
 Jezički model čita pravila i objašnjava rezultat. Odluku donosi deterministički kod. Primarni korisnici su lekar i koordinator koji rade sa sintetičkim profilima; sekundarni korisnik je pacijent uz lekara. Članovi tima pripremaju i pregledaju korpus, pravila i evaluaciju. Nema dijagnostike, terapije ni odluke o uključivanju.
 
@@ -94,6 +94,8 @@ Konkurentne dopune/hipoteze i izgubljen odgovor ne smeju duplirati obradu. Resta
 | F2-13 | Oko 30 ljudski označenih kriterijuma ima odvojene predikcije i verzije; preciznost/odziv nisu mock skripta predstavljena kao živi kvalitet. | AC-07/08; CAP-05 |
 | F2-14 | Tragovi čuvaju stvarne pokušaje/alate/vreme/tokene kada dostupni, verzije i git stanje; nema tajni ni sirovog profila; lokalna fault simulacija nije javni endpoint. | AC-08–10; D3/D4 |
 | F2-15 | Mape dokaza, uputstva, stvarni doprinosi i pregled tuđeg rada prate isporuku; istorijski rezultati ostaju vezani za tadašnju verziju. | CAP-01/07/08; D1/D2 |
+| F2-16 | `data:split` lokalno prima raw CTG v2 ili `trialmatch-import-v2`, deterministički bira N studija, konzervativno izdvaja samo jasno naslovljene i označene stavke, čuva original/citate i prijavljuje sve probleme; izlaz je `pending_review`, ne ulazi u matcher i ne može zaobići approval. | AC-14; C2 |
+| F2-17 | `rules:draft` runtime-validira podržani `trialmatch-import-v2` ili `trialmatch-review-draft-v1`, prenosi postojeće kriterijume bez izmena u poseban niz za `rules:review-template`, proverava studiju/izvor/citat i odbija prepisivanje; ljudski pregled ostaje obavezan. | AC-15; C2 |
 
 ### Ključni entiteti
 
@@ -107,6 +109,8 @@ Izvršavanje sa profilom, poreklom i kumulativnim budžetom; manifest i verzija 
 - **F2-SC4**: Prvi potpuni živi pokušaj svih 16 fiksnih slučajeva sačuvan je kao nepromenljiv baseline, uključujući neuspehe i režime; prekid je vidljiv kao nepotpun pokušaj.
 - **F2-SC5**: Stvarni pregled glavnog UI toka, dopune, hipoteze, isključenja i grešaka beleži pregledaoca, datum i nalaze, uz pristupačnost AC-12.
 - **F2-SC6**: Dokumentacija jasno razlikuje implementaciju spremnu za živo pokretanje od izvršene Faze 2 sa baseline-om; nijedan blokiran/preskočen zadatak nije završen.
+- **AC-14**: isti ulaz i seed daju isti odabir; greške i studije kojima treba ručna podela vidljive su u izveštaju; svaki generisani citat je podniz originala, a nijedno pravilo nije automatski pregledano/odobreno.
+- **AC-15**: `rules:draft` prihvata samo runtime-validne `trialmatch-import-v2` i `trialmatch-review-draft-v1` fajlove; čuva redosled i sadržaj kriterijuma, odbacuje duple studije i nevažeće veze/citate, izostavlja i prijavljuje prazne studije, i nikad ne prepisuje izlaz ili odobrava pravila.
 
 ## Pretpostavke i granice
 
@@ -115,3 +119,8 @@ AC-01–AC-10 zadržavaju značenje iz [001](../001-trialmatch-core/spec.md) i b
 Memorijsko stanje i postojeći stek ostaju. Nema javnog hostinga/Vercel-a (B9, javni deo B8/D3), naloga, baze, embeddings, glasa ni autonomnih agenata u aplikaciji. Faza 3 (optimizacija/poređenje), čist checkout drugog člana, tag i odbrana iz Faze 4 ne izvršavaju se. X-01–X-03 nisu primenljivi jer nema spoljnog upisa.
 
 Imena vlasnika/pregledalaca ostaju TODO do potvrde. Samo sintetički profili; pravi studijski snimak postavlja čovek. Potvrđene formule i kontrolne vrednosti se ne otvaraju ponovo; nove/izmenjene nose izvor i „PROVERITI prema originalnoj publikaciji“ do potvrde.
+
+
+## Implementacioni status
+
+Implementirani su API ugovori i manifest, deterministički alati, provider-neutral Gemini adapter, eksplicitni DEMO/live režimi, lokalni importer i compiler pravila, UI metapodaci, odvojena kriterijumska metrika i guard-ovi live evaluatora. T301–T336 ostaju vođeni u `tasks.md`; sam kod ne zatvara zadatak bez traženog dokaza. Ljudski pregled korpusa, gold oznake, ključ/odobrenje za live poziv, baseline i live browser smoke ostaju otvoreni.

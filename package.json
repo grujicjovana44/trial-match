@@ -17,10 +17,17 @@
     "test:watch": "vitest",
     "smoke": "vitest run apps/server/test/smoke",
     "data:prepare": "node dist/scripts/prepare-trials.js",
+    "data:split": "node dist/scripts/split-trials.js",
+    "data:split-draft": "node dist/scripts/split-draft.js",
     "eval:offline": "node dist/eval/runner/cli.js",
-    "eval:live": "node scripts/live-eval-disabled.mjs",
+    "eval:live": "node dist/eval/runner/cli.js --live",
     "eval:compare": "node dist/eval/runner/compare.js",
-    "gold:metrics": "node dist/eval/runner/gold-metrics.js"
+    "gold:metrics": "node dist/eval/runner/gold-metrics.js",
+    "compile:rules": "node dist/scripts/compile-rules.js",
+    "rules:draft": "node dist/scripts/create-rule-draft.js",
+    "rules:review-template": "node dist/scripts/rule-review-template.js",
+    "gold:criteria": "node dist/eval/runner/gold-criteria-cli.js",
+    "preview:ui": "vite preview --host 127.0.0.1 --port 4173"
   },
   "dependencies": {
     "fastify": "5.12.5",

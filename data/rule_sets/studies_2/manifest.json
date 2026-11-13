@@ -1,0 +1,18 @@
+{
+  "name": "lokalni-pregledani-korpus",
+  "version": "rules-3252bb0ab9e1",
+  "date": "2026-11-13",
+  "origin": "Lokalni snapshot koji je dostavio korisnik; endpoint i query nisu potvrđeni.",
+  "synthetic": false,
+  "license": "ClinicalTrials.gov Terms and Conditions (publicly available U.S. Government data; attribution required; some records may contain third-party copyrighted content). https://clinicaltrials.gov/terms-conditions",
+  "transformations": "Lokalni CTG v2 normalizer; izvorni criteria tekst je sačuvan.; lokalni compile:rules; bez generisanja modelom",
+  "limitations": [
+    "nextPageToken je prisutan; potpunost paginacije nije potvrđena.",
+    "Sirovi kriterijumi čekaju ručno razdvajanje i pregled.",
+    "Nepregledana pravila ne ulaze u matcher."
+  ],
+  "downloadedCount": 2,
+  "includedCount": 2,
+  "sourceHash": "2c1e87ba5dabe09f47bcdf5e1ac7d40882db822ba48d69ede5ff8f343a319707",
+  "rulesVersion": "1"
+}

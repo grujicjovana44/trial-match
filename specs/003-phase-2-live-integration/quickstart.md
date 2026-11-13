@@ -22,13 +22,25 @@ pnpm data:prepare data/fixtures/trials.json /tmp/trialmatch-003-fixtures.json
 
 Poslednje tri CLI data/eval/gold zavise od prethodnog build-a (dist/). data:prepare mora imati odvojen nov izlaz, ne prepisivati korpus. Posle importera proveriti i eksplicitnu stvarnu putanju koju čovek dostavi; sintetički ulaz ne dokazuje stvarni raw format. format:check može prijaviti postojeće tuđe izmene; ne formatirati ih automatski.
 
-## Planirane komande i konfiguracija
+## Komande i konfiguracija
 
-Nisu sada dostupne: compile:rules CLI iz [ugovora podataka](contracts/data-rules.md) i eval:live flagovi iz [evaluacionog ugovora](contracts/evaluation.md). Prvo implementirati i offline proveriti njihove guard-ove, tek onda koristiti.
+Lokalni `rules:draft`, `compile:rules` CLI i `eval:live` guard-ovi su implementirani. `rules:draft` prihvata samo runtime-validne `trialmatch-import-v2` ili `trialmatch-review-draft-v1` ulaze. Preporučen je `data:split` izlaz za kriterijume izdvojene iz eligibility teksta; `data:prepare` prenosi samo kriterijume koje već sadrži. `compile:rules` radi nad prethodno uvezenim JSON-om i odbija svaku studiju bez potvrđenog ljudskog pregleda izvora i pravila. Ne praviti review zapis bez stvarnog pregleda.
 
-Posle T313: podrazumevani DEMO_MODE=false; LLM_PROVIDER=gemini, LLM_MODEL=gemini-3.5-flash-lite, GEMINI_API_KEY samo lokalno u serverskom okruženju. Bez ključa jasna konfiguraciona greška. Mock koristi eksplicitno DEMO_MODE=true; testovi/CI mock i bez mrežnog transporta. Ne kopirati ključ u komandu, razgovor, bundle ili trace.
+Primeri offline korišćenja nakon `pnpm build`:
 
-Lokalna izgrađena verzija: T310 dokumentuje tačnu serversku entry komandu prema build izlazu i pokretanje Vite preview na loopback-u, sa VITE_API_BASE_URL podešenim pri build-u ako su portovi različiti; API dozvoljava samo taj lokalni origin. Nije Vercel deployment. Browser smoke proverava i čitanje Retry-After. Postojeći pnpm dev ostaje razvojni tok; ne predstavljati ga kao proveru izgrađenog UI-ja.
+```sh
+pnpm data:prepare data/raw/studies_50_recruiting_2026-11-12.json /tmp/trialmatch-import.json
+pnpm data:split --input /tmp/trialmatch-import.json --output /tmp/trialmatch-split.json
+pnpm rules:draft --input /tmp/trialmatch-split.json --output /tmp/trialmatch-rules-draft.json
+pnpm rules:review-template --input /tmp/trialmatch-import.json --draft /tmp/trialmatch-rules-draft.json --output /tmp/trialmatch-reviews.json
+pnpm gold:criteria eval/gold-criteria.jsonl eval/predictions/predictions.jsonl DATASET_VERSION /tmp/trialmatch-gold-metrics.json
+```
+
+`data:split` je preporučen za kriterijume iz originalnog eligibility teksta, jer `data:prepare` čuva tekst nerazdvojen. Ako se `rules:draft` pokrene direktno nad `data:prepare` izlazom, prenosi samo postojeće kriterijume. `rules:draft` niz nije review šablon: zasebni `rules:review-template` izlaz ostaje `pending_review`. Čovek i dalje mora proveriti citate i pravila, urediti kriterijume u domenski oblik, ponovo izračunati šablon posle izmena, pa dodati svoj reviewer/date. Nijedna komanda ne odobrava pravila. Izlazi paketa moraju biti nove putanje. Poreklo/licenca korpusa i ljudski review se ne zaključuju iz samog uspešnog importa.
+
+Podrazumevani `DEMO_MODE=false`; `LLM_PROVIDER=gemini`, `LLM_MODEL=gemini-3.5-flash-lite`, `GEMINI_API_KEY` samo lokalno u serverskom okruženju. Bez ključa jasna konfiguraciona greška. Mock koristi eksplicitno `DEMO_MODE=true`; testovi/CI mock i bez mrežnog transporta. Ne kopirati ključ u komandu, razgovor, bundle ili trace.
+
+Lokalna izgrađena verzija: `pnpm build`, zatim pokrenuti API sa `DEMO_MODE=true node dist/apps/server/src/index.js` i preview sa `pnpm preview:ui`. Podrazumevani preview proxy prosleđuje `/api` na loopback API; za drugi API origin postaviti `VITE_API_BASE_URL` pri build-u, a `WEB_ORIGIN` na tačan preview origin. Nije deployment. Browser smoke proverava i čitanje `Retry-After`; nije izvršen u ovoj sesiji. Postojeći `pnpm dev` ostaje razvojni tok i nije provera izgrađenog UI-ja.
 
 ## Proverljivi scenariji
 

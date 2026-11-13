@@ -140,3 +140,11 @@ Ova sekcija beleži odluke za planiranje; nije dokaz implementacije.
 - **Odgovornosti koje je korisnik potvrdio**: Jovana je napravila osnovu i sve pre Aleksinog dela; Aleksa je izvršio oblast A u 002; Jelena je pregledala šta je urađeno do sada. Ovo je istorijski doprinos, ne dodela budućeg vodećeg člana/reviewera za B/C/D ili završno A povezivanje. `docs/team.md` zadržava TODO za buduće vlasništvo.
 
 Alternativni OpenAI provider za produkciju, Gemini SDK, modelom generisani compile pravila i nastavak iz terminalnog `failed` stanja nisu deo potvrđene 003 odluke.
+
+### Offline nacrt za ručni split CTG kriterijuma
+
+Za rad sa ručno dostavljenim snimkom, komanda `data:split` koristi postojeći CTG v2 importer umesto zasebnog parsera. Nacrt ima sopstveni format sa `pending_review`, a kriterijumi nose samo doslovan tekst, izvor i status `manual_review`; matcher polja i approval se ne generišu. Naslov Inclusion/Exclusion i oznaka stavke moraju biti eksplicitni. Nejasan tekst ostaje u celini u `eligibilityText` i u izvornom zapisu, uz razlog `needs_manual_split`.
+
+Odabir `first` prati validirane zapise u redosledu ulaza; `random` koristi obavezni seed za ponovljiv izbor. Izbor se vrši među studijama koje je postojeći importer prihvatio, dok se greške svih raw redova prijavljuju u izveštaju. Duplikati odbijaju generisanje jer bi NCT ID i kriterijumi bili dvosmisleni. Ove odluke zadržavaju izvorne greške vidljivim bez mešanja problematičnog reda sa uspešno validiranim studijama.
+
+Razmotrena alternativa je da se proširi produkcioni `TrialSchema` i postojeći kriterijum odmah označi kao odobrenog porekla. Umesto toga draft koristi uski `raw_extracted` oblik sa sopstvenim `pending_review` stanjem; to izbegava semantičko mešanje sirovog izvoda, ručno pregledanog pravila i paketa za matcher. Cena je da čovek posle pregleda pravi zaseban tipizirani rule-draft za postojeći approval/compiler tok.

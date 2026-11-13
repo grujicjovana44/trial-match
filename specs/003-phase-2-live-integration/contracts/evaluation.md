@@ -1,35 +1,29 @@
-# Evaluacija, trošak i prvo kreiranje baseline-a
+# Evaluacija, ograničenja i baseline
 
-Sve nove opcije u ovom dokumentu su PLANIRANE, nisu sada dostupne. Postojeći eval:live je onemogućen. Ne pokretati živi model tokom pripreme 003.
+## Izvršavanje slučajeva
 
-## Planirani ulaz komande
+`eval/cases.jsonl` ima stabilnih 16 slučajeva sa eksplicitnim režimima. EV-01–EV-10 su `real_model`; EV-11 je offline, EV-12–EV-16 su `simulated_fault`. `pnpm eval:offline` pokreće samo EV-11–EV-16. EV-07–EV-09 se dodatno beleže kao `dry_run`, preostalih sedam živih slučajeva kao `skipped`; nijedan nije PASS.
 
-`pnpm eval:live --confirm-live --label baseline --cases eval/cases.jsonl --dataset fixtures --max-model-attempts <N> --max-input-tokens <N> --max-output-tokens <N> --approval <lokalni-zapis.json>`
+Live evaluator koristi stvarni `TrialMatchService` nad fiksnim sintetičkim `fixtures` skupom. EV-06 izvršava dopunu i eksplicitnu hipotezu pod istim `runId`. EV-07 mora završiti pitanjem o HbA1c/glukozi pre alata. EV-10 poredi matcher statuse i opažanja nad čistim i zlonamernim izvorom i proverava odbijanje alata van allowlist-e. Slučaj prolazi samo ako su sve osobine iz `expected_properties` proverene; prekinut, preskočen ili `dry_run` slučaj nije PASS.
 
-Potvrdni flag nema podrazumevanu vrednost. Jedini dataset za 16 fiksnih slučajeva je fixtures; raw/trials/corpus se odbijaju pre poziva. Sva tri limita su pozitivni celi brojevi i obavezna; pokušaji uključuju retry/popravke, ne samo logičke pozive. Pre svakog poziva proveriti preostali limit i podesiti maksimalni izlaz; ako tačna ulazna tokenizacija nije dostupna bez mreže, koristiti konzervativnu granicu i prijaviti ograničenje procene, ne pretvarati karaktere u precizne tokene. Minimalno čvrsto ograničenje je broj pokušaja i maksimalni izlaz po pozivu; nedostupna potrošnja ostaje null.
+## Live evaluator i odobrenje
 
-Approval zapis sadrži čoveka, datum, provider/model, tačnu komandu, caseSet hash, broj slučajeva, dopuštene pokušaje/tokene i odobrenu potrošnju. Ako postoji proverena cena, dodati `--max-cost <decimal> --currency <oznaka> --price-snapshot <lokalni-json>` sa modelom, cenom i datumom; ako ne postoji, procena je „nije dostupna“ i čovek odobrava izričite tehničke granice uz tu nepoznanicu. CLI flag nije zamena za ljudsku dozvolu neposredno pre slanja. API ključ se unosi lokalno na serveru, nikada u approval zapis. Model je gemini-3.5-flash-lite; pristup dokumentaciji ne odobrava plaćeni poziv.
+Komanda je implementirana, ali nije pokretana u ovoj sesiji:
 
-## Redosled
+```sh
+pnpm eval:live --confirm-live --label baseline --dataset fixtures --max-model-attempts <N> --max-input-tokens <N> --max-output-tokens <N> --approval <lokalni-approval.json>
+```
 
-1. Proveriti konfiguraciju/prisustvo ključa bez ispisivanja, verzije, sintetički dataset, integritet slučajeva i approval.
-2. Zamrznuti očekivanja/hash-ove pre prvog punog živog pokušaja, uključujući eksplicitne sledove EV-03/06/10 i značenje EV-04 compute_egfr broja. EV-02 nedorečenost pola rešiti pre zamrzavanja, bez nagađanja.
-3. Atomski rezervisati eval/results/baseline/ (mkdir bez exist_ok/recursive final target); ako postoji i prazan ili prekinut, stati pre modela, prijaviti run metadata/poreklo ili odsustvo metadata. Ne brisati/renamovati radi zamene.
-4. Odmah zapisati manifest status=reserved/running. Svaki slučaj i redigovan događaj upisati kako nastane; završetak piše summary atomski. Pri exception/signal prekidu sačuvati interrupted i započeti/neizvršene slučajeve; oporavak posle pada čita postojeći dnevnik bez izmene prethodnih ishoda.
-5. Prvo kompletno živo pokretanje postaje baseline, uključujući neuspehe. Prekinuta prva rezervacija se čuva; ne pokretati zamenski baseline bez zasebne ljudske odluke o nastavku istog dokaza. Nema automatskog brisanja, dopunjavanja „iz sećanja“ ili odabira boljeg pokušaja.
+Nema opcije za drugi dataset, drugi model ili promenjen case fajl. Runner validira `--confirm-live`, label, fiksne slučajeve/hash, approval zapis, server konfiguraciju i Gemini ključ pre mrežnog transporta. Approval ima reviewer, vreme odobrenja, provider/model, tačan process command, case hash/count i gornje granice attempts/tokens. Pokrenuta ograničenja moraju biti jednaka ili manja od odobrenih. `maxCost` mora biti `null`, a `costUnavailableAcknowledged` eksplicitan, jer lokalna cena nije dostupna za enforcement. Approval nije dozvola za izvođenje dok čovek neposredno pre pokretanja ne potvrdi konkretan opseg.
 
-Za ponovljivost preferirati korisnikov commit implementacije; agent ga ne pravi. Za dirty tree sačuvati dirty=true, hash redigovanog diff-a i spisak relevantnih fajlova, bez sadržaja env/tajni. Podaci: caseSet/fixture/prompt/schema/rules verzije i hash, model/provider/settings, stvarni pokušaji, alati i argumenti, vremena, validacija, izvori, kategorije grešaka i dostupni tokeni. Redakcija po allowlist-i; ne snimati ceo provider odgovor.
+Ulazni token cap se pre svakog poziva sprovodi konzervativnom gornjom granicom UTF-8 bajtova serijalizovanog prompta/šeme/ulaza uz fiksnu rezervu; to nije precizan tokenizer. Output cap se kumulira kroz pokušaje i šalje kao provider `maxOutputTokens`. Provider usage se sabira kada ga vrati; posle odgovora bez usage metadata runner staje umesto da nastavi bez sigurnog limita. Trošak nije izračunat.
 
-## Slučajevi i metrike
+`eval/results/baseline/` se atomski rezerviše kao nov direktorijum tek posle lokalnih provera i pre kreiranja Gemini adaptera. Ako postoji, proces staje bez slanja poziva ili pisanja u njega. Manifest beleži commit/dirty hash, label, case hash, odobrene i tražene limite; `results.jsonl` i allowlist tragovi dopisuju se posle svakog slučaja. SIGINT/SIGTERM abort-uje aktivni fetch, tekući slučaj postaje `skipped`, a manifest ostaje `interrupted`. Prekinuti baseline se ne nastavlja i ne prepisuje automatski.
 
-EV-01–EV-10 zadržavaju real_model definicije; EV-07 sme 0 modelskih poziva ako je zakonski prekinut pre modela prema brief-u, uz zabeležen razlog. EV-11 je offline, EV-12–EV-16 simulated_fault i tokom kompletnog pokretanja ne pozivaju provajdera. Svaki slučaj koristi aplikacionu servis/API putanju i stvarnu kontrolu granica; fault injection je interni dependency override, nikada javni HTTP parametar/endpoint. EV-10 koristi tačno definisane čiste/zlonamerne fixture varijante; test izvan evaluacije EV-10-offline provera nije njegov prolaz.
+Trag sadrži ID slučaja/run-a, režim, model, verzije, dozvoljene evente, attempt/alate/vreme/prompt hash i dostupne tokene. Ne čuva raw profil, provider body, ključ niti model output. `eval:compare` služi za poređenje postojećih direktorijuma i ne menja ih.
 
-Prikazati odvojeno funkcionalne EV-01–09 k/n samo izvršenih; bezbednosni EV-10; offline/fault EV-11–16; gold kriterijume; podršku citata; trajanje i potrošnju. Slučaj prolazi samo ako sve obavezne provere prolaze. Dry-run/skipped/interrupted nemaju PASS i ne ulaze u imenilac izvršenih. Izveštaj zadržava broj planiranih/preskočenih, tako da manji imenilac ne skriva nedovršenost. Corpus i UI provere su odvojeni rezultati, ne zamena fixture očekivanja.
+## Kriterijumske metrike
 
-## Zlatni skup kriterijuma
+`pnpm gold:metrics` ostaje osam primera profilnog mock parsera i nije modelska potvrda kriterijuma. `pnpm gold:criteria <annotations.json> <predictions.json> <datasetVersion> <new-output.json>` računa odvojene TP/FP/FN i precision/recall. Expected sadrži izvorni tekst/hash, tačnu dataset/annotation verziju i reviewer/date. Prediction nosi isti source hash i verzije; dozvoljen je samo `manual` ili `structured` metod, sa null modelVersion/traceId prema Q4. Pogrešna vrednost daje FP+FN; prazni imenitelji su `null`. Metrika se ne računa za ispražnjeni ili nevažeći skup.
 
-Postojeći eval/gold-set.jsonl ostaje osam profilnih mock primera. Novi eval/gold-criteria.jsonl ima cilj 30 ljudski označenih kriterijuma (ako odstupa, prijaviti stvarni broj i razlog), verzije izvora i reviewer/date. Predikcije su zaseban fajl, nikada isti objekat kao expected. Q4 zabranjuje modelsko generisanje pravila: za 003 predikcije lokalnog ručnog/strukturisanog import procesa proveravaju se prema ljudskom skupu i izveštaj kaže metod=local/manual; to NIJE kvalitet živog modelskog parsiranja kriterijuma. Ako tim kasnije želi živu metriku parsiranja pravila, potrebna je nova odluka koja menja Q4, zaseban trošak i novi dokaz.
-
-Jedinica merenja je normalizovan atom (sourceId, kind, field, operator, value, unit, checkability). Tačno poklapanje je TP; dodatni/pogrešni atom FP; propušten očekivani atom FN. Pogrešna vrednost daje FP+FN. Precision=TP/(TP+FP), recall=TP/(TP+FN); nulti imenilac je null/neizračunljivo. Broj kriterijuma, broj atoma i manual_review stavke navesti posebno. Ručno prepisani expected kao predictions nisu nezavisno merenje; review mora potvrditi poreklo oba skupa. Ljudski pregled podrške citata odvojeno beleži podržano/nepodržano/neodlučeno uz imenioce.
-
-Provere: rezervacija pre transporta, dupli konkurentni start, zabrana prepisivanja, prekid/partial flush, nedostatak odobrenja/ključa, razdvajanje fixture/korpusa, svi EV režimi i očekivanja, brojači alata, neizvršeno nije PASS, wrong-value FP+FN, bez tajni. Faza 3 optimizacija/ponovno poređenje i Faza 4 predaja nisu deo ove sesije ili Faze 2 implementacije.
+Faza 2 nije kompletno izvršena dok nema nezavisnih ljudskih anotacija/predikcija, kompletnog odobrenog živog baseline-a i odvojenog stvarnog browser pregleda. Kod i mock/offline prolazi sami ne dokazuju te ishode.

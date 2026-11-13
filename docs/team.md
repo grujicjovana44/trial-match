@@ -13,4 +13,4 @@ Svaki član treba da ume da objasni svoj doprinos na odbrani; tim treba da pregl
 
 ## Potvrđeni istorijski doprinosi (2026-11-12)
 
-Jovana je napravila osnovu projekta i rad pre Aleksinog UI dela; Aleksa je izvršio UI oblast A u funkcionalnosti 002; Jelena je pregledala dosadašnji rad. Ove potvrde opisuju istoriju iz korisnikovog odgovora. Ne popunjavaju vodeće članove/pregledaoce za predstojeće pakete 003. Oblast B T301–T310 je prvi planirani paket; budući vlasnici i pregledalac ostaju TODO dok tim ne potvrdi.
+Jovana je napravila osnovu projekta i rad pre Aleksinog UI dela; Aleksa je izvršio UI oblast A u funkcionalnosti 002; Jelena je pregledala dosadašnji rad. Ove potvrde opisuju istoriju iz korisnikovog odgovora. Ne popunjavaju vodeće članove/pregledaoce za rad na 003. Kod funkcionalnosti 003 je u radnoj kopiji; budući vlasnici i pregledalac ostaju TODO dok tim ne potvrdi.

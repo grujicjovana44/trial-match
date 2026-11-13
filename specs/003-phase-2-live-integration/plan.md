@@ -43,7 +43,7 @@ Dokumentacija 003: spec, research, plan, data-model, tasks, quickstart, handoff,
 | tools/executor.ts, derived/, matcher/, questions/, retrieval/ | Četiri stvarna alata; snapshot izvedenih vrednosti; deterministički izbor, filteri i kontekst. |
 | citations/verify.ts, grounding/numeric.ts, trace/redact.ts | Provera izvora konkretnog poziva, ograničene tvrdnje, brojevi i stvarni redigovani događaji. |
 | scripts/prepare-trials.ts, scripts/compile-rules.ts | Lokalni importer i validacija/pregled pravila, bez automatskog preuzimanja. |
-| prompts/extract_profile.v1, explain_results.v1 | Kreirati tek u implementaciji; verzije i hash u trace-u; bez računanja/presude modelom. |
+| prompts/extract_profile.v1, explain_results.v1 | Verziji promptova i hash-evi su povezani sa trace-om; model ne računa i ne donosi presudu. |
 | data/raw/, trials/, manifest.json, eval/gold-criteria.jsonl | Čovek daje snimak/pregled; postojeći fixture i profilni gold se ne zamenjuju. |
 | apps/web/src/api/, state/, components/, result-view-model.ts, copy.ts | Novi ugovor uz postojeći dizajn; sintetičnost odvojena od modela; A vlasništvo. |
 | eval/runner/live.ts, cli.ts, results.ts, gold-metrics.ts | Stvarni aplikacioni tok, rezervacija/upis/prekid, odvojene metrike; CI ostaje offline. |
@@ -66,7 +66,7 @@ Stroga stara šema odbija dodata polja: server i shared menjaju se zajedno, a po
 
 Najveći rizici su dvostruki async zahtevi, skrivena potrošnja pri odbijenoj hipotezi, računanje alata više puta, preširoka allowlist izvora, odobrenje starih pravila posle izmene i baseline koji se rezerviše prekasno. Ugovori definišu testove za svaki rizik. Rok uključuje čekanje korisnika; demo od tri minuta može prevazići 60 s za jedan run, pa ručni pregled mora prijaviti timeout, ne povećati limit potajno.
 
-Za kompletne izmene: typecheck, lint, test, build, smoke, eval:offline, gold:metrics, format:check; data:prepare sa tačno navedenim lokalnim ulazom i odvojenim izlazom; compile:rules lokalni testovi. Build mora prethoditi dist CLI-jima. U ovoj sesiji ništa od toga nije pokrenuto. Matrica komandi i budućih režima je u quickstart.md.
+Završni ishodi implementacione sesije i tačne putanje artefakata su u [readiness evidenciji](../../docs/phase-2-readiness.md): typecheck, lint, build, eval:offline, gold:metrics, fixture/raw data:prepare i UI secret scan su izvršeni. `test`/`smoke` nisu pokrenuti, `format:check` prijavljuje samo netaknute raw snapshot i `plan/prompt_plan.md`, a `compile:rules` nije dobio ljudski pregledane ulaze. Live adapter/baseline i browser smoke nisu pokretani. Matrica komandi je u quickstart.md.
 
 ## Složenost
 

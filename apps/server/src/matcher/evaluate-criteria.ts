@@ -20,6 +20,7 @@ import { rankResults } from "./rank-results.js";
 export function getObservedValue(
   profile: Profile,
   field: CriterionField,
+  derived?: DerivedValue[],
 ): number | boolean | string | null {
   switch (field) {
     case "age":
@@ -39,9 +40,13 @@ export function getObservedValue(
     case "insulin_last_3_months":
       return profile.insulin_last_3_months ?? null;
     case "egfr":
-      return computeEgfr(profile) ?? null;
+      return derived
+        ? (derived.find((v) => v.name === "eGFR")?.value ?? null)
+        : (computeEgfr(profile) ?? null);
     case "bmi":
-      return computeBmi(profile) ?? null;
+      return derived
+        ? (derived.find((v) => v.name === "BMI")?.value ?? null)
+        : (computeBmi(profile) ?? null);
     case "medications":
       return profile.medications?.join(", ") ?? null;
     case "stated_diagnoses":
@@ -86,14 +91,20 @@ function compare(
       return value === true;
     case "is_false":
       return value === false;
+    default:
+      return false;
   }
 }
 
 function evaluateCriterion(
   profile: Profile,
   criterion: Criterion,
+  derived?: DerivedValue[],
 ): CriterionResult {
-  const value = getObservedValue(profile, criterion.field);
+  const value =
+    criterion.checkability === "manual_review" || !criterion.field
+      ? null
+      : getObservedValue(profile, criterion.field, derived);
   const status =
     criterion.checkability === "manual_review" || value === null
       ? "unknown"
@@ -105,6 +116,26 @@ function evaluateCriterion(
     text: criterion.text,
     status,
     observedValue: value,
+    observedUnit:
+      value === null
+        ? null
+        : ((
+            {
+              age: "years",
+              hba1c: "%",
+              creatinine: "mg/dL",
+              height: "cm",
+              weight: "kg",
+              egfr: "mL/min/1.73 m²",
+              bmi: "kg/m²",
+            } as Partial<Record<CriterionField, string>>
+          )[criterion.field ?? "age"] ?? null),
+    observedOrigin:
+      value === null
+        ? "unknown"
+        : ["egfr", "bmi"].includes(criterion.field ?? "")
+          ? "derived"
+          : "profile",
     sourceId: criterion.sourceId,
     citation: { sourceId: criterion.sourceId, quote: criterion.sourceQuote },
   };
@@ -113,10 +144,11 @@ function evaluateCriterion(
 export function evaluateCriteria(
   profile: Profile,
   trials: Trial[],
+  derived?: DerivedValue[],
 ): TrialResult[] {
   const results = trials.map((trial) => {
     const criteria = trial.criteria.map((criterion) =>
-      evaluateCriterion(profile, criterion),
+      evaluateCriterion(profile, criterion, derived),
     );
     const verdict: TrialResult["verdict"] = criteria.some(
       (criterion) => criterion.status === "not_met",
@@ -125,7 +157,14 @@ export function evaluateCriteria(
       : criteria.some((criterion) => criterion.status === "unknown")
         ? "pending"
         : "candidate";
-    return { trialId: trial.trialId, title: trial.title, verdict, criteria };
+    return {
+      trialId: trial.trialId,
+      title: trial.title,
+      overallStatus: trial.overallStatus,
+      phase: trial.phases ? trial.phases.join(", ") || null : trial.phase,
+      verdict,
+      criteria,
+    };
   });
   return rankResults(results);
 }
@@ -157,8 +196,9 @@ export function getDerivedValues(profile: Profile): DerivedValue[] {
 export function missingFieldsForCriterion(
   profile: Profile,
   field: CriterionField,
+  derived?: DerivedValue[],
 ): string[] {
-  if (getObservedValue(profile, field) !== null) return [];
+  if (getObservedValue(profile, field, derived) !== null) return [];
   if (field === "egfr")
     return ["age", "sex", "creatinine"].filter((key) => {
       if (key === "age") return profile.age === undefined;

@@ -21,6 +21,11 @@ type ErrorResponse = Extract<RunResponse, { status: "error" }>;
 export function metaOf(overrides: Partial<Meta> = {}): Meta {
   return {
     modelId: "mock",
+    providerId: "mock",
+    modelAttempts: 1,
+    dataSnapshotDate: null,
+    dataOrigin: "Sintetički primeri",
+    dataSynthetic: true,
     promptVersion: "demo.v1",
     schemaVersion: "1.0.0",
     dataVersion: "synthetic-trials-v1",
@@ -45,6 +50,8 @@ export function criterionOf(
     text: `Uslov ${index}`,
     status,
     observedValue,
+    observedUnit: null,
+    observedOrigin: observedValue === null ? "unknown" : "profile",
     sourceId: id,
     citation: { sourceId: id, quote: `Citat ${index} za ${trialId}` },
   };
@@ -58,6 +65,8 @@ export function trialsOf(count: number, idPrefix = "T-"): TrialResult[] {
     return {
       trialId,
       title: `Studija ${i + 1}`,
+      overallStatus: null,
+      phase: null,
       verdict: verdicts[i % verdicts.length] ?? "candidate",
       criteria: [
         criterionOf(trialId, 1, "met", 62),
@@ -70,10 +79,11 @@ export function trialsOf(count: number, idPrefix = "T-"): TrialResult[] {
 
 function baseFields(): Pick<
   OkResponse,
-  "runId" | "profile" | "derived" | "explanation" | "meta"
+  "runId" | "profile" | "derived" | "explanation" | "meta" | "excludedTrials"
 > {
   return {
     runId: "run-1",
+    excludedTrials: [],
     profile: {
       age: 62,
       sex: "male",
@@ -168,7 +178,7 @@ export function rejectedResponse(): RejectedResponse {
 }
 
 export function runErrorResponse(
-  category: string,
+  category: ErrorResponse["error"]["category"],
   retryable: boolean,
   overrides: Partial<ErrorResponse> = {},
 ): ErrorResponse {
@@ -186,7 +196,10 @@ export function runErrorResponse(
   };
 }
 
-export function httpErrorBody(category: string, retryable: boolean) {
+export function httpErrorBody(
+  category: ErrorResponse["error"]["category"],
+  retryable: boolean,
+) {
   return {
     status: "error" as const,
     error: { category, message: "Poruka servera.", retryable },

@@ -1,6 +1,6 @@
 # Ugovor API-ja i pouzdanosti
 
-Status: nezavisne promene B1/B2/B3/B4/B6/B7 su planirane; oporavak B10 zadržava 002 po Q3, stvarni režim je podrazumevan po Q5. Rute ostaju POST /api/runs, /api/runs/{runId}/answer, /api/runs/{runId}/hypothesis, tela iz 001. Nijedna nova ruta nije implicitno odobrena. Zavisnosti: shared šeme, manifest loader, servis/store i A klijent.
+Status: shared/API/UI promene B1/B2/B3/B4/B6/B7 su implementirane; njihove ugovorne testove i smoke treba izvršiti pre zatvaranja taskova. Oporavak B10 zadržava 002 po Q3, stvarni režim je podrazumevan po Q5. Rute ostaju POST /api/runs, /api/runs/{runId}/answer, /api/runs/{runId}/hypothesis, tela iz 001. Nije dodata nova ruta.
 
 Ulaz je strogi objekat sa jednim tekstom, 1–4000 karaktera; runId neprazan validiran parametar. Nevalidan JSON/ključevi/polja 400, predug unos 413 pre modela, alata i promene stanja. Ograničenje bajtova HTTP tela mora prihvatiti validan ćirilični unos od 4000 karaktera plus JSON omotač; karakteri nisu UTF-8 bajtovi. Testirati granične dužine na sva tri endpoint-a.
 

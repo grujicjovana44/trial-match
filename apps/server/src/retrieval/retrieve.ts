@@ -1,5 +1,9 @@
 import MiniSearch from "minisearch";
-import type { Profile, Trial } from "../../../../packages/shared/src/index.js";
+import type {
+  Profile,
+  Trial,
+  DerivedValue,
+} from "../../../../packages/shared/src/index.js";
 import {
   getObservedValue,
   missingFieldsForCriterion,
@@ -19,6 +23,8 @@ export function retrieveTrials(
     maxCandidates: number;
     maxSnippets: number;
     maxContextChars: number;
+    derived?: DerivedValue[];
+    excludeFields?: string[];
   },
 ): RetrievedContext {
   type SearchTrial = Trial & { criteriaText: string };
@@ -31,6 +37,12 @@ export function retrieveTrials(
       prefix: true,
     },
   });
+  trials = trials.filter(
+    (trial) =>
+      !trial.criteria.some((c) =>
+        options.excludeFields?.includes(c.field ?? ""),
+      ),
+  );
   const documents: SearchTrial[] = trials.map((trial) => ({
     ...trial,
     criteriaText: trial.criteria.map((criterion) => criterion.text).join(" "),
@@ -61,16 +73,20 @@ export function retrieveTrials(
     trial.criteria.filter(
       (criterion) =>
         criterion.checkability === "auto" &&
-        getObservedValue(profile, criterion.field) !== null,
+        getObservedValue(profile, criterion.field ?? "age", options.derived) !==
+          null,
     ).length;
   const resolvableCriteria = (trial: Trial) =>
     trial.criteria.filter(
       (criterion) =>
         criterion.checkability === "auto" &&
-        getObservedValue(profile, criterion.field) === null &&
-        missingFieldsForCriterion(profile, criterion.field).some((field) =>
-          resolvableFields.has(field),
-        ),
+        getObservedValue(profile, criterion.field ?? "age", options.derived) ===
+          null &&
+        missingFieldsForCriterion(
+          profile,
+          criterion.field ?? "age",
+          options.derived,
+        ).some((field) => resolvableFields.has(field)),
     ).length;
   selected.sort(
     (left, right) =>

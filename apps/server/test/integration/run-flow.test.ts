@@ -83,3 +83,61 @@ describe("API tok DEMO provere", () => {
     });
   });
 });
+
+it("003: manifest, isključenja i ćirilični limit čuvaju ugovor", async () => {
+  const app = createApp();
+  try {
+    const result = await app.inject({
+      method: "POST",
+      url: "/api/runs",
+      payload: {
+        profileText:
+          "Muškarac, 90 godina, HbA1c 4%, kreatinin 1 mg/dL, bez insulina.",
+      },
+    });
+    expect(result.json().meta).toMatchObject({
+      dataSynthetic: true,
+      dataSnapshotDate: "2026-11-07",
+    });
+    expect(result.json().results).toEqual([]);
+    expect(result.json().excludedTrials.length).toBeGreaterThan(0);
+    const unicode = await app.inject({
+      method: "POST",
+      url: "/api/runs",
+      payload: { profileText: "ж".repeat(4000) },
+    });
+    expect(unicode.statusCode).toBe(200);
+  } finally {
+    await app.close();
+  }
+});
+
+it("003: isti ključ deli aktivan start i odbija promenjeno telo", async () => {
+  const app = createApp();
+  try {
+    const request = {
+      method: "POST" as const,
+      url: "/api/runs",
+      headers: { "Idempotency-Key": "11111111-1111-4111-8111-111111111111" },
+      payload: { profileText },
+    };
+    const [a, b] = await Promise.all([
+      app.inject(request),
+      app.inject(request),
+    ]);
+    expect(a.statusCode).toBe(200);
+    expect(b.json()).toEqual(a.json());
+    expect(
+      (await app.inject({ ...request, payload: { profileText: "Drugi unos" } }))
+        .statusCode,
+    ).toBe(400);
+    const path = `/api/runs/${a.json().runId}/answer`;
+    const answers = await Promise.all([
+      app.inject({ method: "POST", url: path, payload: { answer: "ne" } }),
+      app.inject({ method: "POST", url: path, payload: { answer: "da" } }),
+    ]);
+    expect(answers.map((r) => r.statusCode).sort()).toEqual([200, 400]);
+  } finally {
+    await app.close();
+  }
+});

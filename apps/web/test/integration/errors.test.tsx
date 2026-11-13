@@ -137,7 +137,9 @@ describe("greške zahteva", () => {
       "fetch",
       vi
         .fn()
-        .mockResolvedValue(jsonResponse(runErrorResponse("nesto_novo", true))),
+        .mockResolvedValue(
+          jsonResponse(runErrorResponse("citation_validation_failed", true)),
+        ),
     );
     submitProfile();
     const panel = await screen.findByRole("alert");
