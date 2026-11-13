@@ -1,6 +1,6 @@
 # Demonstracioni scenario (3 minuta)
 
-Cilj: najviše 3 minuta, na aplikaciji u stvarnom režimu. Očekivani ishodi u stvarnom režimu potvrđuju se tek kada REQ-B5 i REQ-C1 budu isporučeni; do tada scenario važi za demo režim.
+Cilj: najviše 3 minuta u lokalnom DEMO_MODE=true toku. Gemini live prikaz i scenario nisu ručno pregledani u ovoj sesiji; ne predstavljati ga kao izvršenu demonstraciju Faze 2.
 
 | Korak | Radnja                                       | Unos                                                                                                                                | Očekivano                                                                                        | Vreme |
 | ----- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----- |
@@ -18,3 +18,7 @@ Napomena u scenariju: ako korak 4 u stvarnom režimu prvo postavi pitanje, odgov
 - Aplikacija je otvorena i prošla je jedna probna provera.
 - Alati pregledača su otvoreni na kartici Mreža, radi koraka 6.
 - Unosi iz tabele su spremni za kopiranje.
+
+## Lokalne komande
+
+Za razvoj pokrenite pnpm dev; skripta eksplicitno bira mock. Za izgrađeni preview pokrenite API sa DEMO_MODE=true i zasebno pnpm preview:ui. Pri različitim origin-ima izgradite UI uz VITE_API_BASE_URL=http://127.0.0.1:3000; WEB_ORIGIN mora da odgovara tačnom UI loopback origin-u. Ovaj vodič ne beleži browser smoke prolaz.

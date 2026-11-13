@@ -68,6 +68,8 @@ describe("kartica studije", () => {
       trialId: "T-1",
       title: "Studija bez kriterijuma",
       verdict: "candidate",
+      overallStatus: null,
+      phase: null,
       criteria: [],
     };
     render(<TrialCard trial={trial} index={0} />);

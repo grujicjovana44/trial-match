@@ -1,5 +1,30 @@
 import { z } from "zod";
 
+const TraceEventSchema = z
+  .object({
+    step: z.enum(["model", "tool", "grounding"]),
+    attempt: z.number().int().positive().optional(),
+    tool: z
+      .enum([
+        "compute_egfr",
+        "compute_bmi",
+        "evaluate_criteria",
+        "select_next_question",
+      ])
+      .optional(),
+    durationMs: z.number().nonnegative(),
+    inputTokens: z.number().int().nonnegative().optional(),
+    outputTokens: z.number().int().nonnegative().optional(),
+    outcome: z.string().min(1),
+    promptVersion: z.string().optional(),
+    promptHash: z
+      .string()
+      .regex(/^[a-f0-9]{64}$/)
+      .optional(),
+    sourceIds: z.array(z.string()).optional(),
+  })
+  .strict();
+
 export const SafeTraceSchema = z
   .object({
     case_id: z.string().regex(/^EV-\d{2}$/u),
@@ -11,6 +36,7 @@ export const SafeTraceSchema = z
     schema_version: z.string().min(1),
     prompt_version: z.string().min(1),
     commit: z.string().min(1),
+    events: z.array(TraceEventSchema).default([]),
   })
   .strict();
 
@@ -29,5 +55,6 @@ export function redactTrace(input: unknown): SafeTrace {
     schema_version: parsed.schema_version,
     prompt_version: parsed.prompt_version,
     commit: parsed.commit,
+    events: parsed.events,
   });
 }

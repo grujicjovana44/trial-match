@@ -1,0 +1,236 @@
+{
+  "format": "trialmatch-import-v2",
+  "sourceHash": "2c1e87ba5dabe09f47bcdf5e1ac7d40882db822ba48d69ede5ff8f343a319707",
+  "manifest": {
+    "name": "Dostavljeni CTG v2 snapshot",
+    "version": "raw-2c1e87ba5dab",
+    "date": "2026-11-12",
+    "origin": "Lokalni snapshot koji je dostavio korisnik; endpoint i query nisu potvrđeni.",
+    "synthetic": false,
+    "license": "NEPOTVRĐENO — čeka ljudsku proveru uslova korišćenja.",
+    "transformations": "Lokalni CTG v2 normalizer; izvorni criteria tekst je sačuvan.",
+    "limitations": [
+      "nextPageToken je prisutan; potpunost paginacije nije potvrđena.",
+      "Sirovi kriterijumi čekaju ručno razdvajanje i pregled."
+    ],
+    "downloadedCount": 2,
+    "sourceHash": "2c1e87ba5dabe09f47bcdf5e1ac7d40882db822ba48d69ede5ff8f343a319707"
+  },
+  "trials": [
+    {
+      "trialId": "NCT07924436",
+      "title": "Whole-Body Vibration Training in Women With Obesity With and Without Type 2 Diabetes",
+      "conditions": [
+        "Obesity",
+        "Diabetes Mellitus, Type 2"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "NA",
+      "phases": [
+        "NA"
+      ],
+      "locations": [
+        "Pamukkale University, Faculty of Physiotherapy and Rehabilitation, Denizli, Turkey (Türkiye)"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n* Female.\n* Aged 18 to 65 years.\n* Body mass index (BMI) ≥30 kg/m².\n* Willing to participate and provide informed consent.\n* For Group 1: Presence of type 2 diabetes mellitus.\n* For Group 2: Absence of type 2 diabetes mellitus.\n\nExclusion Criteria:\n\n* Cardiopulmonary, orthopedic, or neurological conditions that prevent participation in physical activity.\n* Congenital musculoskeletal deformities.\n* Cognitive impairment that prevents effective communication.\n* Presence of osteoporosis or osteopenia.",
+      "criteria": [
+        {
+          "id": "NCT07924436#structured-minimumAge",
+          "trialId": "NCT07924436",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 18,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 18 Years",
+          "sourceId": "NCT07924436#structured-minimumAge",
+          "sourceQuote": "18 Years"
+        },
+        {
+          "id": "NCT07924436#structured-maximumAge",
+          "trialId": "NCT07924436",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "lte",
+          "value": 65,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "maximumAge: 65 Years",
+          "sourceId": "NCT07924436#structured-maximumAge",
+          "sourceQuote": "65 Years"
+        },
+        {
+          "id": "NCT07924436#structured-sex",
+          "trialId": "NCT07924436",
+          "kind": "inclusion",
+          "field": "sex",
+          "operator": "eq",
+          "value": "female",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "sex: FEMALE",
+          "sourceId": "NCT07924436#structured-sex",
+          "sourceQuote": "FEMALE"
+        }
+      ],
+      "dataVersion": "2c1e87ba5dabe09f47bcdf5e1ac7d40882db822ba48d69ede5ff8f343a319707"
+    },
+    {
+      "trialId": "NCT07409714",
+      "title": "SMART 2D: Study of Montelukast's Effects on Renal and Cardiovascular Health in Adolescents and Young Adults With Type 2 Diabetes",
+      "conditions": [
+        "Type 2 Diabetes"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "EARLY_PHASE1",
+      "phases": [
+        "EARLY_PHASE1"
+      ],
+      "locations": [
+        "University of Colorado, Aurora, United States"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n* Age 14-24 years\n* Tanner stage \\>2\n* Diabetes onset \\<18 years of age and \\<10 years duration prior to study start\n* HgbA1c \\<10%\n* Blood pressure \\<130/80 mm Hg prior to randomization\n* Stable anti-hypertensive regimen for at least one month prior to randomization\n* BMI \\< 40 kg/m2\n* If on SGLT2 inhibitor, ACEi/ARB or GLP-1RA, stable dose for 4 weeks\n* Patient or guardian able to provide consent\n\nExclusion Criteria:\n\n* T1D\n* Episode of diabetic ketoacidosis or hyperosmolar hyperglycemia within 60 days\n* Uncontrolled hypertension\n* eGFR \\<30 ml/min/1.73m2\n* Macroalbuminuria with urine albumin to creatinine ratio \\>300 mg/g\n* Current participation in another research study\n* Pregnancy or planning to become pregnant or currently breastfeeding\n* Allergy to aspirin\n* Severe hepatic impairment (Child-Pugh Class C)\n* History of major psychiatric disorder\n* Use of inhaled or systemic corticosteroids or long-acting beta agonists\n* Iodine or shellfish allergy",
+      "criteria": [
+        {
+          "id": "NCT07409714#structured-minimumAge",
+          "trialId": "NCT07409714",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 14,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 14 Years",
+          "sourceId": "NCT07409714#structured-minimumAge",
+          "sourceQuote": "14 Years"
+        },
+        {
+          "id": "NCT07409714#structured-maximumAge",
+          "trialId": "NCT07409714",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "lte",
+          "value": 24,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "maximumAge: 24 Years",
+          "sourceId": "NCT07409714#structured-maximumAge",
+          "sourceQuote": "24 Years"
+        }
+      ],
+      "dataVersion": "2c1e87ba5dabe09f47bcdf5e1ac7d40882db822ba48d69ede5ff8f343a319707"
+    }
+  ],
+  "sources": [
+    {
+      "trialId": "NCT07924436",
+      "sourceId": "NCT07924436#unsplit-1",
+      "text": "Inclusion Criteria:\n\n* Female.\n* Aged 18 to 65 years.\n* Body mass index (BMI) ≥30 kg/m².\n* Willing to participate and provide informed consent.\n* For Group 1: Presence of type 2 diabetes mellitus.\n* For Group 2: Absence of type 2 diabetes mellitus.\n\nExclusion Criteria:\n\n* Cardiopulmonary, orthopedic, or neurological conditions that prevent participation in physical activity.\n* Congenital musculoskeletal deformities.\n* Cognitive impairment that prevents effective communication.\n* Presence of osteoporosis or osteopenia.",
+      "sourceHash": "237a2f0fd8e04b2fbb03a089a07653911cd34be4244496e4572fcba78268c20f",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT07924436",
+      "sourceId": "NCT07924436#structured-minimumAge",
+      "text": "18 Years",
+      "sourceHash": "23c8deb0e75604cb701e61045ca12f90b1cbc2cc82e8ce02ff230c9e4268a65b",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT07924436",
+      "sourceId": "NCT07924436#structured-maximumAge",
+      "text": "65 Years",
+      "sourceHash": "0af10bb56c273dad39f3aa905706a46036a9f86b60c3fd6b23a914951c2b0c82",
+      "location": "protocolSection.eligibilityModule.maximumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT07924436",
+      "sourceId": "NCT07924436#structured-sex",
+      "text": "FEMALE",
+      "sourceHash": "cf112cb65cc0fbbbd85eeaa20d3ac834bd954e7539ad8008b6487dbe47edb61f",
+      "location": "protocolSection.eligibilityModule.sex",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT07409714",
+      "sourceId": "NCT07409714#unsplit-1",
+      "text": "Inclusion Criteria:\n\n* Age 14-24 years\n* Tanner stage \\>2\n* Diabetes onset \\<18 years of age and \\<10 years duration prior to study start\n* HgbA1c \\<10%\n* Blood pressure \\<130/80 mm Hg prior to randomization\n* Stable anti-hypertensive regimen for at least one month prior to randomization\n* BMI \\< 40 kg/m2\n* If on SGLT2 inhibitor, ACEi/ARB or GLP-1RA, stable dose for 4 weeks\n* Patient or guardian able to provide consent\n\nExclusion Criteria:\n\n* T1D\n* Episode of diabetic ketoacidosis or hyperosmolar hyperglycemia within 60 days\n* Uncontrolled hypertension\n* eGFR \\<30 ml/min/1.73m2\n* Macroalbuminuria with urine albumin to creatinine ratio \\>300 mg/g\n* Current participation in another research study\n* Pregnancy or planning to become pregnant or currently breastfeeding\n* Allergy to aspirin\n* Severe hepatic impairment (Child-Pugh Class C)\n* History of major psychiatric disorder\n* Use of inhaled or systemic corticosteroids or long-acting beta agonists\n* Iodine or shellfish allergy",
+      "sourceHash": "f8331f1b41206909f2d8a4ad432fc0e1c3b2227e4aa93a80a3f84de12a244ceb",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT07409714",
+      "sourceId": "NCT07409714#structured-minimumAge",
+      "text": "14 Years",
+      "sourceHash": "2bb9b79414c6b0122bbb63366929890ca6a2cf0d99a4c021d5e3a079bfa91de7",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT07409714",
+      "sourceId": "NCT07409714#structured-maximumAge",
+      "text": "24 Years",
+      "sourceHash": "430a27e49c1ddad5697e76f946ca1eda250bc949a50aea2a6758d87e47910f64",
+      "location": "protocolSection.eligibilityModule.maximumAge",
+      "kind": "inclusion"
+    }
+  ],
+  "report": {
+    "total": 2,
+    "accepted": [
+      "NCT07924436",
+      "NCT07409714"
+    ],
+    "problems": [],
+    "needsManualSplit": [
+      "NCT07924436",
+      "NCT07409714"
+    ],
+    "unknownMetadata": [
+      "derivedSection",
+      "hasResults",
+      "protocolSection.armsInterventionsModule",
+      "protocolSection.conditionsModule.keywords",
+      "protocolSection.contactsLocationsModule.centralContacts",
+      "protocolSection.contactsLocationsModule.locations[].contacts",
+      "protocolSection.contactsLocationsModule.locations[].geoPoint",
+      "protocolSection.contactsLocationsModule.locations[].state",
+      "protocolSection.contactsLocationsModule.locations[].status",
+      "protocolSection.contactsLocationsModule.locations[].zip",
+      "protocolSection.descriptionModule",
+      "protocolSection.designModule.designInfo",
+      "protocolSection.designModule.enrollmentInfo",
+      "protocolSection.designModule.studyType",
+      "protocolSection.eligibilityModule.healthyVolunteers",
+      "protocolSection.eligibilityModule.stdAges",
+      "protocolSection.identificationModule.officialTitle",
+      "protocolSection.identificationModule.orgStudyIdInfo",
+      "protocolSection.identificationModule.organization",
+      "protocolSection.identificationModule.secondaryIdInfos",
+      "protocolSection.ipdSharingStatementModule",
+      "protocolSection.outcomesModule",
+      "protocolSection.oversightModule",
+      "protocolSection.sponsorCollaboratorsModule",
+      "protocolSection.statusModule.completionDateStruct",
+      "protocolSection.statusModule.expandedAccessInfo",
+      "protocolSection.statusModule.lastUpdatePostDateStruct",
+      "protocolSection.statusModule.lastUpdateSubmitDate",
+      "protocolSection.statusModule.primaryCompletionDateStruct",
+      "protocolSection.statusModule.startDateStruct",
+      "protocolSection.statusModule.statusVerifiedDate",
+      "protocolSection.statusModule.studyFirstPostDateStruct",
+      "protocolSection.statusModule.studyFirstSubmitDate",
+      "protocolSection.statusModule.studyFirstSubmitQcDate"
+    ],
+    "hasNextPage": true
+  }
+}

@@ -105,7 +105,7 @@ describe("runReducer", () => {
       runReducer(initialRunState, { type: "submit", request: runRequest }),
       {
         type: "succeeded",
-        response: runErrorResponse("internal_error", true),
+        response: runErrorResponse("internal_contract_violation", true),
       },
     );
     expect(state).toMatchObject({

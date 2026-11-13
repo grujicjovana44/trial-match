@@ -4,6 +4,7 @@ import { uiErrorFromCategory, type UiError } from "../api/ui-error.js";
 export type RequestKind = "run" | "answer" | "hypothesis";
 
 export interface LastRequest {
+  idempotencyKey?: string;
   kind: RequestKind;
   path: string;
   body: Record<string, string>;

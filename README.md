@@ -1,13 +1,13 @@
 # TrialMatch
 
-TrialMatch je demonstraciona TypeScript veb-aplikacija za preliminarnu proveru sintetičkog profila u odnosu na kriterijume kliničkih studija za dijabetes tip 2. Prikazuje status svakog kriterijuma, podatke koji nedostaju, jedno ciljano pitanje i citate iz dostupnih odlomaka.
+TrialMatch je TypeScript veb-aplikacija za preliminarnu proveru sintetičkog profila u odnosu na kriterijume kliničkih studija za dijabetes tip 2. Prikazuje status svakog kriterijuma, podatke koji nedostaju, jedno ciljano pitanje i citate iz dostupnih odlomaka.
 
 > **Jezički model čita pravila i objašnjava rezultat. Odluku donosi deterministički kod.**
 
 ## Bezbednosne granice
 
 - Ovo nije alat za dijagnozu, lečenje, doziranje ni odluku o uključivanju. Konačnu odluku donosi lekar.
-- Trenutna Faza 1 radi u **DEMO režimu** sa mock adapterom; ne poziva stvarni modelski provajder niti plaćeni API.
+- Direktni server podrazumeva Gemini live režim; za lokalni razvoj `pnpm dev` eksplicitno bira mock sa `DEMO_MODE=true`. Bez serverskog ključa live režim se zaustavlja uz konfiguracionu grešku.
 - Koristite isključivo izmišljene profile. Ne unosite stvarne podatke pacijenata.
 - Studije T-A, T-B i T-C su sintetički testni primeri. Njihovi pragovi nisu klinički preporučeni.
 - Nepoznata vrednost ostaje `unknown`; ne tumači se kao „da“ ili „ne“.
@@ -20,7 +20,7 @@ TrialMatch je demonstraciona TypeScript veb-aplikacija za preliminarnu proveru s
 
 ```sh
 pnpm install --frozen-lockfile
-pnpm dev
+DEMO_MODE=true pnpm dev
 ```
 
 Zatim otvorite `http://127.0.0.1:5173`. Primer sintetičkog profila:
@@ -29,24 +29,28 @@ Zatim otvorite `http://127.0.0.1:5173`. Primer sintetičkog profila:
 Muškarac, 62 godine, dijabetes tip 2, HbA1c 8,1%, kreatinin 1,3 mg/dL, visina 178 cm, težina 92 kg.
 ```
 
-DEMO može zatražiti dopunu, na primer podatak o upotrebi insulina. Po završenoj preliminarnoj proveri polje „Šta ako?“ ponavlja procenu u istom `runId`.
+Lokalni DEMO može zatražiti dopunu, na primer podatak o upotrebi insulina. Za izgrađeni preview pokrenite API sa `DEMO_MODE=true`, napravite UI build sa `VITE_API_BASE_URL=http://127.0.0.1:3000`, pa `pnpm preview:ui`. API prihvata samo loopback origin naveden u `WEB_ORIGIN` (podrazumevano `http://127.0.0.1:4173`). Po završenoj preliminarnoj proveri polje „Šta ako?“ ponavlja procenu u istom `runId`.
 
 ## Komande
 
-| Komanda                            | Namena                                                          |
-| ---------------------------------- | --------------------------------------------------------------- |
-| `pnpm dev`                         | Lokalni DEMO server i Vite interfejs                            |
-| `pnpm typecheck`                   | TypeScript provera                                              |
-| `pnpm lint`                        | ESLint provera                                                  |
-| `pnpm format:check`                | Provera Prettier formatiranja                                   |
-| `pnpm build`                       | Serverska TypeScript kompilacija i produkcioni UI build         |
-| `pnpm test`                        | Offline unit i integracioni testovi                             |
-| `pnpm smoke`                       | API demo smoke test                                             |
-| `pnpm eval:offline`                | Offline i simulirane fault provere; živi slučajevi se preskaču  |
-| `pnpm eval:live`                   | Trenutno namerno onemogućeno; stvarni provajder nije deo Faze 1 |
-| `pnpm data:prepare [ulaz] [izlaz]` | Validira lokalni JSON snimak; ne pristupa mreži                 |
-| `pnpm gold:metrics`                | Izračunava izdvajanje prema malom sintetičkom zlatnom skupu     |
-| `pnpm eval:compare <pre> <posle>`  | Poredi dva sačuvana rezultata po ID-ju slučaja                  |
+| Komanda                            | Namena                                                                       |
+| ---------------------------------- | ---------------------------------------------------------------------------- |
+| `pnpm dev`                         | Lokalni DEMO server i Vite interfejs                                         |
+| `pnpm typecheck`                   | TypeScript provera                                                           |
+| `pnpm lint`                        | ESLint provera                                                               |
+| `pnpm format:check`                | Provera Prettier formatiranja                                                |
+| `pnpm build`                       | Serverska TypeScript kompilacija i produkcioni UI build                      |
+| `pnpm test`                        | Offline unit i integracioni testovi                                          |
+| `pnpm smoke`                       | API demo smoke test                                                          |
+| `pnpm eval:offline`                | Offline i simulirane fault provere; živi slučajevi se preskaču               |
+| `pnpm eval:live -- ...`            | Zahteva `--confirm-live`, scope odobrenje, limits i serverski ključ          |
+| `pnpm data:prepare [ulaz] [izlaz]` | Lokalno validira normalizovani skup ili uvozi CTG v2 JSON; ne pristupa mreži |
+| `pnpm gold:metrics`                | Izračunava profilne mock metrike                                             |
+| `pnpm gold:criteria ...`           | Izračunava odvojenu metriku ljudski označenih kriterijuma                    |
+| `pnpm compile:rules ...`           | Lokalno validira i pakuje samo ljudski odobrena pravila                      |
+| `pnpm rules:review-template ...`   | Pravi neodobren šablon sa source/rules hash-evima za ljudski pregled         |
+| `pnpm preview:ui`                  | Lokalno servira prethodno izgrađen UI na loopback portu 4173                 |
+| `pnpm eval:compare <pre> <posle>`  | Poredi dva sačuvana rezultata po ID-ju slučaja                               |
 
 CI pokreće samo lokalne provere, bez modelskih API poziva.
 
@@ -66,4 +70,4 @@ Formule za eGFR, BMI i konverzije imaju izvore u kodu i potvrđene su u [docs/pr
 - [Mapa dokaza CAP-01–CAP-08](docs/evidence-map.md)
 - [Sastav tima](docs/team.md)
 
-Faza 1 ne uključuje stvarni model, glas, embeddings, deployment ni AC-11. Zato se njeni mock i offline rezultati ne predstavljaju kao dokaz stvarne integracije modela.
+Faza 2 implementacija je u toku; stvarni poziv modela, odobreni korpus, live baseline i browser review nisu izvršeni. Glas, embeddings, javni deployment i AC-11 ostaju van opsega. Pogledajte [trenutnu spremnost](docs/phase-2-readiness.md).

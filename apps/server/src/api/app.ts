@@ -1,3 +1,4 @@
+import { Operations } from "../store/operations.js";
 import Fastify, { type FastifyInstance } from "fastify";
 import { z } from "zod";
 import { parseConfig, type AppConfig } from "../config/index.js";
@@ -6,37 +7,53 @@ import {
   TrialMatchService,
   type ServiceOptions,
 } from "../service/trialmatch.js";
-import { RunResponseSchema } from "../../../../packages/shared/src/index.js";
+import {
+  RunResponseSchema,
+  ErrorEnvelopeSchema,
+} from "../../../../packages/shared/src/index.js";
 
 type AppOptions = {
   config?: AppConfig;
   service?: TrialMatchService;
+  now?: () => number;
   serviceOptions?: Partial<Omit<ServiceOptions, "config">>;
 };
 
-const errorEnvelope = (
-  category: string,
-  message: string,
-  retryable = false,
-) => ({
-  status: "error" as const,
-  error: { category, message, retryable },
-});
+const errorEnvelope = (category: string, message: string, retryable = false) =>
+  ErrorEnvelopeSchema.parse({
+    status: "error" as const,
+    error: { category, message, retryable },
+  });
 
 export function createApp(options: AppOptions = {}): FastifyInstance {
-  const config = options.config ?? parseConfig({ NODE_ENV: "test" });
+  const config =
+    options.config ?? parseConfig({ NODE_ENV: "test", DEMO_MODE: "true" });
   const service =
     options.service ??
     new TrialMatchService({ config, ...options.serviceOptions });
   const app = Fastify({
     logger: config.NODE_ENV !== "test",
-    bodyLimit: config.MAX_INPUT_CHARS + 2048,
+    bodyLimit: config.MAX_INPUT_CHARS * 6 + 2048,
   });
+  const operations = new Operations(options.now);
   const rateLimits = new Map<string, { startedAt: number; count: number }>();
 
+  app.addHook("onRequest", async (request, reply) => {
+    if (request.headers.origin === config.WEB_ORIGIN) {
+      reply.header("Access-Control-Allow-Origin", config.WEB_ORIGIN);
+      reply.header("Vary", "Origin");
+      reply.header("Access-Control-Expose-Headers", "Retry-After");
+      reply.header(
+        "Access-Control-Allow-Headers",
+        "Content-Type, Idempotency-Key",
+      );
+      reply.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+      if (request.method === "OPTIONS") return reply.code(204).send();
+    }
+  });
   app.addHook("preHandler", async (request, reply) => {
     if (!request.url.startsWith("/api/")) return;
-    const now = Date.now();
+    const now = (options.now ?? Date.now)();
     const key = request.ip;
     let window = rateLimits.get(key);
     if (!window || now - window.startedAt >= config.RATE_LIMIT_WINDOW_MS) {
@@ -52,21 +69,35 @@ export function createApp(options: AppOptions = {}): FastifyInstance {
     }
     if (window.count > config.RATE_LIMIT_MAX) {
       return reply
+        .header(
+          "Retry-After",
+          Math.max(
+            1,
+            Math.ceil(
+              (config.RATE_LIMIT_WINDOW_MS - (now - window.startedAt)) / 1000,
+            ),
+          ),
+        )
         .code(429)
         .send(
           errorEnvelope(
             "rate_limit_exceeded",
             "Prekoračen je broj dozvoljenih zahteva. Pokušajte ponovo kasnije.",
+            true,
           ),
         );
     }
   });
 
   app.setErrorHandler((error, request, reply) => {
-    if (error instanceof HttpError)
+    if (error instanceof HttpError) {
+      if (error.statusCode === 429) reply.header("Retry-After", 60);
       return reply
         .code(error.statusCode)
-        .send({ status: "error", error: error.info });
+        .send(
+          ErrorEnvelopeSchema.parse({ status: "error", error: error.info }),
+        );
+    }
     if (error instanceof z.ZodError) {
       request.log.error(
         {
@@ -112,18 +143,29 @@ export function createApp(options: AppOptions = {}): FastifyInstance {
           ),
         );
     }
-    request.log.error({ err: error }, "Neočekivana serverska greška.");
+    request.log.error("Neočekivana serverska greška.");
     return reply
       .code(500)
       .send(
         errorEnvelope(
-          "internal_error",
+          "internal_contract_violation",
           "Došlo je do interne greške. Pokušajte ponovo.",
         ),
       );
   });
 
-  app.get("/health", async () => ({ status: "ok", demoMode: true }));
+  app.addHook("onReady", () => service.initialize());
+  app.options("/*", async (request, reply) =>
+    request.headers.origin === config.WEB_ORIGIN
+      ? reply.code(204).send()
+      : reply.code(403).send(),
+  );
+  app.get("/health", async () => ({
+    status: "ok",
+    demoMode: config.DEMO_MODE,
+    providerId: service.adapter.providerId,
+    modelId: service.adapter.modelId,
+  }));
   app.post("/api/runs", async (request, reply) => {
     const body = request.body as { profileText?: unknown } | undefined;
     if (
@@ -139,14 +181,28 @@ export function createApp(options: AppOptions = {}): FastifyInstance {
           ),
         );
     }
-    const response = RunResponseSchema.parse(await service.start(request.body));
+    const response = RunResponseSchema.parse(
+      await operations.execute(
+        request.headers["idempotency-key"],
+        request.url,
+        request.body,
+        undefined,
+        () => service.start(request.body),
+      ),
+    );
     return reply.code(200).send(response);
   });
   app.post<{ Params: { runId: string } }>(
     "/api/runs/:runId/answer",
     async (request, reply) => {
       const response = RunResponseSchema.parse(
-        await service.answer(request.params.runId, request.body),
+        await operations.execute(
+          request.headers["idempotency-key"],
+          request.url,
+          request.body,
+          request.params.runId,
+          () => service.answer(request.params.runId, request.body),
+        ),
       );
       return reply.code(200).send(response);
     },
@@ -155,7 +211,13 @@ export function createApp(options: AppOptions = {}): FastifyInstance {
     "/api/runs/:runId/hypothesis",
     async (request, reply) => {
       const response = RunResponseSchema.parse(
-        await service.hypothesis(request.params.runId, request.body),
+        await operations.execute(
+          request.headers["idempotency-key"],
+          request.url,
+          request.body,
+          request.params.runId,
+          () => service.hypothesis(request.params.runId, request.body),
+        ),
       );
       return reply.code(200).send(response);
     },

@@ -15,4 +15,11 @@ export default defineConfig({
     outDir: "../../dist/web",
     emptyOutDir: true,
   },
+  preview: {
+    host: "127.0.0.1",
+    port: 4173,
+    proxy: {
+      "/api": "http://127.0.0.1:3000",
+    },
+  },
 });

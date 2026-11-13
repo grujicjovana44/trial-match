@@ -29,6 +29,7 @@ describe("minimalni tragovi", () => {
       "schema_version",
       "prompt_version",
       "commit",
+      "events",
     ]);
     expect(JSON.stringify(trace)).not.toContain("tajna-vrednost");
     expect(JSON.stringify(trace)).not.toContain("privatni podatak");

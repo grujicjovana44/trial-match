@@ -4,7 +4,11 @@ import { parseConfig } from "../../src/config/index.js";
 
 describe("ograničenja API zahteva", () => {
   it("vraća 413 za unos duži od odobrenog limita pre obrade", async () => {
-    const config = parseConfig({ NODE_ENV: "test", MAX_INPUT_CHARS: "4" });
+    const config = parseConfig({
+      NODE_ENV: "test",
+      DEMO_MODE: "true",
+      MAX_INPUT_CHARS: "4",
+    });
     const app = createApp({ config });
     const response = await app.inject({
       method: "POST",
@@ -16,7 +20,11 @@ describe("ograničenja API zahteva", () => {
   });
 
   it("vraća 429 kada je dostignut rate limit", async () => {
-    const config = parseConfig({ NODE_ENV: "test", RATE_LIMIT_MAX: "1" });
+    const config = parseConfig({
+      NODE_ENV: "test",
+      DEMO_MODE: "true",
+      RATE_LIMIT_MAX: "1",
+    });
     const app = createApp({ config });
     await app.inject({
       method: "POST",

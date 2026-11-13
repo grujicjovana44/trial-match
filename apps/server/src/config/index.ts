@@ -10,11 +10,23 @@ const ConfigSchema = z
       .default("development"),
     HOST: z.string().min(1).default("127.0.0.1"),
     PORT: integerSetting(3000, 65535),
+    WEB_ORIGIN: z
+      .string()
+      .url()
+      .refine((value) =>
+        ["localhost", "127.0.0.1", "[::1]"].includes(new URL(value).hostname),
+      )
+      .default("http://127.0.0.1:4173"),
     WEB_PORT: integerSetting(5173, 65535),
     DEMO_MODE: z
-      .literal("true")
-      .default("true")
-      .transform(() => true),
+      .enum(["true", "false"])
+      .default("false")
+      .transform((value) => value === "true"),
+    LLM_PROVIDER: z.literal("gemini").default("gemini"),
+    LLM_MODEL: z
+      .literal("gemini-3.5-flash-lite")
+      .default("gemini-3.5-flash-lite"),
+    GEMINI_API_KEY: z.string().min(1).optional(),
     DATA_DIR: z.string().min(1).default("data/fixtures"),
     MAX_INPUT_CHARS: integerSetting(4000),
     MAX_CONTEXT_CHARS: integerSetting(12000),
@@ -32,14 +44,25 @@ const ConfigSchema = z
 
 export type AppConfig = z.infer<typeof ConfigSchema>;
 
+export function configEnvironment(
+  env: NodeJS.ProcessEnv = process.env,
+): Record<string, string | undefined> {
+  return Object.fromEntries(
+    Object.keys(ConfigSchema.shape)
+      .filter((key) => env[key] !== undefined)
+      .map((key) => [key, env[key]]),
+  );
+}
+
 export function parseConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
-  const source =
-    env === process.env
-      ? Object.fromEntries(
-          Object.keys(ConfigSchema.shape)
-            .filter((key) => env[key] !== undefined)
-            .map((key) => [key, env[key]]),
-        )
-      : env;
-  return ConfigSchema.parse(source);
+  const isProcessEnvironment =
+    env === process.env ||
+    ["PATH", "HOME", "PWD", "SHELL"].some((key) => Object.hasOwn(env, key));
+  const source = isProcessEnvironment ? configEnvironment(env) : env;
+  const config = ConfigSchema.parse(source);
+  if (!config.DEMO_MODE && !config.GEMINI_API_KEY)
+    throw new Error(
+      "Stvarni model zahteva GEMINI_API_KEY u serverskom okruženju.",
+    );
+  return config;
 }

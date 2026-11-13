@@ -1,4 +1,4 @@
-# Model podataka 003 — planirana proširenja
+# Model podataka 003
 
 Svi objekti na granici imaju stroge runtime šeme; nepoznati ključevi su greška, ne tiho uklonjeni. Brojevi su konačni. Postojeća profilna polja, trovalentna logika, formula/reference i odsutne vrednosti zadržavaju značenje. Nova verzija shared šeme beleži se u metapodacima; ne menjati postojeće fixture-e da liče na stvarni korpus.
 

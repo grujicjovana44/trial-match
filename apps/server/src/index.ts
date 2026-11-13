@@ -7,7 +7,7 @@ const app = createApp({ config });
 try {
   await app.listen({ host: config.HOST, port: config.PORT });
   app.log.info(
-    `TrialMatch DEMO server je pokrenut na http://${config.HOST}:${config.PORT}`,
+    `TrialMatch server je pokrenut na http://${config.HOST}:${config.PORT} (${config.DEMO_MODE ? "DEMO" : config.LLM_PROVIDER})`,
   );
 } catch (error) {
   app.log.error(error);

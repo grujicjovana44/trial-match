@@ -38,6 +38,10 @@ export function TrialCard({
           {verdictLabel(trial.verdict)}
         </span>
       </div>
+      <p>
+        Status regrutacije: {trial.overallStatus ?? "Nije naveden"} · Faza:{" "}
+        {trial.phase ?? "Nije navedena"}
+      </p>
       {registryUrl !== null && (
         <p className="trial-links">
           <a href={registryUrl} target="_blank" rel="noopener noreferrer">

@@ -49,7 +49,7 @@ export function parseRetryAfter(value: string | null): number {
   const trimmed = value.trim();
   if (!/^\d+$/.test(trimmed)) return DEFAULT_RETRY_AFTER_SECONDS;
   const seconds = Number(trimmed);
-  return seconds >= 1 && seconds <= 600 ? seconds : DEFAULT_RETRY_AFTER_SECONDS;
+  return seconds >= 1 && seconds <= 60 ? seconds : DEFAULT_RETRY_AFTER_SECONDS;
 }
 
 // Kategorija servera u vrstu greške za prikaz (data-model.md, odeljak 2).
@@ -59,7 +59,8 @@ export function uiErrorFromCategory(
   source: "run" | "http",
 ): UiError {
   const lost = (tableValue: boolean): boolean => source === "run" || tableValue;
-  const retryOrRestart: UiErrorAction = error.retryable ? "retry" : "restart";
+  const retryOrRestart: UiErrorAction =
+    source === "run" || !error.retryable ? "restart" : "retry";
 
   switch (error.category) {
     case "model_timeout":

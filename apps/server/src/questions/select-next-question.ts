@@ -3,6 +3,7 @@ import type {
   Question,
   Trial,
   TrialResult,
+  DerivedValue,
 } from "../../../../packages/shared/src/index.js";
 import { missingFieldsForCriterion } from "../matcher/evaluate-criteria.js";
 
@@ -32,6 +33,7 @@ export function selectNextQuestion(
   profile: Profile,
   trials: Trial[],
   results: TrialResult[],
+  derived?: DerivedValue[],
 ): Question | undefined {
   const verdictById = new Map(
     results.map((result) => [result.trialId, result.verdict]),
@@ -45,7 +47,11 @@ export function selectNextQuestion(
         .find((item) => item.trialId === trial.trialId)
         ?.criteria.find((item) => item.id === criterion.id);
       if (result?.status !== "unknown") continue;
-      for (const field of missingFieldsForCriterion(profile, criterion.field)) {
+      for (const field of missingFieldsForCriterion(
+        profile,
+        criterion.field ?? "age",
+        derived,
+      )) {
         const studies = resolutions.get(field) ?? new Set<string>();
         studies.add(trial.trialId);
         resolutions.set(field, studies);

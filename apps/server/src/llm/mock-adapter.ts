@@ -1,3 +1,10 @@
+import type {
+  AdapterContext,
+  AdapterRequest,
+  AdapterResult,
+  LlmAdapter,
+} from "./adapter.js";
+import { z } from "zod";
 import {
   ExtractionSchema,
   type Extraction,
@@ -24,7 +31,22 @@ function extractMeasurement(
   return value === undefined ? undefined : { value, unit: match[2] };
 }
 
-export class MockLlmAdapter {
+export class MockLlmAdapter implements LlmAdapter {
+  readonly providerId = "mock";
+  async generate(
+    request: AdapterRequest,
+    _context: AdapterContext,
+  ): Promise<AdapterResult> {
+    void _context;
+    const candidate =
+      request.promptId === "extract_profile.v1"
+        ? this.extract(z.object({ text: z.string() }).parse(request.input).text)
+        : {
+            text: "Preliminarna provera kriterijuma; konačnu odluku donosi lekar.",
+            references: [],
+          };
+    return { candidate, usage: null, finish: "complete" };
+  }
   readonly modelId = "mock";
   private calls = 0;
 
