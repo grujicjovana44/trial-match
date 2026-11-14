@@ -98,8 +98,14 @@ export function retrieveTrials(
   const snippets: string[] = [];
   const sourceTexts = new Map<string, string>();
   for (const trial of selected) {
-    for (const criterion of trial.criteria)
-      sourceTexts.set(criterion.sourceId, criterion.sourceQuote);
+    for (const criterion of trial.criteria) {
+      const sourceText =
+        criterion.sourceId === `${trial.trialId}#unsplit-1` &&
+        trial.eligibilityText !== undefined
+          ? trial.eligibilityText
+          : criterion.sourceQuote;
+      sourceTexts.set(criterion.sourceId, sourceText);
+    }
   }
   let contextLength = 0;
   const contextSourceIds: string[] = [];

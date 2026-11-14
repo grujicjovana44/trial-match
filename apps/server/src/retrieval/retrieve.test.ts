@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import fixtureData from "../../../../data/fixtures/trials.json" with { type: "json" };
-import { TrialSchema } from "../../../../packages/shared/src/index.js";
+import studiesData from "../../../../data/rule_sets/studies_2/trials.json" with { type: "json" };
+import {
+  CitationSchema,
+  TrialSchema,
+} from "../../../../packages/shared/src/index.js";
+import { verifyCitation } from "../citations/verify.js";
 import { retrieveTrials } from "./retrieve.js";
 
 describe("offline pronalaženje", () => {
@@ -31,5 +36,38 @@ describe("offline pronalaženje", () => {
       { maxCandidates: 3, maxSnippets: 5, maxContextChars: 12000 },
     );
     expect(result.trials[0]?.trialId).toBe("T-A");
+  });
+
+  it("proverava različite citate istog izvora prema originalnom eligibility tekstu", () => {
+    const trials = TrialSchema.array().parse(studiesData);
+    const retrieved = retrieveTrials(
+      { stated_diagnoses: ["type 2 diabetes"] },
+      trials,
+      { maxCandidates: 10, maxSnippets: 10, maxContextChars: 12000 },
+    );
+    const trial = retrieved.trials.find(
+      (candidate) => candidate.trialId === "NCT07924436",
+    );
+    expect(trial).toBeDefined();
+
+    const criteria = trial!.criteria.filter(
+      (criterion) =>
+        criterion.sourceId === `${trial!.trialId}#unsplit-1`,
+    );
+    expect(criteria.length).toBeGreaterThan(1);
+    expect(retrieved.sourceTexts.get(criteria[0]!.sourceId)).toBe(
+      trial!.eligibilityText,
+    );
+    for (const criterion of criteria.slice(0, 2)) {
+      expect(
+        verifyCitation(
+          CitationSchema.parse({
+            sourceId: criterion.sourceId,
+            quote: criterion.sourceQuote,
+          }),
+          retrieved.sourceTexts,
+        ),
+      ).toBe(true);
+    }
   });
 });

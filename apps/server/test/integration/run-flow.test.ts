@@ -1,5 +1,6 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { createApp } from "../../src/api/app.js";
+import { parseConfig } from "../../src/config/index.js";
 
 const profileText =
   "Muškarac, 62 godine, dijabetes tip 2, HbA1c 8,1%, kreatinin 1,3 mg/dL, visina 178 cm, težina 92 kg, na metforminu.";
@@ -107,6 +108,99 @@ it("003: manifest, isključenja i ćirilični limit čuvaju ugovor", async () =>
       payload: { profileText: "ж".repeat(4000) },
     });
     expect(unicode.statusCode).toBe(200);
+  } finally {
+    await app.close();
+  }
+});
+
+it("učitava dve stvarne studije iz DATA_DIR i vraća rezultate bez greške citata", async () => {
+  const app = createApp({
+    config: parseConfig({
+      NODE_ENV: "test",
+      DEMO_MODE: "true",
+      DATA_DIR: "data/rule_sets/studies_2_lt_20261114",
+    }),
+  });
+  try {
+    const result = await app.inject({
+      method: "POST",
+      url: "/api/runs",
+      payload: {
+        profileText:
+          "Žena, 30 godina, HbA1c 8%, kreatinin 1 mg/dL, visina 160 cm, težina 90 kg, bez insulina.",
+      },
+    });
+    const response = result.json();
+
+    expect(result.statusCode).toBe(200);
+    expect(response.status).not.toBe("error");
+    expect(response.meta).toMatchObject({
+      dataSynthetic: false,
+      dataVersion: "rules-72b33d1faec2",
+      demoMode: true,
+    });
+    expect(
+      response.results
+        .map((trial: { trialId: string }) => trial.trialId)
+        .sort(),
+    ).toEqual(["NCT07409714", "NCT07924436"]);
+
+    const boundaryCases = [
+      {
+        hba1c: "9,99",
+        creatinine: "2,3049",
+        weight: "102,3744",
+        statuses: ["met", "met", "not_met"],
+        egfr: 29.99,
+      },
+      {
+        hba1c: "10",
+        creatinine: "2,3043",
+        weight: "102,4",
+        statuses: ["not_met", "not_met", "met"],
+        egfr: 30,
+      },
+      {
+        hba1c: "10,01",
+        creatinine: "2,3036",
+        weight: "102,4256",
+        statuses: ["not_met", "not_met", "met"],
+        egfr: 30.01,
+      },
+    ] as const;
+
+    for (const boundary of boundaryCases) {
+      const evaluated = await app.inject({
+        method: "POST",
+        url: "/api/runs",
+        payload: {
+          profileText: `Žena, 22 godine, HbA1c ${boundary.hba1c}%, kreatinin ${boundary.creatinine} mg/dL, visina 160 cm, težina ${boundary.weight} kg, bez insulina.`,
+        },
+      });
+      expect(evaluated.statusCode, evaluated.body).toBe(200);
+      const evaluatedResponse = evaluated.json();
+      const study = evaluatedResponse.results.find(
+        (trial: { trialId: string }) => trial.trialId === "NCT07409714",
+      );
+      expect(study).toBeDefined();
+      const statuses = [
+        "NCT07409714#inc-4",
+        "NCT07409714#inc-7",
+        "NCT07409714#exc-4",
+      ].map(
+        (criterionId) =>
+          study.criteria.find(
+            (criterion: { id: string }) => criterion.id === criterionId,
+          )?.status,
+      );
+      expect(statuses).toEqual(boundary.statuses);
+      expect(
+        study.criteria.find(
+          (criterion: { id: string }) =>
+            criterion.id === "NCT07409714#exc-4",
+        )?.observedValue,
+      ).toBe(boundary.egfr);
+    }
   } finally {
     await app.close();
   }

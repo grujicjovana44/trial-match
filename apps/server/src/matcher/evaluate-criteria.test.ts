@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { TrialSchema } from "../../../../packages/shared/src/index.js";
+import {
+  CriterionSchema,
+  TrialSchema,
+} from "../../../../packages/shared/src/index.js";
 import fixtureData from "../../../../data/fixtures/trials.json" with { type: "json" };
 import { evaluateCriteria } from "./evaluate-criteria.js";
 
@@ -37,5 +40,138 @@ describe("deterministički matcher", () => {
     expect(result.find((item) => item.trialId === "T-C")?.verdict).toBe(
       "candidate",
     );
+  });
+
+  it("primenjuje strogi lt prag za inclusion kriterijum", () => {
+    const trial = TrialSchema.parse({
+      ...trials[0],
+      criteria: [
+        {
+          ...trials[0]!.criteria[0],
+          operator: "lt",
+          value: 10,
+        },
+      ],
+    });
+    const results = [9, 10, 11].map((age) =>
+      evaluateCriteria({ age }, [trial])[0]!.criteria[0]!.status,
+    );
+
+    expect(results).toEqual(["met", "not_met", "not_met"]);
+  });
+
+  it("primenjuje strogi lt prag za exclusion kriterijum", () => {
+    const trial = TrialSchema.parse({
+      ...trials[0],
+      criteria: [
+        {
+          ...trials[0]!.criteria[0],
+          kind: "exclusion",
+          operator: "lt",
+          value: 10,
+        },
+      ],
+    });
+    const results = [9, 10, 11].map((age) =>
+      evaluateCriteria({ age }, [trial])[0]!.criteria[0]!.status,
+    );
+
+    expect(results).toEqual(["not_met", "met", "met"]);
+  });
+
+  it("primenjuje strogi gt prag za inclusion kriterijum", () => {
+    const trial = TrialSchema.parse({
+      ...trials[0],
+      criteria: [
+        {
+          ...trials[0]!.criteria[0],
+          operator: "gt",
+          value: 10,
+        },
+      ],
+    });
+    const results = [9, 10, 11].map((age) =>
+      evaluateCriteria({ age }, [trial])[0]!.criteria[0]!.status,
+    );
+
+    expect(results).toEqual(["not_met", "not_met", "met"]);
+  });
+
+  it("primenjuje strogi gt prag za exclusion kriterijum", () => {
+    const trial = TrialSchema.parse({
+      ...trials[0],
+      criteria: [
+        {
+          ...trials[0]!.criteria[0],
+          kind: "exclusion",
+          operator: "gt",
+          value: 10,
+        },
+      ],
+    });
+    const results = [9, 10, 11].map((age) =>
+      evaluateCriteria({ age }, [trial])[0]!.criteria[0]!.status,
+    );
+
+    expect(results).toEqual(["met", "met", "not_met"]);
+  });
+
+  it("Zod prihvata lt sa brojem i odbija nebrojčanu vrednost", () => {
+    const criterion = {
+      ...trials[0]!.criteria[0],
+      operator: "lt",
+      value: 10,
+    };
+
+    expect(CriterionSchema.safeParse(criterion).success).toBe(true);
+    expect(
+      CriterionSchema.safeParse({ ...criterion, value: "10" }).success,
+    ).toBe(false);
+  });
+
+  it("Zod prihvata gt sa brojem i odbija nebrojčanu vrednost", () => {
+    const criterion = {
+      ...trials[0]!.criteria[0],
+      operator: "gt",
+      value: 10,
+    };
+
+    expect(CriterionSchema.safeParse(criterion).success).toBe(true);
+    expect(
+      CriterionSchema.safeParse({ ...criterion, value: "10" }).success,
+    ).toBe(false);
+  });
+
+  it("čuva uključive granice za gte, lte i between", () => {
+    const criterion = trials[0]!.criteria[0]!;
+    const cases = [
+      { operator: "gte", value: 10, ages: [9, 10, 11] },
+      { operator: "lte", value: 10, ages: [9, 10, 11] },
+      { operator: "between", value: [10, 12], ages: [9, 10, 12, 13] },
+    ] as const;
+
+    for (const testCase of cases) {
+      const trial = TrialSchema.parse({
+        ...trials[0],
+        criteria: [
+          {
+            ...criterion,
+            operator: testCase.operator,
+            value: testCase.value,
+          },
+        ],
+      });
+      const statuses = testCase.ages.map(
+        (age) => evaluateCriteria({ age }, [trial])[0]!.criteria[0]!.status,
+      );
+      const expected =
+        testCase.operator === "gte"
+          ? ["not_met", "met", "met"]
+          : testCase.operator === "lte"
+            ? ["met", "met", "not_met"]
+            : ["not_met", "met", "met", "not_met"];
+
+      expect(statuses).toEqual(expected);
+    }
   });
 });

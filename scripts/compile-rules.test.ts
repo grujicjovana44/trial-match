@@ -23,8 +23,10 @@ afterEach(async () => {
   );
 });
 
-describe("compile:rules standard JSON workflow", () => {
-  it("retains strict schemas and existing approval/hash checks", async () => {
+describe.each(["lt", "gt"] as const)(
+  "compile:rules %s standard JSON workflow",
+  (operator) => {
+    it("retains strict schemas and existing approval/hash checks", async () => {
     const directory = await makeTempDir();
     const input = join(directory, "import.json");
     const draftPath = join(directory, "rules-draft.json");
@@ -49,6 +51,32 @@ describe("compile:rules standard JSON workflow", () => {
     });
     await writeFile(input, `${JSON.stringify(imported, null, 2)}\n`);
     await createRuleDraft(input, draftPath);
+    const drafts = JSON.parse(await readFile(draftPath, "utf8")) as Array<{
+      trialId: string;
+      criteria: Array<Record<string, unknown>>;
+    }>;
+    const trialId = drafts[0]!.trialId;
+    const source = imported.sources.find(
+      (item) =>
+        item.trialId === trialId && item.sourceId === `${trialId}#unsplit-1`,
+    )!;
+    drafts[0]!.criteria = [
+      {
+        id: `${trialId}#inc-1`,
+        trialId,
+        kind: "inclusion",
+        field: "age",
+        operator,
+        value: 18,
+        unit: "years",
+        checkability: "auto",
+        origin: "compiled_reviewed",
+        text: "Age less than 18 years.",
+        sourceId: source.sourceId,
+        sourceQuote: source.text,
+      },
+    ];
+    await writeFile(draftPath, `${JSON.stringify(drafts, null, 2)}\n`);
     await writeReviewTemplate(input, draftPath, reviewPath);
 
     const draftText = await readFile(draftPath, "utf8");
@@ -107,13 +135,17 @@ describe("compile:rules standard JSON workflow", () => {
       await readFile(join(output, "review-report.json"), "utf8"),
     );
     expect(compiledTrials).toMatchObject([
-      { trialId: "NCT00000061", criteria: [{ field: "age", value: 18 }] },
+      {
+        trialId: "NCT00000061",
+        criteria: [{ field: "age", operator, value: 18 }],
+      },
     ]);
     expect(report).toMatchObject({
       included: [
         { reviewer: "Synthetic reviewer", sourceHash: expect.any(String) },
       ],
       excluded: [],
-    });
-  });
+      });
+    },
+  );
 });

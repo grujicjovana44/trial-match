@@ -138,7 +138,7 @@
         "sourceId": "NCT07409714#unsplit-1",
         "sourceQuote": "* HgbA1c \\<10%",
         "field": "hba1c",
-        "operator": "lte",
+        "operator": "lt",
         "value": 10,
         "unit": "%"
       },
@@ -174,7 +174,7 @@
         "sourceId": "NCT07409714#unsplit-1",
         "sourceQuote": "* BMI \\< 40 kg/m2",
         "field": "bmi",
-        "operator": "lte",
+        "operator": "lt",
         "value": 40,
         "unit": "kg/m²"
       },
@@ -221,7 +221,7 @@
         "sourceId": "NCT07409714#unsplit-1",
         "sourceQuote": "* eGFR \\<30 ml/min/1.73m2",
         "field": "egfr",
-        "operator": "lte",
+        "operator": "lt",
         "value": 30,
         "unit": "mL/min/1.73 m²"
       },

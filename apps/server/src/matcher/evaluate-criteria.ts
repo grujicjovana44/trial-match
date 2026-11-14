@@ -60,6 +60,18 @@ function compare(
 ): boolean {
   const expected = criterion.value;
   switch (criterion.operator) {
+    case "gt":
+      return (
+        typeof value === "number" &&
+        typeof expected === "number" &&
+        value > expected
+      );
+    case "lt":
+      return (
+        typeof value === "number" &&
+        typeof expected === "number" &&
+        value < expected
+      );
     case "gte":
       return (
         typeof value === "number" &&
