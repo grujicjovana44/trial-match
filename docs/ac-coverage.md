@@ -16,7 +16,7 @@ Za svaki AC navodi stanje interfejsa koje ga prikazuje i dokaz. Brojevi stanja s
 | AC-10 | 3, 10, 11, 12, 13, 14                | `integration/errors.test.tsx`, `integration/processing.test.tsx`, `unit/client.test.ts`                 | Ponovni pokušaji prema modelu su serverski.                                                     |
 | AC-11 | Nema                                 | Buduće proširenje, bez obaveze u interfejsu.                                                            |                                                                                                 |
 | AC-12 | Sva                                  | `accessibility.test.tsx`, `unit/contrast.test.ts`, `unit/copy.test.ts`, ručna provera iz quickstart.md  |                                                                                                 |
-| AC-13 | 1 (kontrola „Diktiraj“)              | `integration/voice-input.test.tsx` (nastaje u T252)                                                     | Opciono.                                                                                        |
+| AC-13 | 1 (kontrola „Diktiraj“)              | `integration/voice-input.test.tsx`                                                                      | Opciono.                                                                                        |
 
 ## Šta čeka druge uloge
 

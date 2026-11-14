@@ -794,3 +794,10 @@ blockquote q {
 blockquote {
   overflow-wrap: anywhere;
 }
+
+.voice-input {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+  margin-top: var(--space-3);
+}
