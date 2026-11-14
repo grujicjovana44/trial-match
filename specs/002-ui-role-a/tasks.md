@@ -460,18 +460,20 @@ description: "Zadaci za funkcionalnost 002: korisnički tok i interfejs TrialMat
 
 **Radi se samo ako su sve prethodne faze gotove.**
 
-- [ ] T250 [US9] Napraviti kuku za prepoznavanje govora u `apps/web/src/hooks/useSpeechRecognition.ts`
+- [X] T250 [US9] Napraviti kuku za prepoznavanje govora u `apps/web/src/hooks/useSpeechRecognition.ts`
   - **Datoteke**: `apps/web/src/hooks/useSpeechRecognition.ts` (novo), `apps/web/test/unit/speech-recognition.test.ts` (novo).
   - **Izmena**: lokalni interfejs `RecognitionLike { lang: string; interimResults: boolean; continuous: boolean; onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null; onerror: ((event: { error: string }) => void) | null; onend: (() => void) | null; start(): void; stop(): void; }`. Funkcija `getRecognitionConstructor(): (new () => RecognitionLike) | null` čita `SpeechRecognition` ili `webkitSpeechRecognition` sa `window` (preko `window as unknown as Record<string, unknown>`, uz proveru `typeof === "function"`). Kuka `useSpeechRecognition(onTranscript: (text: string) => void)` vraća `{ supported: boolean; listening: boolean; status: "idle" | "listening" | "added" | "no_speech" | "denied" | "failed"; start(): void; stop(): void }`. `start`: napravi instancu, `lang = SPEECH_LANGUAGE`, `interimResults = false`, `continuous = false`; `onresult` spaja `transcript` svih rezultata razmakom, zove `onTranscript` i postavlja `added`; `onerror`: `not-allowed` ili `service-not-allowed` → `denied`, `no-speech` → `no_speech`, ostalo → `failed`; `onend` gasi `listening`. Čišćenje pri uklanjanju zove `stop()`.
   - **Test**: sa lažnim konstruktorom postavljenim na `window.SpeechRecognition`: `supported` je `true`; posle `start()` instanca ima `lang === "sr-RS"`; simuliran `onresult` zove `onTranscript("muškarac 62 godine")` i daje status `added`; `onerror({ error: "not-allowed" })` daje `denied`; bez konstruktora `supported` je `false`, a `start()` ne baca.
   - **Gotovo kada**: testovi prolaze; u datoteci nema `any`.
   - **AC/EV**: AC-13 | **Zavisi od**: T248
+  - **Ishod (2026-11-14, grana `feature/002-voice-input`, Node 24.14.0, pnpm 12.16.1, Windows)**: `pnpm typecheck`, `pnpm lint` i `pnpm test` prolaze; `unit/speech-recognition.test.ts` ima 13 testova i svi prolaze. U datoteci nema `any`. Odstupanja: (1) test nosi `// @vitest-environment jsdom`, jer kuka čita `window` i renderuje se; (2) zajednički lažni konstruktor je u novoj pomoćnoj datoteci `apps/web/test/helpers/speech.ts`; (3) prazan prepoznat tekst se ne prosleđuje u `onTranscript` (status `no_speech`), da ne bi dopisao razmak u polje.
 
-- [ ] T251 [US9] Napraviti kontrolu glasovnog unosa u `apps/web/src/components/VoiceInput.tsx`
+- [X] T251 [US9] Napraviti kontrolu glasovnog unosa u `apps/web/src/components/VoiceInput.tsx`
   - **Datoteke**: `apps/web/src/components/VoiceInput.tsx` (novo), `apps/web/src/styles.css`.
   - **Izmena**: `VoiceInput({ onTranscript, disabled })`; ako `supported` nije `true`, vraća `null`. Inače `<div className="voice-input"><button type="button" className="secondary-button" aria-pressed={listening} disabled={disabled} onClick={listening ? stop : start}>{listening ? copy.voice.stop : copy.voice.start}</button><p className="form-hint">{copy.voice.note}</p><p className="form-hint" role="status">{tekst po statusu}</p></div>`, gde je tekst: `listening` → `copy.voice.listening`, `added` → `copy.voice.added`, `no_speech` → `copy.voice.noSpeech`, `denied` → `copy.voice.denied`, `failed` → `copy.voice.failed`, `idle` → prazno. CSS: `.voice-input { display: grid; gap: var(--space-2); justify-items: start; margin-top: var(--space-3); }`.
   - **Gotovo kada**: `pnpm typecheck` prolazi (test dolazi u T252).
   - **AC/EV**: AC-13 | **Zavisi od**: T250
+  - **Ishod (2026-11-14, grana `feature/002-voice-input`, Node 24.14.0, pnpm 12.16.1, Windows)**: `pnpm typecheck`, `pnpm lint` i `pnpm test` prolaze. `VoiceInput` je u `components/VoiceInput.tsx`, a `.voice-input` je na kraju `styles.css`. Ponašanje pokriva T252.
 
 - [ ] T252 [US9] Uključiti glasovni unos u obrazac i pokriti testom
   - **Datoteke**: `apps/web/src/App.tsx`, `apps/web/test/integration/voice-input.test.tsx` (novo), `docs/ac-coverage.md`.
@@ -480,6 +482,7 @@ description: "Zadaci za funkcionalnost 002: korisnički tok i interfejs TrialMat
   - **Provera**: `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build`, `pnpm format:check`.
   - **Gotovo kada**: svih pet testova prolazi i svih pet komandi prolazi.
   - **AC/EV**: AC-13 | **Zavisi od**: T251
+  - **Ishod (2026-11-14, grana `feature/002-voice-input`, Node 24.14.0, pnpm 12.16.1, Windows)**: u `App.tsx` dodat je jedan import i `<VoiceInput>` kao dete `<ProfileForm>`; `docs/ac-coverage.md` je ažuriran (napomena uklonjena, prettier pokrenut). `voice-input.test.tsx` ima pet slučajeva (a–e) i svi prolaze. `pnpm typecheck`, `pnpm lint`, `pnpm test` (46 datoteka, 178 testova; pre ove faze 44 i 160) i `pnpm build` prolaze; `prettier --check --end-of-line auto` za izmenjene datoteke prolazi. `pnpm format:check` pada na 81 datoteci, isto kao kod T248. Na čistoj LF kopiji `HEAD`-a (`git -c core.autocrlf=false archive HEAD`) `prettier --check .` pada samo na `.github/workflows/ci.yml`, kojem nedostaje novi red na kraju fajla. Ostale datoteke na Windows radnoj kopiji padaju zbog CRLF-a (`core.autocrlf=true`), a `.claude/launch.json` je lokalan i nije u repou. Probno spajanje (`git merge-tree`) sa `origin/feature/003-phase-2-live-integration` nema konflikta, i za `HEAD` i za radnu kopiju. Zadatak ostaje otvoren dok `format:check` ne prođe.
 
 ---
 
