@@ -13,6 +13,7 @@ import {
 } from "./state/run-state.js";
 import { ResultPanel } from "./components/ResultPanel.js";
 import { ProfileForm } from "./components/ProfileForm.js";
+import { VoiceInput } from "./components/VoiceInput.js";
 import { ErrorPanel } from "./components/ErrorPanel.js";
 import { SiteHeader } from "./components/SiteHeader.js";
 import { SafetyNotice } from "./components/SafetyNotice.js";
@@ -92,7 +93,18 @@ export function App() {
           canStartOver={canStartOver(state)}
           onStartOver={startOver}
           textareaRef={textareaRef}
-        />
+        >
+          <VoiceInput
+            disabled={isBusy(state)}
+            onTranscript={(spoken) =>
+              setProfileText((current) =>
+                current.trim().length > 0
+                  ? `${current.trim()} ${spoken}`
+                  : spoken,
+              )
+            }
+          />
+        </ProfileForm>
 
         {busy && <ProcessingStatus slow={slow} />}
         {state.error && (
