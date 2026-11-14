@@ -484,6 +484,14 @@ description: "Zadaci za funkcionalnost 002: korisnički tok i interfejs TrialMat
   - **AC/EV**: AC-13 | **Zavisi od**: T251
   - **Ishod (2026-11-14, grana `feature/002-voice-input`, Node 24.14.0, pnpm 12.16.1, Windows)**: u `App.tsx` dodat je jedan import i `<VoiceInput>` kao dete `<ProfileForm>`; `docs/ac-coverage.md` je ažuriran (napomena uklonjena, prettier pokrenut). `voice-input.test.tsx` ima pet slučajeva (a–e) i svi prolaze. `pnpm typecheck`, `pnpm lint`, `pnpm test` (46 datoteka, 178 testova; pre ove faze 44 i 160) i `pnpm build` prolaze; `prettier --check --end-of-line auto` za izmenjene datoteke prolazi. `pnpm format:check` pada na 81 datoteci, isto kao kod T248. Na čistoj LF kopiji `HEAD`-a (`git -c core.autocrlf=false archive HEAD`) `prettier --check .` pada samo na `.github/workflows/ci.yml`, kojem nedostaje novi red na kraju fajla. Ostale datoteke na Windows radnoj kopiji padaju zbog CRLF-a (`core.autocrlf=true`), a `.claude/launch.json` je lokalan i nije u repou. Probno spajanje (`git merge-tree`) sa `origin/feature/003-phase-2-live-integration` nema konflikta, i za `HEAD` i za radnu kopiju. Zadatak ostaje otvoren dok `format:check` ne prođe.
 
+- [X] T253 [US9] Prekinuti diktat pri slanju i „Počni iznova“; ukloniti `aria-pressed` sa dugmeta za diktat
+  - **Datoteke**: `apps/web/src/hooks/useSpeechRecognition.ts`, `apps/web/src/components/VoiceInput.tsx`, `apps/web/src/App.tsx`, `apps/web/src/styles.css`, `apps/web/test/unit/speech-recognition.test.ts`, `apps/web/test/integration/voice-input.test.tsx`.
+  - **Razlog**: nalazi pregleda posle T252. (1) Ako korisnik pošalje obrazac dok diktira, dugme je onemogućeno, pa diktat ne može da se zaustavi, a kasni rezultat se dopisuje u polje dok provera traje; isto važi za „Počni iznova“, posle kog kasni rezultat ulazi u prazno polje. (2) Dugme je menjalo i natpis i `aria-pressed`, pa čitač ekrana izgovara „Zaustavi diktiranje, pritisnuto“.
+  - **Izmena**: kuka vraća i `cancel(): void`, koji odvaja `onresult`, `onerror` i `onend`, zove `stop()` i vraća `listening = false`, `status = "idle"`; bez aktivnog diktata ne radi ništa. Čišćenje pri uklanjanju takođe odvaja rukovaoce pre `stop()`. Korisnički `stop()` je nepromenjen: već izgovoreno i dalje ulazi u polje. `VoiceInput` zove `cancel()` kada `disabled` postane `true`; dugme nema `aria-pressed`, a stanje slušanja nosi klasa `voice-listening` (isti izgled kao ranije `.secondary-button[aria-pressed="true"]`). `App.tsx` daje `VoiceInput` ključ `voiceKey`, koji `startOver` povećava, pa se kontrola ponovo pravi i diktat prekida.
+  - **Test**: jedinični: uklanjanje kuke odbacuje kasni rezultat; korisnički `stop()` zadržava izgovoreno; `cancel()` daje `idle` i odbacuje kasni rezultat; `cancel()` bez diktata ne menja status. Integracioni: (f) slanje tokom diktata zaustavlja prepoznavanje, „Diktiraj“ je onemogućeno, kasni rezultat ne menja polje i `fetch` je pozvan jednom; (g) „Počni iznova“ tokom diktata ostavlja prazno polje i posle kasnog rezultata; (h) dugme „Zaustavi diktiranje“ nema `aria-pressed`, a klik na njega zadržava izgovoreno.
+  - **AC/EV**: AC-13 | **Zavisi od**: T252
+  - **Ishod (2026-11-14, grana `feature/002-voice-input`, Node 24.14.0, pnpm 12.16.1, Windows)**: šest novih testova pada na kodu pre izmene, a prolazi posle nje. `pnpm typecheck`, `pnpm lint`, `pnpm test` (46 datoteka, 184 testa; pre T253 178), `pnpm build`, `pnpm smoke` i `pnpm eval:offline` prolaze; `prettier --check --end-of-line auto` za izmenjene datoteke prolazi. `pnpm format:check` i dalje pada iz istog razloga kao kod T252 (CRLF u radnoj kopiji i `.github/workflows/ci.yml`, van oblasti A). U pregledaču (lažni `SpeechRecognition`) dugme „Zaustavi diktiranje“ nema `aria-pressed` i ima istaknutu pozadinu.
+
 ---
 
 ## Zavisnosti i redosled
@@ -535,5 +543,5 @@ Zahtevi koji ne blokiraju nijedan zadatak, ali menjaju ponašanje kada stignu: R
 | 10 Priča 10 | T241–T242 | 2 | 1 |
 | 11 Priča 8 | T243–T244 | 2 | 1 |
 | 12 Dorada | T245–T249 | 5 | 0 |
-| 13 Priča 9 | T250–T252 | 3 | 0 |
-| **Ukupno** | T201–T252 | **52** | **5** |
+| 13 Priča 9 | T250–T253 | 4 | 0 |
+| **Ukupno** | T201–T253 | **53** | **5** |

@@ -148,7 +148,7 @@ Automatski test `integration/safe-rendering.test.tsx` je glavni dokaz. Ručna pr
 
 ## 10. Glasovni unos (AC-13, opciono)
 
-U pregledaču koji podržava prepoznavanje govora (na primer Chrome): kliknuti „Diktiraj“, dozvoliti mikrofon, izgovoriti U1. Tekst se pojavljuje u polju; ništa se ne šalje; tekst se može ispraviti. Odbiti mikrofon: poruka „Pristup mikrofonu nije dozvoljen. Unos tekstom radi kao i do sada.“ U pregledaču bez podrške (na primer Firefox): dugme ne postoji, unos tekstom radi.
+U pregledaču koji podržava prepoznavanje govora (na primer Chrome): kliknuti „Diktiraj“, dozvoliti mikrofon, izgovoriti U1. Tekst se pojavljuje u polju; ništa se ne šalje; tekst se može ispraviti. Odbiti mikrofon: poruka „Pristup mikrofonu nije dozvoljen. Unos tekstom radi kao i do sada.“ U pregledaču bez podrške (na primer Firefox): dugme ne postoji, unos tekstom radi. Kliknuti „Diktiraj“ pa odmah „Proveri kriterijume“: diktat se prekida, a polje se ne menja dok provera traje. Posle rezultata kliknuti „Diktiraj“ pa „Počni iznova“: polje ostaje prazno. Čitač ekrana na dugmetu „Zaustavi diktiranje“ ne izgovara „pritisnuto“.
 
 ## 11. Šta ovaj vodič ne može da potvrdi dok druge uloge ne isporuče
 

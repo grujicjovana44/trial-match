@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { copy } from "../copy.js";
 import {
   useSpeechRecognition,
@@ -21,14 +22,26 @@ export function VoiceInput({
   disabled: boolean;
 }) {
   const speech = useSpeechRecognition(onTranscript);
+  const { cancel } = speech;
+
+  // Kada se pokrene provera, diktat se prekida: polje se ne menja dok provera traje.
+  useEffect(() => {
+    if (disabled) cancel();
+  }, [disabled, cancel]);
+
   if (!speech.supported) return null;
 
+  // Natpis dugmeta se menja sa stanjem, pa nema `aria-pressed`: čitač ekrana bi
+  // inače izgovorio „Zaustavi diktiranje, pritisnuto“.
   return (
     <div className="voice-input">
       <button
         type="button"
-        className="secondary-button"
-        aria-pressed={speech.listening}
+        className={
+          speech.listening
+            ? "secondary-button voice-listening"
+            : "secondary-button"
+        }
         disabled={disabled}
         onClick={speech.listening ? speech.stop : speech.start}
       >
