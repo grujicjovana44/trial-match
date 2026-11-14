@@ -24,6 +24,8 @@ interface ReviewTemplateRecord {
 }
 
 const ReviewDraftOperatorSchema = z.enum([
+  "gt",
+  "lt",
   "gte",
   "lte",
   "between",

@@ -1,0 +1,20 @@
+[
+  {
+    "trialId": "NCT07924436",
+    "status": "approved",
+    "reviewer": "Igor",
+    "reviewedAt": "2026-11-13T11:49:51.670Z",
+    "sourceHash": "681b74a55521c937541b9c800cd6e4fb73800462d2e7721630b29cd55a4120f8",
+    "rulesHash": "b21a43307517a503397775fc16ba61298471c6778fc2b3879e596bec4de50a02",
+    "rulesVersion": "1"
+  },
+  {
+    "trialId": "NCT07409714",
+    "status": "approved",
+    "reviewer": "Igor",
+    "reviewedAt": "2026-11-14T18:33:04.296+01:00",
+    "sourceHash": "638c967ed78409757047860f607637d9ae47c0affa69d69ec19f224fcfa0dc09",
+    "rulesHash": "a99fd3ba5e22a884b1afe852e45b75ca30c342d2c199fe376312b71f4c276870",
+    "rulesVersion": "1"
+  }
+]

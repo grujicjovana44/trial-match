@@ -101,6 +101,8 @@ const LegacyCriterionSchema = z
     kind: z.enum(["inclusion", "exclusion"]),
     field: CriterionFieldSchema,
     operator: z.enum([
+      "gt",
+      "lt",
       "gte",
       "lte",
       "between",
@@ -179,7 +181,12 @@ export const CriterionSchema = z
         typeof c.value[0] === "number" &&
         typeof c.value[1] === "number" &&
         c.value[0] <= c.value[1];
-    if (c.operator === "gte" || c.operator === "lte")
+    if (
+      c.operator === "gt" ||
+      c.operator === "lt" ||
+      c.operator === "gte" ||
+      c.operator === "lte"
+    )
       valid = typeof c.value === "number";
     if (c.operator === "in" || c.operator === "not_in")
       valid = Array.isArray(c.value) && c.value.length > 0;
