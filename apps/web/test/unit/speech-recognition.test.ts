@@ -143,15 +143,57 @@ describe("useSpeechRecognition (AC-13)", () => {
     expect(result.current.status).toBe("idle");
   });
 
-  it("pri uklanjanju kuke zaustavlja prepoznavanje", () => {
+  it("pri uklanjanju kuke zaustavlja prepoznavanje i odbacuje kasni rezultat", () => {
+    const onTranscript = vi.fn();
     installSpeechRecognition();
     const { result, unmount } = renderHook(() =>
-      useSpeechRecognition(() => {}),
+      useSpeechRecognition(onTranscript),
     );
     act(() => result.current.start());
     const recognition = latestRecognition();
     unmount();
+    recognition.say("kasni tekst");
 
     expect(recognition.stops).toBe(1);
+    expect(onTranscript).not.toHaveBeenCalled();
+  });
+
+  it("korisničko zaustavljanje i dalje prosleđuje već izgovoreno", () => {
+    const onTranscript = vi.fn();
+    installSpeechRecognition();
+    const { result } = renderHook(() => useSpeechRecognition(onTranscript));
+    act(() => result.current.start());
+    act(() => result.current.stop());
+    act(() => latestRecognition().say("muškarac 62 godine"));
+
+    expect(latestRecognition().stops).toBe(1);
+    expect(onTranscript).toHaveBeenCalledWith("muškarac 62 godine");
+    expect(result.current.status).toBe("added");
+  });
+
+  it("cancel prekida slušanje, vraća idle i odbacuje kasni rezultat", () => {
+    const onTranscript = vi.fn();
+    installSpeechRecognition();
+    const { result } = renderHook(() => useSpeechRecognition(onTranscript));
+    act(() => result.current.start());
+    const recognition = latestRecognition();
+    act(() => result.current.cancel());
+    act(() => recognition.say("kasni tekst"));
+
+    expect(recognition.stops).toBe(1);
+    expect(onTranscript).not.toHaveBeenCalled();
+    expect(result.current.listening).toBe(false);
+    expect(result.current.status).toBe("idle");
+  });
+
+  it("cancel bez aktivnog diktata ne menja status", () => {
+    installSpeechRecognition();
+    const { result } = renderHook(() => useSpeechRecognition(() => {}));
+    act(() => result.current.start());
+    act(() => latestRecognition().say("muškarac 62 godine"));
+    act(() => result.current.cancel());
+
+    expect(result.current.status).toBe("added");
+    expect(latestRecognition().stops).toBe(0);
   });
 });

@@ -200,6 +200,7 @@ Lekar želi da profil izgovori umesto da ga kuca, ali tako da pre slanja vidi i 
 
 1. **Polazeći od** pregledač podržava prepoznavanje govora, **Kada** korisnik završi diktiranje, **Tada** prepoznat tekst se upisuje u polje za unos gde ga korisnik može izmeniti, i ništa se ne šalje dok korisnik sam ne pokrene proveru.
 2. **Polazeći od** pregledač ne podržava prepoznavanje govora ili korisnik odbije pristup mikrofonu, **Kada** se prikaže ekran, **Tada** kontrola za glasovni unos je skrivena ili prikazuje razumljivu poruku, a unos tekstom radi normalno.
+3. **Polazeći od** korisnik diktira, **Kada** pokrene proveru ili izabere „Počni iznova“, **Tada** diktat se prekida i tekst koji pregledač prepozna posle toga ne ulazi u polje za unos.
 
 **Odluka (2026-11-09):** glasovni unos je u obimu kao opciona funkcionalnost najnižeg prioriteta, pod novim stabilnim ID-jem **AC-13** (konstitucija, princip VIII).
 

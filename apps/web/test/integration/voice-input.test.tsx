@@ -116,4 +116,79 @@ describe("glasovni unos (AC-13)", () => {
     });
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+
+  it("(f) slanje tokom diktata prekida diktat, a kasni rezultat ne menja polje", () => {
+    const fetchMock = vi.fn(() => new Promise<Response>(() => {}));
+    vi.stubGlobal("fetch", fetchMock);
+    installSpeechRecognition();
+    render(<App />);
+
+    fireEvent.change(profileField(), {
+      target: { value: "Sintetički profil" },
+    });
+    dictate();
+    const recognition = latestRecognition();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Proveri kriterijume" }),
+    );
+
+    expect(recognition.stops).toBe(1);
+    const button = screen.getByRole("button", { name: "Diktiraj" });
+    expect((button as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.queryByText("Slušam. Govorite sada.")).toBeNull();
+    act(() => recognition.say("kasni tekst"));
+    expect(profileField().value).toBe("Sintetički profil");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("(g) „Počni iznova“ tokom diktata prekida diktat i ostavlja prazno polje", async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(jsonResponse(okResponse()));
+    vi.stubGlobal("fetch", fetchMock);
+    installSpeechRecognition();
+    render(<App />);
+
+    fireEvent.change(profileField(), {
+      target: { value: "Sintetički profil" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Proveri kriterijume" }),
+    );
+    await screen.findByRole("heading", {
+      level: 2,
+      name: "Preliminarna provera završena",
+    });
+
+    dictate();
+    const recognition = latestRecognition();
+    fireEvent.click(screen.getByRole("button", { name: "Počni iznova" }));
+    act(() => recognition.say("kasni tekst"));
+
+    expect(recognition.stops).toBe(1);
+    expect(profileField().value).toBe("");
+    expect(screen.getByRole("button", { name: "Diktiraj" })).toBeTruthy();
+    expect(screen.queryByText("Slušam. Govorite sada.")).toBeNull();
+  });
+
+  it("(h) dugme menja natpis bez aria-pressed, a zaustavljanje zadržava izgovoreno", () => {
+    installSpeechRecognition();
+    render(<App />);
+
+    dictate();
+    const stopButton = screen.getByRole("button", {
+      name: "Zaustavi diktiranje",
+    });
+    expect(stopButton.hasAttribute("aria-pressed")).toBe(false);
+    expect(screen.getByText("Slušam. Govorite sada.")).toBeTruthy();
+
+    fireEvent.click(stopButton);
+    act(() => latestRecognition().say("muškarac 62 godine"));
+
+    expect(latestRecognition().stops).toBe(1);
+    expect(profileField().value).toBe("muškarac 62 godine");
+    expect(
+      screen
+        .getByRole("button", { name: "Diktiraj" })
+        .hasAttribute("aria-pressed"),
+    ).toBe(false);
+  });
 });

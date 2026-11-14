@@ -10,6 +10,7 @@ export interface SpeechRecognitionControl {
   status: SpeechStatus;
   start: () => void;
   stop: () => void;
+  cancel: () => void;
 }
 
 // Lokalni oblik ugrađenog API-ja. lib.dom ne mora da sadrži SpeechRecognition
@@ -57,6 +58,13 @@ function transcriptOf(
   return parts.join(" ");
 }
 
+// Odvaja rukovaoce pre zaustavljanja, da kasni rezultat ne stigne u polje.
+function detach(recognition: RecognitionLike): void {
+  recognition.onresult = null;
+  recognition.onerror = null;
+  recognition.onend = null;
+}
+
 function statusOfError(error: string): SpeechStatus {
   if (error === "not-allowed" || error === "service-not-allowed") {
     return "denied";
@@ -82,7 +90,9 @@ export function useSpeechRecognition(
     return () => {
       const recognition = recognitionRef.current;
       recognitionRef.current = null;
-      recognition?.stop();
+      if (recognition === null) return;
+      detach(recognition);
+      recognition.stop();
     };
   }, []);
 
@@ -126,9 +136,21 @@ export function useSpeechRecognition(
     }
   }, []);
 
+  // Korisnik zaustavlja diktat: ono što je već izgovoreno i dalje ulazi u polje.
   const stop = useCallback(() => {
     recognitionRef.current?.stop();
   }, []);
 
-  return { supported, listening, status, start, stop };
+  // Prekid spolja (slanje ili „Počni iznova“): kasni rezultat se odbacuje.
+  const cancel = useCallback(() => {
+    const recognition = recognitionRef.current;
+    if (recognition === null) return;
+    recognitionRef.current = null;
+    detach(recognition);
+    recognition.stop();
+    setListening(false);
+    setStatus("idle");
+  }, []);
+
+  return { supported, listening, status, start, stop, cancel };
 }

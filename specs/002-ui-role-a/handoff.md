@@ -11,7 +11,7 @@ Ovaj dokument predaje planiranje modelu koji implementira. Planiranje je završe
 | 1. `speckit-specify` | Završen | [spec.md](spec.md), ažuriran za finalni proizvod: 10 priča, FR-001–FR-034, SC-001–SC-016, 16 stanja prikaza. |
 | 2. `speckit-clarify` | Završen | Sedam odgovora u odeljku „Clarifications“ (2026-11-09 i 2026-11-10). |
 | 3. `speckit-plan` | Završen i odobren | [plan.md](plan.md), [research.md](research.md), [data-model.md](data-model.md), [contracts/ui-api.md](contracts/ui-api.md), [contracts/cross-team-requests.md](contracts/cross-team-requests.md), [quickstart.md](quickstart.md). |
-| 4. `speckit-tasks` | Završen | [tasks.md](tasks.md): 52 zadatka (T201–T252), 5 blokiranih, 2 ručna. |
+| 4. `speckit-tasks` | Završen | [tasks.md](tasks.md): 53 zadatka (T201–T253), 5 blokiranih, 2 ručna. |
 | 5. `speckit-checklist` | Završen | [checklists/ux.md](checklists/ux.md): 64 stavke; CHK001–CHK053 pregledane i označene, CHK054–CHK064 ostaju za gotovu implementaciju. |
 | 6. `speckit-analyze` | Završen, ispravke odobrene i primenjene | Vidi ispod. |
 | 7. Predaja | Ovaj dokument | |
@@ -49,7 +49,7 @@ Jedna grupa po sesiji ili po zahtevu vlasnika. Posle svake grupe model staje i �
 | 6 | T235–T238 | Priča 5: fokus, bezbedan prikaz, uski ekrani i smanjen pokret, provera internih naziva | Ne |
 | 7 | T239, T240, T241, T243, T245, T246, T247, T248 | Dokumenta (tabela AC, mapa pokrivenosti, demonstracioni scenario, pokret, odluke), provera izgrađene verzije, čišćenje, završna provera | Ne |
 | Ručno | T249 | Vlasnik Uloge A prolazi [quickstart.md](quickstart.md) u pregledaču | Ne |
-| 8 (poslednja) | T250–T252 | Priča 9: glasovni unos (AC-13, opciono) | Ne |
+| 8 (poslednja) | T250–T253 | Priča 9: glasovni unos (AC-13, opciono); T253 ispravlja nalaze pregleda | Ne |
 
 **Na čekanju** (ne ulaze ni u jednu grupu dok zahtev ne bude isporučen; tada se rade kao zasebna mala grupa):
 

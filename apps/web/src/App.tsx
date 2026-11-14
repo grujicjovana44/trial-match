@@ -23,6 +23,8 @@ import { useSlowNotice } from "./hooks/useSlowNotice.js";
 
 export function App() {
   const [profileText, setProfileText] = useState("");
+  // Novi ključ pri „Počni iznova“ ponovo pravi VoiceInput i prekida diktat.
+  const [voiceKey, setVoiceKey] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const clarificationRef = useRef<HTMLHeadingElement>(null);
@@ -47,6 +49,7 @@ export function App() {
     if (isBusy(state)) return;
     dispatch({ type: "reset" });
     setProfileText("");
+    setVoiceKey((key) => key + 1);
   }
 
   useEffect(() => {
@@ -95,6 +98,7 @@ export function App() {
           textareaRef={textareaRef}
         >
           <VoiceInput
+            key={voiceKey}
             disabled={isBusy(state)}
             onTranscript={(spoken) =>
               setProfileText((current) =>
