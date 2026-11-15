@@ -7,6 +7,9 @@ on:
 jobs:
   offline:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ["24.15.0", "24.22.1"]
     steps:
       - name: Preuzmi repozitorijum
         uses: actions/checkout@v4
@@ -19,7 +22,7 @@ jobs:
       - name: Podesi Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version: ${{ matrix.node-version }}
           cache: pnpm
 
       - name: Instaliraj zaključane zavisnosti

@@ -37,3 +37,11 @@ pnpm eval:live prihvata --confirm-live, --label, --dataset fixtures, tri obavezn
 Cene trenutno nisu obračunljive, pa guard odbija cenu kao broj i traži maxCost=null uz eksplicitno priznanje da procena nije dostupna. Ulazni tokeni nemaju tačan lokalni tokenizer; limit se sprovodi konzervativno nad UTF-8 bajtovima, a stvarna token usage ostaje null ako provajder ne vrati validan podatak. Evaluator i dalje zahteva ljudski pregled očekivanja i run rezultate; implementacioni kod sam po sebi nije izvršeni baseline.
 
 gold:criteria radi zasebno nad ljudskim očekivanjima i predikcijama, proverava dataset verziju i izračunava TP/FP/FN; prazni imenitelji su null. Bez ljudskih anotacija se ne objavljuje metrika.
+
+## RAG retrieval status
+
+`eval/rag/retrieval-v1.json` je zamrznut assistant-authored nacrt sa četiri slučaja i korpus hash-evima; `annotationStatus=pending_human_review`. Zato `baseline-v1.json` ostaje nepromenljiv, ali njegove metrike su samo privremeni razvojni podaci, ne dokaz kvaliteta. Ne menjati dataset/baseline u mestu niti birati najbolje pokušaje; nakon ljudske adjudikacije treba dodati novu verziju skupa i zaseban baseline.
+
+Sačuvani MiniSearch baseline na nacrtu: studije recall@1/3/5 `0.60/0.80/1.00`; odlomci recall@1/3/5 `0.222/0.511/0.622`. Citati, granica konteksta i ponovljivost prolaze. Ovo merenje je pre hibridnog retrieval-a; `eval:rag:baseline` runner validira korpus hash-eve i odbija prepisivanje postojećeg baseline fajla.
+
+Trenutno postoje offline ranking metrike i regression testovi za query/hybrid retrieval, ali još nema kompletnog `eval:rag:offline` poređenja lexical-only, vector-only, hybrid i reranked konfiguracija, niti TypeScript RAGAS evaluator/`eval:rag:live`. `embeddings:check` je uspeo jednim sintetičkim pozivom (4 tokena); provider trošak nije izračunat jer nema proverene cenovne verzije. Index build i stvarni EV baseline sa modelom nisu pokrenuti. RAGAS-style faithfulness, answer relevancy, context precision i context recall moraju biti odvojeni od determinističkih matcher metrika; live sudija zahteva eksplicitno odobrenje, procenu poziva/troška i zapis modela/verzija.

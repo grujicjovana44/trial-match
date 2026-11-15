@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import { resolve } from "node:path";
 import { z } from "zod";
 import {
@@ -28,6 +28,25 @@ import {
 import { verifyCitation } from "../citations/verify.js";
 import { evaluateCriteria } from "../matcher/evaluate-criteria.js";
 import { retrieveTrials } from "../retrieval/retrieve.js";
+import type {
+  RetrievedContext,
+  RetrievalOptions,
+} from "../retrieval/retrieve.js";
+import {
+  HybridTrialRetriever,
+  validateIndexDocuments,
+} from "../retrieval/hybrid-retrieve.js";
+import { createOpenAIEmbeddingClient } from "../retrieval/embeddings.js";
+import {
+  EMBEDDING_DIMENSIONS,
+  RAG_MAX_CANDIDATES,
+  RAG_MAX_SNIPPETS,
+} from "../retrieval/config.js";
+import { RagIndexManifestSchema } from "../retrieval/indexing.js";
+import {
+  openSQLiteVectorStore,
+  type SQLiteVectorStore,
+} from "../retrieval/vector-store.js";
 import { ToolExecutionError, ToolExecutor } from "../tools/executor.js";
 import { RunStore, type RunState } from "../store/run-store.js";
 import {
@@ -48,6 +67,16 @@ export type ServiceOptions = {
   manifest?: DatasetManifest;
   now?: () => number;
   toolOverrides?: Record<string, (input: unknown) => unknown>;
+  retriever?: {
+    retrieve(
+      profile: Profile,
+      trials: Trial[],
+      options: RetrievalOptions & {
+        derived?: DerivedValue[];
+        excludeFields?: string[];
+      },
+    ): Promise<RetrievedContext>;
+  };
 };
 export class HttpError extends Error {
   constructor(
@@ -93,6 +122,10 @@ export class TrialMatchService {
   private trials: Trial[] | undefined;
   private readonly now: () => number;
   private readonly config: AppConfig;
+  private retriever: NonNullable<ServiceOptions["retriever"]> | undefined;
+  private vectorStore: SQLiteVectorStore | undefined;
+  private retrievalModeValue: "lexical-only" | "hybrid" | "injected" =
+    "lexical-only";
   constructor(private readonly options: ServiceOptions) {
     this.config = options.config;
     this.now = options.now ?? Date.now;
@@ -105,6 +138,17 @@ export class TrialMatchService {
     this.manifest = options.manifest
       ? DatasetManifestSchema.parse(options.manifest)
       : undefined;
+    if (options.retriever) {
+      this.retriever = options.retriever;
+      this.retrievalModeValue = "injected";
+    }
+  }
+  get retrievalMode(): "lexical-only" | "hybrid" | "injected" {
+    return this.retrievalModeValue;
+  }
+  async close(): Promise<void> {
+    this.vectorStore?.close();
+    this.vectorStore = undefined;
   }
   async initialize(): Promise<void> {
     if (!this.manifest)
@@ -141,6 +185,68 @@ export class TrialMatchService {
     )
       throw new Error("Realni korpus sadrži studiju bez pregledanih pravila.");
     this.trials = trials;
+    await this.initializeRetriever(trials);
+  }
+  private async initializeRetriever(trials: Trial[]): Promise<void> {
+    if (this.retriever) return;
+    if (this.config.NODE_ENV === "test") {
+      this.retriever = {
+        retrieve: async (profile, corpus, options) =>
+          retrieveTrials(profile, corpus, options),
+      };
+      return;
+    }
+
+    const indexPath = resolve(this.config.RAG_INDEX_PATH);
+    try {
+      const info = await stat(indexPath);
+      if (!info.isFile())
+        throw new Error(`RAG indeks nije običan fajl: ${indexPath}`);
+    } catch (error) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        error.code === "ENOENT"
+      ) {
+        if (!this.config.DEMO_MODE)
+          throw new Error(
+            `RAG indeks nije pronađen na ${indexPath}. Pokrenite pnpm build, pnpm embeddings:check i pnpm index:build.`,
+          );
+        this.retriever = {
+          retrieve: async (profile, corpus, options) =>
+            retrieveTrials(profile, corpus, options),
+        };
+        return;
+      }
+      throw error;
+    }
+
+    const store = await openSQLiteVectorStore(indexPath);
+    try {
+      const serializedManifest = store.getManifest();
+      if (!serializedManifest)
+        throw new Error("SQLite RAG indeks nema manifest.");
+      let rawManifest: unknown;
+      try {
+        rawManifest = JSON.parse(serializedManifest);
+      } catch (error) {
+        throw new Error("SQLite RAG manifest nije validan JSON.", {
+          cause: error,
+        });
+      }
+      const manifest = RagIndexManifestSchema.parse(rawManifest);
+      if (manifest.dimensions !== EMBEDDING_DIMENSIONS)
+        throw new Error("RAG indeks ima nepodržanu dimenziju embeddinga.");
+      validateIndexDocuments(manifest.documentHashes, trials);
+      const embedder = createOpenAIEmbeddingClient(process.env);
+      this.retriever = new HybridTrialRetriever(store, embedder);
+      this.vectorStore = store;
+      this.retrievalModeValue = "hybrid";
+    } catch (error) {
+      store.close();
+      throw error;
+    }
   }
   private input(body: unknown, field: "answer" | "profileText"): string {
     const parsed = z
@@ -449,9 +555,11 @@ export class TrialMatchService {
         height: normalizeHeight(profile.height),
         weight: normalizeWeight(profile.weight),
       });
-    const retrieval = retrieveTrials(profile, trials, {
-      maxCandidates: 10,
-      maxSnippets: 5,
+    const retriever = this.retriever;
+    if (!retriever) throw new Error("RAG retriever nije inicijalizovan.");
+    const retrieval = await retriever.retrieve(profile, trials, {
+      maxCandidates: RAG_MAX_CANDIDATES,
+      maxSnippets: RAG_MAX_SNIPPETS,
       maxContextChars: this.config.MAX_CONTEXT_CHARS,
       derived,
       excludeFields:

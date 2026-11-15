@@ -17,6 +17,9 @@ function study(nctId: string, eligibilityCriteria: string) {
   return {
     protocolSection: {
       identificationModule: { nctId, briefTitle: `Synthetic title ${nctId}` },
+      descriptionModule: {
+        briefSummary: `Synthetic summary for ${nctId}`,
+      },
       statusModule: { overallStatus: "RECRUITING" },
       conditionsModule: { conditions: ["Type 2 diabetes"] },
       designModule: { phases: ["PHASE2"] },
@@ -61,6 +64,7 @@ describe("data:split", () => {
     expect(trial).toMatchObject({
       trialId: "NCT00000001",
       title: "Synthetic title NCT00000001",
+      summary: "Synthetic summary for NCT00000001",
       overallStatus: "RECRUITING",
       phase: "PHASE2",
       phases: ["PHASE2"],

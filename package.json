@@ -5,7 +5,7 @@
   "type": "module",
   "packageManager": "pnpm@12.16.1",
   "engines": {
-    "node": "24.22.1"
+    "node": ">=24.15.0"
   },
   "scripts": {
     "dev": "node scripts/dev.mjs",
@@ -16,11 +16,15 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "smoke": "vitest run apps/server/test/smoke",
+    "sqlite:smoke": "node scripts/sqlite-vec-smoke.mjs",
+    "embeddings:check": "node --env-file-if-exists=.env dist/scripts/embeddings-check.js",
+    "index:build": "node --env-file-if-exists=.env dist/scripts/index-build.js",
     "data:prepare": "node dist/scripts/prepare-trials.js",
     "data:split": "node dist/scripts/split-trials.js",
     "data:split-draft": "node dist/scripts/split-draft.js",
     "eval:offline": "node dist/eval/runner/cli.js",
     "eval:live": "node dist/eval/runner/cli.js --live",
+    "eval:rag:baseline": "node dist/eval/runner/rag-retrieval.js",
     "eval:compare": "node dist/eval/runner/compare.js",
     "gold:metrics": "node dist/eval/runner/gold-metrics.js",
     "compile:rules": "node dist/scripts/compile-rules.js",
@@ -35,6 +39,7 @@
     "motion": "14.6.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
+    "sqlite-vec": "0.1.9",
     "zod": "4.6.7"
   },
   "devDependencies": {

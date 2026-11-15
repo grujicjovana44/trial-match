@@ -24,4 +24,14 @@ Registar sadrži `compute_egfr`, `compute_bmi`, `evaluate_criteria` i `select_ne
 
 ## Provider i dataset granica 003
 
-ModelSession obavija svaki logički poziv rokom po run-u, ograničenom popravkom, retry pravilom i redigovanim događajima. GeminiAdapter koristi fiksni REST endpoint; prompt ne određuje provider alate ni URL-ove. Importer radi offline, a početni izlaz označava tekst kriterijuma za ručno razdvajanje. compile:rules objavljuje samo redove čiji ljudski review odgovara trenutnim hash-evima izvora i pravila. Repo i dalje nema odobren realni korpus ni live baseline.
+ModelSession obavija svaki logički poziv rokom po run-u, ograničenom popravkom, retry pravilom i redigovanim događajima. GeminiAdapter koristi fiksni REST endpoint; prompt ne određuje provider alate ni URL-ove. Importer radi offline, a početni izlaz označava tekst kriterijuma za ručno razdvajanje. `compile:rules` objavljuje samo redove čiji ljudski review odgovara trenutnim hash-evima izvora i pravila. Repo sadrži lokalni paket sa review metapodacima, ali njihov identitet/licenca nisu nezavisno potvrđeni; stvarni EV baseline nije pokrenut.
+
+## RAG retrieval — Faza 2
+
+`HybridTrialRetriever` prima `ProfileSchema` validiran profil i odobrene lokalne studije. Upit se pravi od strukturisanih dijagnoza preko verzionisanog srpsko-engleskog rečnika (`sr-en-clinical-v1`); sirovi profilni tekst i ostala polja profila se ne šalju embeddings endpoint-u. Bez pretraživog termina nema embeddings poziva: vraćaju se studije po stabilnom ID redosledu do `maxCandidates`.
+
+Korpusni dokumenti se grade odvojeno za nivo studije (naslov, stanja, sažetak) i kriterijumski odlomak. MiniSearch i vektorski rezultati se spajaju Reciprocal Rank Fusion-om. `VectorStore` ugovor ima memorijsku i lokalnu SQLite + `sqlite-vec` implementaciju; tačan L2 pregled je deterministički, a razrešenje izjednačenja radi po ID-ju u aplikaciji. `data/index/` sadrži generisane fajlove i nije deo repozitorijuma.
+
+Retrieval bira samo studije; matcher dobija sve pregledane kriterijume izabranih studija. Odlomci retrieval-a utiču na kontekst, ne na presude. U kontekst uključeni studijski tekst ostaje nepouzdan, a postojeća serverska provera citata ostaje na snazi. Metadata filteri, zaseban deterministic reranker i puna poredbena/offline RAG evaluacija još nisu završeni.
+
+Embeddings koristi samo `text-embedding-3-small`. Pri indeksiranju šalju se javni tekstovi studija (naslov, stanja, sažetak i criterion `sourceQuote`); pri pretrazi se šalje samo normalizovani upit izveden iz sintetičkog validiranog profila. API ključ ostaje u serverskom okruženju. Testovi koriste deterministički lažni embedder. Jedan `embeddings:check` sintetički poziv uspeo je; `index:build` i EV baseline nisu pokrenuti.
