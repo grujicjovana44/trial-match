@@ -8,7 +8,7 @@ EV-07, EV-08 i EV-09 ostaju `real_model`. U Fazi 1 mogu se pokrenuti kao dry-run
 
 EV-10 ostaje `real_model`. Live evaluator proverava isti sintetički profil nad čistom studijom i njenom varijantom sa zlonamernim tekstom, poredeći determinističke statuse i opažanja, a nezavisno proverava da registar odbija alat van allowlist-e. Dok živi evaluator nije odobren i pokrenut, ova provera nije EV-10 prolaz.
 
-B-03 je razrešen korisnički dostavljenim izvorima, formulama, konverzijama i kontrolnim vrednostima u `docs/project-brief.md`. EV-01, EV-02 i EV-04 mogu proveravati numeričke obračune koristeći navedene kontrolne vrednosti i toleranciju ±0,01. Tehnički sanity-check opsezi ne predstavljaju medicinske/laboratorijske referentne opsege.
+B-03 nije potvrđen kao provera prema originalnim publikacijama dok odgovorna osoba ne upiše izvor, datum provere i ime pregledavaoca. Za kontrolne vrednosti izračunate referentnom implementacijom važi tolerancija ±0,01; za zaokružene ručne referentne vrednosti važi ±0,5. Tehnički sanity-check opsezi ne predstavljaju medicinske/laboratorijske referentne opsege.
 
 ## Zlatni skup parsiranja
 
@@ -38,10 +38,10 @@ Cene trenutno nisu obračunljive, pa guard odbija cenu kao broj i traži maxCost
 
 gold:criteria radi zasebno nad ljudskim očekivanjima i predikcijama, proverava dataset verziju i izračunava TP/FP/FN; prazni imenitelji su null. Bez ljudskih anotacija se ne objavljuje metrika.
 
-## RAG retrieval status
+## RAG retrieval evaluacija
 
-`eval/rag/retrieval-v1.json` je zamrznut assistant-authored nacrt sa četiri slučaja i korpus hash-evima; `annotationStatus=pending_human_review`. Zato `baseline-v1.json` ostaje nepromenljiv, ali njegove metrike su samo privremeni razvojni podaci, ne dokaz kvaliteta. Ne menjati dataset/baseline u mestu niti birati najbolje pokušaje; nakon ljudske adjudikacije treba dodati novu verziju skupa i zaseban baseline.
+`eval/rag/retrieval-v1.json` i `baseline-v1.json` ostaju nepromenjeni. `retrieval-v2.json` uvodi schema v2 i prenosi postojeće predloge kao `proposed`; `reviewer` i `reviewedAt` su `TODO` dok ih čovek ne potvrdi. Relevance rule beleži unapred definisano pravilo koje anotator primenjuje bez uvida u retrieval izlaz. V1 i v2 su povezani sa korpusom `rag-corpus-v0-dev` od pet studija: sva eventualna merenja na njemu su **razvojno, bez zaključaka** i nisu dokaz kvaliteta. Nema novog/većeg gold skupa na tom korpusu.
 
-Sačuvani MiniSearch baseline na nacrtu: studije recall@1/3/5 `0.60/0.80/1.00`; odlomci recall@1/3/5 `0.222/0.511/0.622`. Citati, granica konteksta i ponovljivost prolaze. Ovo merenje je pre hibridnog retrieval-a; `eval:rag:baseline` runner validira korpus hash-eve i odbija prepisivanje postojećeg baseline fajla.
+V2 razdvaja `ranking` od `behavior`: slučajevi za izbor svih studija i fallback bez dijagnoze ne ulaze u recall/precision/MRR/nDCG. Metrike se računaju samo za `ranking` slučajeve sa `labelStatus=confirmed`; proposed/disputed oznake se izuzimaju. Rezultati se odvajaju po `split=dev|test`. Dozvoljeni k cutoff-i su 1..floor(korpusa/2), pa se za pet studija ne računa nijedna metrika sa k većim od 2. Dataset navodi četiri samo-opisna obrasca za korpus v1 (upit bez poklapanja, srpski sinonimi/ćirilica, zlonameran indeksirani odlomak i teški negativi); nema dodeljenih relevantnih studija ili odlomaka dok korpus v1 ne postoji.
 
-Trenutno postoje offline ranking metrike i regression testovi za query/hybrid retrieval, ali još nema kompletnog `eval:rag:offline` poređenja lexical-only, vector-only, hybrid i reranked konfiguracija, niti TypeScript RAGAS evaluator/`eval:rag:live`. `embeddings:check` je uspeo jednim sintetičkim pozivom (4 tokena); provider trošak nije izračunat jer nema proverene cenovne verzije. Index build i stvarni EV baseline sa modelom nisu pokrenuti. RAGAS-style faithfulness, answer relevancy, context precision i context recall moraju biti odvojeni od determinističkih matcher metrika; live sudija zahteva eksplicitno odobrenje, procenu poziva/troška i zapis modela/verzija.
+`eval:rag:baseline` čita v2 i odbija prepisivanje `baseline-v2.json`; postojeći v1 artefakti se ne menjaju. Trenutno nisu ljudski potvrđene rangirajuće oznake, pa ne treba izvoditi niti objavljivati metričke zaključke. Potpuno poređenje lexical-only, vector-only, hybrid i reranked konfiguracija i TypeScript RAGAS evaluator/`eval:rag:live` još nisu implementirani. `embeddings:check` je uspeo jednim sintetičkim pozivom; trošak nije izračunat jer nema proverene cenovne verzije. Index build i stvarni EV baseline sa modelom nisu pokrenuti. Faithfulness, answer relevancy, context precision i context recall ostaju odvojeni od matcher metrika; live sudija zahteva eksplicitno odobrenje, procenu poziva/troška i zapis modela/verzija.
