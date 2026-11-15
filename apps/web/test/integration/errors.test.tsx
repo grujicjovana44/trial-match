@@ -26,7 +26,7 @@ function submitProfile() {
 }
 
 describe("greške zahteva", () => {
-  it("nudi ponovni pokušaj i ponavlja isti zahtev", async () => {
+  it("nudi restart kada odgovor potvrđuje da je run izgubljen", async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(jsonResponse(runErrorResponse("tool_error", true)))
@@ -38,19 +38,32 @@ describe("greške zahteva", () => {
     expect(panel.querySelector("h2")?.textContent).toBe(
       "Provera nije završena",
     );
-    expect(screen.getByRole("button", { name: "Pokušaj ponovo" })).toBeTruthy();
-    expect(panel.querySelectorAll("button")).toHaveLength(2);
+    expect(screen.queryByRole("button", { name: "Pokušaj ponovo" })).toBeNull();
+    expect(panel.querySelector("button")?.textContent).toBe("Počni iznova");
+    expect(panel.querySelectorAll("button")).toHaveLength(1);
     expect(document.querySelectorAll("article")).toHaveLength(0);
     const firstPath = fetchMock.mock.calls[0]?.[0];
     const firstBody = fetchMock.mock.calls[0]?.[1]?.body;
+    const firstKey = new Headers(fetchMock.mock.calls[0]?.[1]?.headers).get(
+      "Idempotency-Key",
+    );
 
-    fireEvent.click(screen.getByRole("button", { name: "Pokušaj ponovo" }));
+    fireEvent.click(panel.querySelector("button")!);
+    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+      target: { value: "Sintetički profil" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Proveri kriterijume" }),
+    );
     await screen.findByRole("heading", {
       level: 2,
       name: "Preliminarna provera završena",
     });
     expect(fetchMock.mock.calls[1]?.[0]).toBe(firstPath);
     expect(fetchMock.mock.calls[1]?.[1]?.body).toBe(firstBody);
+    expect(
+      new Headers(fetchMock.mock.calls[1]?.[1]?.headers).get("Idempotency-Key"),
+    ).not.toBe(firstKey);
     expect(screen.queryByRole("alert")).toBeNull();
   });
 

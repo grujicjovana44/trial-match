@@ -143,6 +143,10 @@ export function noMatchResponse(): InsufficientResponse {
     status: "insufficient_evidence",
     stage: "completed",
     results: [],
+    excludedTrials: trialsOf(1).map((trial) => ({
+      ...trial,
+      verdict: "excluded",
+    })),
     question: null,
     reason: "no_matching_trial",
     error: null,

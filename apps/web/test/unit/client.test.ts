@@ -23,6 +23,7 @@ describe("postJson", () => {
       "/api/runs",
       { profileText: "sintetički" },
       "run",
+      "request-key-1",
     );
 
     expect(outcome).toMatchObject({ ok: true, response: { status: "ok" } });
@@ -30,8 +31,12 @@ describe("postJson", () => {
       "/api/runs",
       expect.objectContaining({
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: {
+          "content-type": "application/json",
+          "Idempotency-Key": "request-key-1",
+        },
         body: JSON.stringify({ profileText: "sintetički" }),
+        signal: expect.any(AbortSignal),
       }),
     );
   });

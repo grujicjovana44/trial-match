@@ -100,7 +100,7 @@ describe("runReducer", () => {
     expect(isHypothesisResult(state)).toBe(true);
   });
 
-  it("maps an error response to a controlled lost-run error without incrementing resultSeq", () => {
+  it("maps a failed run response to restart because the run was lost", () => {
     const state = runReducer(
       runReducer(initialRunState, { type: "submit", request: runRequest }),
       {
@@ -112,7 +112,7 @@ describe("runReducer", () => {
       phase: "error",
       result: null,
       resultKind: null,
-      error: { kind: "service", action: "retry", runLost: true },
+      error: { kind: "service", action: "restart", runLost: true },
       focusToken: 1,
       resultSeq: 0,
     });
