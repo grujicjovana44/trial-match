@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const TraceEventSchema = z
   .object({
-    step: z.enum(["model", "tool", "grounding"]),
+    step: z.enum(["model", "tool", "grounding", "retrieval"]),
     attempt: z.number().int().positive().optional(),
     tool: z
       .enum([
@@ -22,6 +22,7 @@ const TraceEventSchema = z
       .regex(/^[a-f0-9]{64}$/)
       .optional(),
     sourceIds: z.array(z.string()).optional(),
+    untranslatedTerms: z.array(z.string().max(100)).optional(),
   })
   .strict();
 

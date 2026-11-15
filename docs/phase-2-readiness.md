@@ -7,32 +7,40 @@ Ovaj izveštaj opisuje trenutno nekomitovano radno stablo na grani `rag`. Nije p
 - Odobren je SQLite + `sqlite-vec@0.1.9`; Node minimum i CI matrica su ažurirani. `VectorStore` ima memorijsku i SQLite implementaciju, manifest, hash-keš i deterministički tie-break.
 - Dodati su `text-embedding-3-small` adapter sa allowlist-om, token procena/ograničenja za indeksiranje, `embeddings:check` i inkrementalni `index:build`.
 - Dodati su corpus loader za `data/trials/` i `data/fixtures/`, dokumenti na nivou studije i kriterijumskog odlomka, validirani srpsko-engleski query builder, lexical/vector RRF i servisna integracija.
+- Query builder sada pokriva više aspekata i multi-query fuziju, ćiriličnu transliteraciju, normalizaciju đ/dž, neprevedene termine u tragu, poznate-only state/status filtere i prag minimalne relevantnosti. Embedding greške daju ograničene pokušaje pa lex-only fallback.
+- Dodati su deterministički podrazumevani reranker i opcioni jednokratni Gemini reranker sa strogom šemom izlaza i RRF fallback-om. Dodati su offline poređenje lexical/vector/hybrid/hybrid+rerank, TypeScript RAGAS-style heuristike i zaštićen live evaluator; live pozivi nisu izvršeni.
 - Bez dijagnoze retrieval vraća stabilno sortirane studije do limita bez embeddings poziva. Matcher dobija sve kriterijume izabranih studija; pronađeni odlomci ne ograničavaju presudu.
 - Testovi pokrivaju nepretražen exclusion kriterijum, zlonamerni odlomak u memorijskom indeksu, query builder, indeksiranje i VectorStore.
 
 ## Provere izvršene
 
-| Provera                 | Rezultat                                                                          |
-| ----------------------- | --------------------------------------------------------------------------------- |
-| `pnpm typecheck`        | PASS                                                                              |
-| `pnpm lint`             | PASS                                                                              |
-| `pnpm test`             | PASS — 55 fajlova, 231 test                                                       |
-| `pnpm build`            | PASS — Vite upozorava da JS bundle prelazi 500 kB                                 |
-| `pnpm sqlite:smoke`     | PASS — sqlite-vec v0.1.9 ekstenzija i KNN                                         |
-| `pnpm eval:offline`     | PASS — 6 offline/fault slučajeva; 3 dry-run; 7 live slučajeva preskočeno          |
-| `pnpm embeddings:check` | PASS — jedan sintetički poziv; `text-embedding-3-small`, 1536 dimenzija, 4 tokena |
+| Provera                                            | Rezultat                                                                                    |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `pnpm typecheck`                                   | PASS                                                                                        |
+| `pnpm lint`                                        | PASS                                                                                        |
+| `pnpm test`                                        | PASS — 58 fajlova, 252 testa                                                                |
+| `pnpm build`                                       | PASS — Vite upozorava da JS bundle prelazi 500 kB                                           |
+| `pnpm sqlite:smoke`                                | PASS — sqlite-vec v0.1.9 ekstenzija i KNN                                                   |
+| `pnpm eval:offline`                                | PASS — 6 offline/fault slučajeva; 3 dry-run; 7 live slučajeva preskočeno                    |
+| `pnpm eval:rag:offline`                            | PASS — fake embedder; InMemory/SQLite ID paritet `true` (20/20), distance delta ≤ 2.39e-7   |
+| `node dist/scripts/index-build.js --estimate-only` | 5 studija, 20 dokumenata, 192 procenjena tokena; cena nepoznata (`null`); bez index build-a |
+| `pnpm embeddings:check`                            | Ranije PASS — jedan sintetički poziv; nije ponovljen u ovoj završnoj proveri                |
 
-`pnpm eval:offline` beleži commit `4c22035` kao source revision, dok su izmene u radnom stablu nekomitovane; zato taj izveštaj nije baseline za ovaj diff. RAG-specifični eval poređenja nije pokrenut.
+Offline RAG izveštaj je razvojna dijagnostika, jer su sve oznake `proposed`/`pending_human_review`: paired nDCG delta hybrid→rerank je 0 za RAG-001, +0.369 za RAG-002, a ranking metrike za RAG-003/004 nisu izračunate. Ovo nije dokaz poboljšanja kvaliteta. Lokalno merenje VectorStore latencije nije produkcioni SLO.
+
+`pnpm eval:offline` prethodno beleži commit `4c22035` kao source revision, dok su izmene u radnom stablu nekomitovane; zato taj izveštaj nije baseline za ovaj diff.
 
 ## Preostalo pre merge-a
 
 - `eval/rag/retrieval-v1.json` i `baseline-v1.json` ostaju nepromenjeni. `retrieval-v2.json` sadrži predložene oznake (`TODO` pregledavaoci/datumi) i opisne corpus-v1 obrasce; ljudska adjudikacija nije urađena. Merenja na v0-dev su razvojna, bez zaključaka.
 - `index:build` nije pokrenut; nema lokalnog izgrađenog indeksa i tekst studija nije poslat embeddings provajderu. `embeddings:check` je koristio samo sintetički upit.
-- Nisu završeni metadata filteri, poseban deterministic reranker, `eval:rag:offline` poređenje lexical/vector/hybrid/reranked varijanti ni TypeScript RAGAS/`eval:rag:live` evaluator.
+- Retrieval implementacija/evaluatori i offline RAG poređenje su završeni, ali oznake nisu ljudski adjudikovane; nije potvrđeno da reranking poboljšava kvalitet. TypeScript RAGAS-style metrike su lokalne heuristike, ne semantički dokaz.
+- Estimate-only nije slao tekst niti pozivao embeddings provajdera; stvarni index build čeka korisničko odobrenje.
+- `eval:rag:live` i Gemini reranker nisu pozvani; nije dostavljen human-reviewed RAGAS skup niti live approval.
 - Stvarni EV baseline sa LLM-om, browser review i GitHub CI status nisu provereni. Paket studija ima lokalne review metapodatke, ali njihov identitet/licenca/poreklo nisu nezavisno potvrđeni.
 - Repo-wide `pnpm format:check` i dalje pada na 15 netaknutih fajlova/podataka i nepromenljivom `baseline-v1.json`. Svi RAG fajlovi izmenjeni u ovom radu prošli su zaseban Prettier check.
 - CI workflow je pregledan: pokreće typecheck, lint, build, offline testove i `eval:offline`; ne poziva `embeddings:check`, `index:build` ni live evaluator. GitHub izvršenje/status ipak nije provereno.
 
 ## Zaključak
 
-**Nije spremno za merge.** Offline tipovi/testovi/build prolaze, ali ključni ulazni benchmark nije ljudski adjudikovan, nema izgrađenog indeksa ni poređenja RAG varijanti, a postojeći live/CI provere nisu izvršene. Nije pokrenut `index:build`, live RAG evaluacija niti EV baseline.
+**Nije spremno za merge.** Offline tipovi/testovi/build i tehničko poređenje RAG varijanti prolaze, ali benchmark nije ljudski adjudikovan pa nema kvalitetnog zaključka o rerankingu. Nema izgrađenog indeksa; `index:build`, live RAG evaluacija i EV baseline nisu pokrenuti, a GitHub CI izvršenje nije provereno.

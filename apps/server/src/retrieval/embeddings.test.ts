@@ -95,4 +95,28 @@ describe("OpenAI embeddings adapter", () => {
     );
     await expect(wrongDimensions.embed(["x"])).rejects.toThrow(/dimenzija/);
   });
+
+  it("ograničeno ponavlja HTTP 429/5xx i nevažeći JSON odgovor", async () => {
+    for (const firstResponse of [
+      new Response("busy", { status: 503 }),
+      new Response("{", { status: 200 }),
+    ]) {
+      let calls = 0;
+      const client = new OpenAIEmbeddingClient(
+        "test-key",
+        "text-embedding-3-small",
+        "https://api.openai.com/v1",
+        async () => {
+          calls += 1;
+          return calls === 1 ? firstResponse : response();
+        },
+        1000,
+        1,
+      );
+      await expect(client.embed(["type 2 diabetes"])).resolves.toMatchObject({
+        dimensions: EMBEDDING_DIMENSIONS,
+      });
+      expect(calls).toBe(2);
+    }
+  });
 });

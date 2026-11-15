@@ -20,6 +20,7 @@ export type ExecutionEvent = {
   promptVersion?: string;
   promptHash?: string;
   sourceIds?: string[];
+  untranslatedTerms?: string[];
 };
 export class ModelSession {
   calls = 0;

@@ -37,6 +37,7 @@ import {
   validateIndexDocuments,
 } from "../retrieval/hybrid-retrieve.js";
 import { createOpenAIEmbeddingClient } from "../retrieval/embeddings.js";
+import { GeminiCandidateReranker } from "../retrieval/gemini-reranker.js";
 import {
   EMBEDDING_DIMENSIONS,
   RAG_MAX_CANDIDATES,
@@ -240,7 +241,19 @@ export class TrialMatchService {
         throw new Error("RAG indeks ima nepodržanu dimenziju embeddinga.");
       validateIndexDocuments(manifest.documentHashes, trials);
       const embedder = createOpenAIEmbeddingClient(process.env);
-      this.retriever = new HybridTrialRetriever(store, embedder);
+      this.retriever = new HybridTrialRetriever(
+        store,
+        embedder,
+        trials,
+        this.config.RAG_RERANKER === "gemini"
+          ? new GeminiCandidateReranker(
+              this.config.GEMINI_API_KEY ?? "",
+              this.config.LLM_MODEL,
+              fetch,
+              this.config.RAG_RERANK_TIMEOUT_MS,
+            )
+          : undefined,
+      );
       this.vectorStore = store;
       this.retrievalModeValue = "hybrid";
     } catch (error) {
@@ -557,10 +570,12 @@ export class TrialMatchService {
       });
     const retriever = this.retriever;
     if (!retriever) throw new Error("RAG retriever nije inicijalizovan.");
+    const retrievalStartedAt = this.now();
     const retrieval = await retriever.retrieve(profile, trials, {
       maxCandidates: RAG_MAX_CANDIDATES,
       maxSnippets: RAG_MAX_SNIPPETS,
       maxContextChars: this.config.MAX_CONTEXT_CHARS,
+      rerank: this.config.RAG_RERANKER !== "disabled",
       derived,
       excludeFields:
         /(?:\bbez\b|\bne\s+(?:koristi|koriste|uključuje|ukljucuje|uključuju|ukljucuju|primenjuje|primenjuju)\b).{0,32}\b(?:bmi|indeks(?:a)?\s+telesne\s+mase)\b/iu.test(
@@ -569,6 +584,13 @@ export class TrialMatchService {
           ? ["bmi"]
           : [],
     });
+    if (retrieval.retrievalTrace)
+      session.events.push({
+        step: "retrieval",
+        durationMs: this.now() - retrievalStartedAt,
+        outcome: `${retrieval.retrievalTrace.embedding}:${retrieval.retrievalTrace.reranking}`,
+        untranslatedTerms: retrieval.retrievalTrace.untranslatedTerms,
+      });
     if (retrieval.trials.length === 0)
       return this.save(runId, profile, trials, rounds, {
         status: "insufficient_evidence",

@@ -25,6 +25,8 @@
     "eval:offline": "node dist/eval/runner/cli.js",
     "eval:live": "node dist/eval/runner/cli.js --live",
     "eval:rag:baseline": "node dist/eval/runner/rag-retrieval.js",
+    "eval:rag:offline": "node dist/eval/runner/rag-offline.js",
+    "eval:rag:live": "node dist/eval/runner/rag-live.js",
     "eval:compare": "node dist/eval/runner/compare.js",
     "gold:metrics": "node dist/eval/runner/gold-metrics.js",
     "compile:rules": "node dist/scripts/compile-rules.js",

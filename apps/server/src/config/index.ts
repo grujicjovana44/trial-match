@@ -29,6 +29,10 @@ const ConfigSchema = z
     GEMINI_API_KEY: z.string().min(1).optional(),
     DATA_DIR: z.string().min(1).default("data/fixtures"),
     RAG_INDEX_PATH: z.string().min(1).default("data/index/rag.sqlite"),
+    RAG_RERANKER: z
+      .enum(["deterministic", "gemini", "disabled"])
+      .default("deterministic"),
+    RAG_RERANK_TIMEOUT_MS: integerSetting(2000, 10000),
     MAX_INPUT_CHARS: integerSetting(4000),
     MAX_CONTEXT_CHARS: integerSetting(12000),
     MAX_MODEL_CALLS_PER_RUN: integerSetting(4),

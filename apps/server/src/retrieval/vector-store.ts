@@ -92,6 +92,15 @@ function distanceL2(left: readonly number[], right: readonly number[]): number {
   return Math.fround(Math.sqrt(sum));
 }
 
+function compareVectorHits(left: VectorHit, right: VectorHit): number {
+  const leftBucket = Math.round(left.distance * 100_000);
+  const rightBucket = Math.round(right.distance * 100_000);
+  return (
+    leftBucket - rightBucket ||
+    (left.id < right.id ? -1 : left.id > right.id ? 1 : 0)
+  );
+}
+
 function validateSearch(vector: readonly number[], limit: number): void {
   assertVector(vector);
   if (!Number.isSafeInteger(limit) || limit < 0)
@@ -128,11 +137,7 @@ export class InMemoryVectorStore implements PersistentVectorStore {
         kind: record.kind,
         distance: distanceL2(vector, record.vector),
       }))
-      .sort(
-        (left, right) =>
-          left.distance - right.distance ||
-          left.id.localeCompare(right.id, "en"),
-      )
+      .sort(compareVectorHits)
       .slice(0, limit);
   }
 
@@ -308,7 +313,7 @@ export class SQLiteVectorStore implements PersistentVectorStore {
         vec_distance_L2(embedding, ?) AS distance
       FROM rag_vectors
       WHERE (? IS NULL OR kind = ?)
-      ORDER BY distance ASC, id ASC
+      ORDER BY ROUND(distance, 5) ASC, id COLLATE BINARY ASC
       LIMIT ?
     `);
     return SqlVectorHitSchema.array().parse(
