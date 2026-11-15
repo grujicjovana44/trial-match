@@ -67,10 +67,8 @@ export class Operations {
       if (runId && (this.revisions.get(runId) ?? 0) !== revision)
         throw invalid("invalid_transition");
       const response = await action();
-      this.revisions.set(
-        response.runId,
-        (this.revisions.get(response.runId) ?? 0) + 1,
-      );
+      if (runId)
+        this.revisions.set(runId, (this.revisions.get(runId) ?? 0) + 1);
       return response;
     })();
     if (runId) this.locks.set(runId, pending);
@@ -84,8 +82,10 @@ export class Operations {
     void pending
       .finally(() => {
         entry.active = false;
-        if (runId && this.locks.get(runId) === pending)
+        if (runId && this.locks.get(runId) === pending) {
           this.locks.delete(runId);
+          this.revisions.delete(runId);
+        }
       })
       .catch(() => undefined);
     return pending;

@@ -95,13 +95,13 @@ export class TrialMatchService {
   private readonly config: AppConfig;
   constructor(private readonly options: ServiceOptions) {
     this.config = options.config;
-    this.store = options.store ?? new RunStore();
+    this.now = options.now ?? Date.now;
+    this.store = options.store ?? new RunStore(this.now);
     this.adapter =
       options.adapter ??
       (this.config.DEMO_MODE
         ? new MockLlmAdapter()
         : new GeminiAdapter(this.config.GEMINI_API_KEY ?? ""));
-    this.now = options.now ?? Date.now;
     this.manifest = options.manifest
       ? DatasetManifestSchema.parse(options.manifest)
       : undefined;
@@ -163,6 +163,7 @@ export class TrialMatchService {
   }
   async start(body: unknown): Promise<RunResponse> {
     const text = this.input(body, "profileText");
+    this.cleanupRunState();
     await this.initialize();
     const runId = randomUUID();
     const session = new ModelSession(this.now(), this.config, this.now);
@@ -636,7 +637,7 @@ export class TrialMatchService {
         demoMode: this.adapter.providerId === "mock",
       },
     });
-    this.store.set({
+    const removed = this.store.set({
       runId,
       profile,
       trials,
@@ -645,6 +646,10 @@ export class TrialMatchService {
       createdAt: session.createdAt,
       availableSources: sources,
     });
+    for (const removedRunId of removed) {
+      this.sessions.delete(removedRunId);
+      this.caches.delete(removedRunId);
+    }
     return response;
   }
   private fail(
@@ -682,6 +687,7 @@ export class TrialMatchService {
     });
   }
   private requireRun(runId: string): RunState {
+    this.cleanupRunState();
     const state = this.store.get(runId);
     if (!state)
       throw new HttpError(404, {
@@ -693,6 +699,12 @@ export class TrialMatchService {
   }
   private badRequest(category: string, message: string): HttpError {
     return new HttpError(400, { category, message, retryable: false });
+  }
+  private cleanupRunState(): void {
+    for (const runId of this.store.prune()) {
+      this.sessions.delete(runId);
+      this.caches.delete(runId);
+    }
   }
   private applyAnswer(
     profile: Profile,
