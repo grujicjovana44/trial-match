@@ -92,7 +92,9 @@ describe("ishod ok", () => {
       overallStatus: "SINTETIČKI PRIMER",
       phase: "Nije primenljivo",
       locations: [],
-      eligibilityText: criteria.map((criterion) => criterion.sourceQuote).join("\n"),
+      eligibilityText: criteria
+        .map((criterion) => criterion.sourceQuote)
+        .join("\n"),
       dataVersion: "synthetic-operator-boundaries-v1",
       criteria,
     });
@@ -196,9 +198,7 @@ describe("ishod ok", () => {
                   ? age > item.threshold
                   : age >= item.threshold;
           const isMet = item.kind === "inclusion" ? matches : !matches;
-          expect(result.criteria[index].status).toBe(
-            isMet ? "met" : "not_met",
-          );
+          expect(result.criteria[index].status).toBe(isMet ? "met" : "not_met");
         }
       }
       expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -344,11 +344,12 @@ describe("ishodi bez studija", () => {
         "Prema unetim podacima profil ne ispunjava kriterijume nijedne studije iz dostupnog skupa. TrialMatch ne predlaže studije van tog skupa i ne nagađa.",
       ),
     ).toBeTruthy();
-    expect(
-      screen.getByText("Razlozi po studiji trenutno nisu deo odgovora."),
-    ).toBeTruthy();
+    expect(screen.getByText("Isključene studije i razlozi")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Studija 1" })).toBeTruthy();
+    expect(screen.getByText("Uslov 2")).toBeTruthy();
+    expect(screen.getByText("Citat 2 za T-1")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Šta ako?" })).toBeTruthy();
-    expect(document.querySelectorAll("article")).toHaveLength(0);
+    expect(document.querySelectorAll("article")).toHaveLength(1);
   });
 
   it("ne prikazuje profil ni hipotezu kada informacija nije u izvorima", async () => {
