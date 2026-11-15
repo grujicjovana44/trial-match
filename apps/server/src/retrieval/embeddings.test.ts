@@ -96,6 +96,20 @@ describe("OpenAI embeddings adapter", () => {
     await expect(wrongDimensions.embed(["x"])).rejects.toThrow(/dimenzija/);
   });
 
+  it("beleži HTTP status kao razlog neuspeha embeddinga", async () => {
+    const invalidKey = new OpenAIEmbeddingClient(
+      "invalid-key",
+      "text-embedding-3-small",
+      "https://api.openai.com/v1",
+      async () => new Response("unauthorized", { status: 401 }),
+      1000,
+      0,
+    );
+    await expect(invalidKey.embed(["type 2 diabetes"])).rejects.toMatchObject({
+      reason: "embedding_http_401",
+    });
+  });
+
   it("ograničeno ponavlja HTTP 429/5xx i nevažeći JSON odgovor", async () => {
     for (const firstResponse of [
       new Response("busy", { status: 503 }),

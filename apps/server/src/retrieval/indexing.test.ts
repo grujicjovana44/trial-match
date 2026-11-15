@@ -84,8 +84,12 @@ describe("RAG vector index build", () => {
     expect(first.manifest.corpusVersion).toBe("synthetic-trials-v1");
     expect(first.manifest.documentHashes).toHaveLength(documents.length);
     expect(first.manifest.sourceHashes[0]?.sha256).toBe("f".repeat(64));
+    expect(first.embeddingCalls).toBe(embedder.calls);
+    expect(first.tokensUsed).toBeGreaterThan(0);
     expect(second.embeddedTexts).toBe(0);
     expect(second.reusedTexts).toBe(first.embeddedTexts);
+    expect(second.embeddingCalls).toBe(0);
+    expect(second.tokensUsed).toBe(0);
     expect(embedder.calls).toBe(callsAfterFirstBuild);
     expect(JSON.parse(store.getManifest() ?? "{}")).toMatchObject({
       embeddingModel: "text-embedding-3-small",

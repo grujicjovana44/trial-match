@@ -590,6 +590,12 @@ export class TrialMatchService {
         durationMs: this.now() - retrievalStartedAt,
         outcome: `${retrieval.retrievalTrace.embedding}:${retrieval.retrievalTrace.reranking}`,
         untranslatedTerms: retrieval.retrievalTrace.untranslatedTerms,
+        retrievalMode: retrieval.retrievalTrace.retrievalMode,
+        ...(retrieval.retrievalTrace.fallbackReason
+          ? { fallbackReason: retrieval.retrievalTrace.fallbackReason }
+          : {}),
+        vectorHitCount: retrieval.retrievalTrace.vectorHitCount,
+        selectedTrialIds: retrieval.trials.map((trial) => trial.trialId),
       });
     if (retrieval.trials.length === 0)
       return this.save(runId, profile, trials, rounds, {

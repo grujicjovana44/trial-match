@@ -109,6 +109,8 @@ async function main(): Promise<void> {
         embeddedTexts: result.embeddedTexts,
         reusedTexts: result.reusedTexts,
         estimatedTokens: result.estimatedTokens,
+        embeddingCalls: result.embeddingCalls,
+        tokensUsed: result.tokensUsed,
       }),
     );
   } finally {

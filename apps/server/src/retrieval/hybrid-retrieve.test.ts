@@ -105,6 +105,8 @@ describe("hibridni retrieval", () => {
     expect(retrieval.trials[0]?.criteria).toHaveLength(2);
     expect(retrieval.sourceIds).toEqual(["T-X#inc-1"]);
     expect(retrieval.contextText).not.toContain("HbA1c at least 10%");
+    expect(retrieval.retrievalTrace?.retrievalMode).toBe("hybrid");
+    expect(retrieval.retrievalTrace?.vectorHitCount).toBeGreaterThan(0);
     expect(evaluated[0]?.verdict).toBe("excluded");
     expect(evaluated[0]?.criteria.map((criterion) => criterion.id)).toEqual([
       "T-X#inc-1",
@@ -189,6 +191,9 @@ describe("hibridni retrieval", () => {
 
     expect(result.trials.map((item) => item.trialId)).toEqual(["T-X"]);
     expect(result.retrievalTrace?.embedding).toBe("lexical_fallback");
+    expect(result.retrievalTrace?.retrievalMode).toBe("lexical_fallback");
+    expect(result.retrievalTrace?.fallbackReason).toBe("embedding_error");
+    expect(result.retrievalTrace?.vectorHitCount).toBe(0);
   });
 
   it("odbacuje vektorski najbližu studiju ispod minimalne relevantnosti", async () => {
