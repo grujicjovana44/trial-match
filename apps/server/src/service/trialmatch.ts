@@ -543,37 +543,40 @@ export class TrialMatchService {
       retrieval.sourceIds.map((id) => [id, retrieval.sourceTexts.get(id)!]),
     );
     let supported = false;
-    try {
-      const explanation = await session.generate(
-        this.adapter,
-        "explain_results.v1",
-        {
-          results: evaluated.map((t) => ({
-            trialId: t.trialId,
-            verdict: t.verdict,
-            criteria: t.criteria.filter((c) => allowed.has(c.sourceId)),
-          })),
-          sources: Object.fromEntries(allowed),
-        },
-        ExplanationSchema,
-      );
-      supported =
-        explanation.references.length > 0 &&
-        explanation.references.every(
-          (ref) =>
-            evaluated.some((t) =>
-              t.criteria.some(
-                (c) => c.id === ref.criterionId && c.sourceId === ref.sourceId,
-              ),
-            ) && verifyCitation(ref, allowed),
+    if (this.adapter.providerId !== "mock") {
+      try {
+        const explanation = await session.generate(
+          this.adapter,
+          "explain_results.v1",
+          {
+            results: evaluated.map((t) => ({
+              trialId: t.trialId,
+              verdict: t.verdict,
+              criteria: t.criteria.filter((c) => allowed.has(c.sourceId)),
+            })),
+            sources: Object.fromEntries(allowed),
+          },
+          ExplanationSchema,
         );
-    } catch {
-      // The matcher result is complete; an unverified explanation is optional.
-      session.events.push({
-        step: "grounding",
-        durationMs: 0,
-        outcome: "fallback_after_explanation_error",
-      });
+        supported =
+          explanation.references.length > 0 &&
+          explanation.references.every(
+            (ref) =>
+              evaluated.some((t) =>
+                t.criteria.some(
+                  (c) =>
+                    c.id === ref.criterionId && c.sourceId === ref.sourceId,
+                ),
+              ) && verifyCitation(ref, allowed),
+          );
+      } catch {
+        // The matcher result is complete; an unverified explanation is optional.
+        session.events.push({
+          step: "grounding",
+          durationMs: 0,
+          outcome: "fallback_after_explanation_error",
+        });
+      }
     }
     // Exact quotes do not establish semantic support: until human review, use the verified status template.
     session.events.push({
