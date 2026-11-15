@@ -15,7 +15,7 @@ TrialMatch je TypeScript veb-aplikacija za preliminarnu proveru sintetičkog pro
 
 ## Preduslovi
 
-- Node.js `24.22.1`
+- Node.js `24.15.0` ili noviji (`.nvmrc` bira `24.15.0`; CI proverava i `24.22.1`)
 - pnpm `12.16.1`
 
 ```sh
@@ -42,6 +42,9 @@ Lokalni DEMO može zatražiti dopunu, na primer podatak o upotrebi insulina. Za 
 | `pnpm build`                       | Serverska TypeScript kompilacija i produkcioni UI build                      |
 | `pnpm test`                        | Offline unit i integracioni testovi                                          |
 | `pnpm smoke`                       | API demo smoke test                                                          |
+| `pnpm sqlite:smoke`                | Proverava učitavanje sqlite-vec ekstenzije i KNN upit offline                |
+| `pnpm embeddings:check`            | Jedan mali stvarni poziv za proveru embeddings pristupa                      |
+| `pnpm index:build`                 | Gradi/obnavlja lokalni inkrementalni RAG indeks                              |
 | `pnpm eval:offline`                | Offline i simulirane fault provere; živi slučajevi se preskaču               |
 | `pnpm eval:live -- ...`            | Zahteva `--confirm-live`, scope odobrenje, limits i serverski ključ          |
 | `pnpm data:prepare [ulaz] [izlaz]` | Lokalno validira normalizovani skup ili uvozi CTG v2 JSON; ne pristupa mreži |
@@ -53,6 +56,10 @@ Lokalni DEMO može zatražiti dopunu, na primer podatak o upotrebi insulina. Za 
 | `pnpm eval:compare <pre> <posle>`  | Poredi dva sačuvana rezultata po ID-ju slučaja                               |
 
 CI pokreće samo lokalne provere, bez modelskih API poziva.
+
+### RAG indeks (lokalno, eksplicitno)
+
+Za promenu ili dodavanje podataka pokrenite `pnpm build`, zatim prvo `pnpm embeddings:check` (jedan mali stvarni poziv), pa `pnpm index:build`. Indeksiranje čita `data/trials/` i `data/fixtures/`, prikazuje procenu tokena i traži potvrdu kada pređe podešeni prag. Embeddings dozvoljava samo `text-embedding-3-small`; prosleđuje se tekst studija i kriterijumskih odlomaka, a pri retrieval-u samo normalizovani upit iz validiranog sintetičkog profila — nikad sirov profil. Potrebne promenljive su u `.env.example`; stvarni `.env` ostaje lokalni i ne commit-uje se. SQLite fajl indeksa je u `data/index/` i ne commit-uje se.
 
 ## Podaci i izvori
 
@@ -70,4 +77,4 @@ Formule za eGFR, BMI i konverzije imaju izvore u kodu i potvrđene su u [docs/pr
 - [Mapa dokaza CAP-01–CAP-08](docs/evidence-map.md)
 - [Sastav tima](docs/team.md)
 
-Faza 2 implementacija je u toku; stvarni poziv modela, odobreni korpus, live baseline i browser review nisu izvršeni. Glas, embeddings, javni deployment i AC-11 ostaju van opsega. Pogledajte [trenutnu spremnost](docs/phase-2-readiness.md).
+Faza 2 implementacija je u toku. SQLite + sqlite-vec osnova je izabrana i jedan embeddings smoke poziv je uspeo; index build, stvarni EV baseline i browser review nisu izvršeni. RAG evaluacioni skup je nacrt koji čeka ljudsku adjudikaciju. Glas, javni deployment i AC-11 ostaju van opsega. Pogledajte [trenutnu spremnost](docs/phase-2-readiness.md).

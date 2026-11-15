@@ -16,13 +16,16 @@ export type RetrievedContext = {
   contextText: string;
 };
 
+export type RetrievalOptions = {
+  maxCandidates: number;
+  maxSnippets: number;
+  maxContextChars: number;
+};
+
 export function retrieveTrials(
   profile: Profile,
   trials: Trial[],
-  options: {
-    maxCandidates: number;
-    maxSnippets: number;
-    maxContextChars: number;
+  options: RetrievalOptions & {
     derived?: DerivedValue[];
     excludeFields?: string[];
   },

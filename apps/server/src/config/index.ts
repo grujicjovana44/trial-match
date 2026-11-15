@@ -28,6 +28,7 @@ const ConfigSchema = z
       .default("gemini-3.5-flash-lite"),
     GEMINI_API_KEY: z.string().min(1).optional(),
     DATA_DIR: z.string().min(1).default("data/fixtures"),
+    RAG_INDEX_PATH: z.string().min(1).default("data/index/rag.sqlite"),
     MAX_INPUT_CHARS: integerSetting(4000),
     MAX_CONTEXT_CHARS: integerSetting(12000),
     MAX_MODEL_CALLS_PER_RUN: integerSetting(4),

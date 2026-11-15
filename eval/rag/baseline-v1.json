@@ -1,0 +1,306 @@
+{
+  "baselineId": "mini-search-rag-retrieval-v1",
+  "retrievalImplementation": "current MiniSearch retrieveTrials",
+  "datasetId": "rag-retrieval-v1",
+  "corpusSnapshotId": "rag-corpus-v1",
+  "annotationStatus": "pending_human_review",
+  "annotationMethod": "assistant-authored draft based on direct source inspection; requires human adjudication",
+  "gitCommit": "4c22035",
+  "limits": {
+    "maxCandidates": 10,
+    "maxSnippets": 5,
+    "maxContextChars": 12000
+  },
+  "corpus": [
+    {
+      "path": "data/fixtures/trials.json",
+      "version": "synthetic-trials-v1",
+      "sha256": "f368d13bff16dc5ad69636513281ed18ea8601978a83d6c3c000dd4b0cde4950",
+      "observedSha256": "f368d13bff16dc5ad69636513281ed18ea8601978a83d6c3c000dd4b0cde4950"
+    },
+    {
+      "path": "data/rule_sets/studies_2_approved_20261115_1539/trials.json",
+      "version": "rules-0b88455b00ae",
+      "sha256": "4b39b15a92b3ce20591c70ed54bb60e81a453c10b2c3a5dd2052b00ec3c8a2e5",
+      "observedSha256": "4b39b15a92b3ce20591c70ed54bb60e81a453c10b2c3a5dd2052b00ec3c8a2e5"
+    }
+  ],
+  "cases": [
+    {
+      "caseId": "RAG-001",
+      "language": "sr",
+      "retrievedTrialIds": [
+        "NCT07924436",
+        "NCT07409714",
+        "T-A",
+        "T-B",
+        "T-C"
+      ],
+      "retrievedPassageIds": [
+        "NCT07924436#inc-1",
+        "NCT07924436#inc-2",
+        "NCT07924436#inc-3",
+        "NCT07924436#inc-4",
+        "NCT07924436#inc-5"
+      ],
+      "contextChars": 342,
+      "latencyMs": 14.216416000000002,
+      "deterministic": true,
+      "citationsValid": true,
+      "studyMetrics": {
+        "at1": {
+          "recall": 1,
+          "precision": 1,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        },
+        "at3": {
+          "recall": 1,
+          "precision": 0.3333333333333333,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        },
+        "at5": {
+          "recall": 1,
+          "precision": 0.2,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        }
+      },
+      "passageMetrics": {
+        "at1": {
+          "recall": 0.3333333333333333,
+          "precision": 1,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        },
+        "at3": {
+          "recall": 0.6666666666666666,
+          "precision": 0.6666666666666666,
+          "reciprocalRank": 1,
+          "ndcg": 0.7039180890341347
+        },
+        "at5": {
+          "recall": 1,
+          "precision": 0.6,
+          "reciprocalRank": 1,
+          "ndcg": 0.8854598815714874
+        }
+      }
+    },
+    {
+      "caseId": "RAG-002",
+      "language": "en",
+      "retrievedTrialIds": [
+        "NCT07409714",
+        "T-A",
+        "NCT07924436",
+        "T-B",
+        "T-C"
+      ],
+      "retrievedPassageIds": [
+        "NCT07409714#inc-1",
+        "NCT07409714#inc-2",
+        "NCT07409714#inc-3",
+        "NCT07409714#inc-4",
+        "NCT07409714#inc-5"
+      ],
+      "contextChars": 301,
+      "latencyMs": 0.38391599999999926,
+      "deterministic": true,
+      "citationsValid": true,
+      "studyMetrics": {
+        "at1": {
+          "recall": 1,
+          "precision": 1,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        },
+        "at3": {
+          "recall": 1,
+          "precision": 0.3333333333333333,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        },
+        "at5": {
+          "recall": 1,
+          "precision": 0.2,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        }
+      },
+      "passageMetrics": {
+        "at1": {
+          "recall": 0.3333333333333333,
+          "precision": 1,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        },
+        "at3": {
+          "recall": 0.6666666666666666,
+          "precision": 0.6666666666666666,
+          "reciprocalRank": 1,
+          "ndcg": 0.7039180890341347
+        },
+        "at5": {
+          "recall": 0.6666666666666666,
+          "precision": 0.4,
+          "reciprocalRank": 1,
+          "ndcg": 0.7039180890341347
+        }
+      }
+    },
+    {
+      "caseId": "RAG-003",
+      "language": "sr",
+      "retrievedTrialIds": [
+        "NCT07409714",
+        "T-A",
+        "NCT07924436",
+        "T-B",
+        "T-C"
+      ],
+      "retrievedPassageIds": [
+        "NCT07409714#inc-1",
+        "NCT07409714#inc-2",
+        "NCT07409714#inc-3",
+        "NCT07409714#inc-4",
+        "NCT07409714#inc-5"
+      ],
+      "contextChars": 301,
+      "latencyMs": 0.5527499999999961,
+      "deterministic": true,
+      "citationsValid": true,
+      "studyMetrics": {
+        "at1": {
+          "recall": 0.2,
+          "precision": 1,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        },
+        "at3": {
+          "recall": 0.6,
+          "precision": 1,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        },
+        "at5": {
+          "recall": 1,
+          "precision": 1,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        }
+      },
+      "passageMetrics": {
+        "at1": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0.3333333333333333,
+          "ndcg": 0
+        },
+        "at3": {
+          "recall": 0.2,
+          "precision": 0.3333333333333333,
+          "reciprocalRank": 0.3333333333333333,
+          "ndcg": 0.23463936301137822
+        },
+        "at5": {
+          "recall": 0.2,
+          "precision": 0.2,
+          "reciprocalRank": 0.3333333333333333,
+          "ndcg": 0.16958010263680806
+        }
+      }
+    },
+    {
+      "caseId": "RAG-004",
+      "language": "none",
+      "retrievedTrialIds": [
+        "NCT07409714",
+        "T-A",
+        "NCT07924436",
+        "T-B",
+        "T-C"
+      ],
+      "retrievedPassageIds": [
+        "NCT07409714#inc-1",
+        "NCT07409714#inc-2",
+        "NCT07409714#inc-3",
+        "NCT07409714#inc-4",
+        "NCT07409714#inc-5"
+      ],
+      "contextChars": 301,
+      "latencyMs": 0.3576660000000018,
+      "deterministic": true,
+      "citationsValid": true,
+      "studyMetrics": {
+        "at1": {
+          "recall": 0.2,
+          "precision": 1,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        },
+        "at3": {
+          "recall": 0.6,
+          "precision": 1,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        },
+        "at5": {
+          "recall": 1,
+          "precision": 1,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        }
+      },
+      "passageMetrics": null
+    }
+  ],
+  "aggregate": {
+    "studies": {
+      "at1": {
+        "recall": 0.6000000000000001,
+        "precision": 1,
+        "mrr": 1,
+        "ndcg": 1
+      },
+      "at3": {
+        "recall": 0.8,
+        "precision": 0.6666666666666666,
+        "mrr": 1,
+        "ndcg": 1
+      },
+      "at5": {
+        "recall": 1,
+        "precision": 0.6,
+        "mrr": 1,
+        "ndcg": 1
+      }
+    },
+    "passages": {
+      "at1": {
+        "recall": 0.2222222222222222,
+        "precision": 0.6666666666666666,
+        "mrr": 0.7777777777777778,
+        "ndcg": 0.6666666666666666
+      },
+      "at3": {
+        "recall": 0.5111111111111111,
+        "precision": 0.5555555555555555,
+        "mrr": 0.7777777777777778,
+        "ndcg": 0.5474918470265492
+      },
+      "at5": {
+        "recall": 0.6222222222222221,
+        "precision": 0.39999999999999997,
+        "mrr": 0.7777777777777778,
+        "ndcg": 0.5863193577474767
+      }
+    }
+  },
+  "checks": {
+    "allContextsWithinLimit": true,
+    "allCitationsValid": true,
+    "deterministicAcrossRepeatedRuns": true
+  }
+}
