@@ -8,16 +8,49 @@ import {
   estimatePendingEmbeddings,
 } from "../apps/server/src/retrieval/indexing.js";
 import {
+  DEFAULT_EMBEDDING_MODEL,
   INDEX_TOKEN_CONFIRMATION_THRESHOLD,
   MAX_CHUNKS_PER_INDEX_BUILD,
 } from "../apps/server/src/retrieval/config.js";
 import { loadRagCorpus } from "../apps/server/src/retrieval/corpus.js";
-import { openSQLiteVectorStore } from "../apps/server/src/retrieval/vector-store.js";
+import {
+  InMemoryVectorStore,
+  openSQLiteVectorStore,
+} from "../apps/server/src/retrieval/vector-store.js";
 
 async function main(): Promise<void> {
   const corpus = await loadRagCorpus();
-  const client = createOpenAIEmbeddingClient();
   const documents = buildRagDocuments(corpus.trials);
+  if (process.argv.includes("--estimate-only")) {
+    const estimate = estimatePendingEmbeddings(
+      corpus,
+      new InMemoryVectorStore(),
+      DEFAULT_EMBEDDING_MODEL,
+    );
+    console.log(
+      JSON.stringify(
+        {
+          mode: "estimate-only",
+          indexBuildExecuted: false,
+          studies: corpus.trials.length,
+          documents: documents.length,
+          uniqueTexts: estimate.uniqueTexts,
+          estimatedTokens: estimate.tokens,
+          estimatedCostUsd: null,
+          costFormula:
+            "estimatedTokens × verifiedPriceUsdPerMillion / 1,000,000",
+          costReason:
+            "Nema verifikovanog cenovnika i datuma cene u repozitorijumu.",
+          model: DEFAULT_EMBEDDING_MODEL,
+          skippedSources: corpus.skipped,
+        },
+        null,
+        2,
+      ),
+    );
+    return;
+  }
+  const client = createOpenAIEmbeddingClient();
   const databasePath = resolve("data/index/rag.sqlite");
   const store = await openSQLiteVectorStore(databasePath);
   try {

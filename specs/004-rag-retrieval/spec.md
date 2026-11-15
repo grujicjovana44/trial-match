@@ -2,7 +2,7 @@
 
 **Funkcionalnost**: `004-rag-retrieval`  
 **Datum**: 2026-11-15  
-**Status**: Implementacija u toku; korisnik je odobrio SQLite + sqlite-vec i jedan `embeddings:check` sintetički poziv je uspeo; `index:build` još nije pokrenut.  
+**Status**: Implementacija je proširena sa multi-query RRF-om, opcionim rerankiranjem, embedding fallback-om i offline evaluatorima. Operativni `index:build`, `eval:rag:live` i live RAGAS evaluator nisu pokrenuti.
 **Nadovezuje se na**: [specifikaciju Faze 2](../003-phase-2-live-integration/spec.md), bez izmene njenih AC ID-jeva.
 
 Jezički model čita pravila i objašnjava rezultat. Odluku donosi deterministički kod. RAG pronalazi studije i kontekstualne odlomke; ne određuje ishod podobnosti.
@@ -20,13 +20,13 @@ Jezički model čita pravila i objašnjava rezultat. Odluku donosi deterministi�
 
 ### US1 — Relevantne studije i izvori iz validiranog profila
 
-Validiran strukturisani sintetički profil postaje retrieval upit. Srpski koncepti se prevode u jezik korpusa determinističkim, verzionisanim terminološkim rečnikom; sirovi profilni tekst se ne šalje embedding servisu. Poznate vrednosti mogu doprineti upitu, ali nedostajuće/ambivalentne vrednosti se ne izmišljaju.
+Validiran strukturisani sintetički profil postaje skup upita za dijagnoze/komorbiditete i poznate laboratorijske oblasti (HbA1c, kreatinin/eGFR, BMI i lekovi). Srpski termini se transliterišu iz ćirilice, normalizuju (uključujući đ/dž) i prevode determinističkim, verzionisanim rečnikom; izvorni alias se zadržava kao dodatni upit. Nepoznati termin ostaje u upitu i beleži se kao `untranslated` u retrieval tragu. Sirovi profilni tekst se ne šalje embedding servisu.
 
 Metapodaci mogu ograničiti skup studija samo po poznatim, dozvoljenim filterima. Ako nema dijagnoze ni drugog pretraživog koncepta, sistem vraća sve studije koje prođu metadata filtere, sortirane stabilno po normalizovanom ID-ju, līdz `maxCandidates` limitu. Nije dozvoljeno uzimati prvih N zapisa ulaznog fajla.
 
 ### US2 — Hibridna pretraga uz očuvan matcher
 
-Sistem pretražuje studije po naslovu, stanjima i sažetku, a zatim i kriterijumske odlomke. Leksički i vektorski rezultati se kombinuju Reciprocal Rank Fusion-om. Studijski i odlomkovni embeddings su odvojeni nivoa, jer numerički kriterijumi sami po sebi slabo predstavljaju semantičku temu studije.
+Sistem pretražuje studije i kriterijumske odlomke; MiniSearch indeks se izgradi pri inicijalizaciji. Kandidati se kombinuju po svim aspektima upita preko RRF-a, a zatim se top-N studija i odlomaka opciono rerangiraju jednim Gemini pozivom sa strogim `{id, score}` izlazom. Gemini rangira samo tekstualnu relevantnost i ne odlučuje podobnost niti kriterijume. Nevalidan izlaz ili greška poziva vraća RRF redosled. Testovi podrazumevano koriste deterministički reranker.
 
 Posle odabira studija, matcher dobija kompletan kriterijumski niz iz svake izabrane studije. Čak i kada retrieval nije stavio exclusion odlomak u kontekst, matcher mora oceniti taj exclusion kriterijum; poznato kršenje i dalje daje `excluded`.
 
@@ -44,27 +44,27 @@ Metrike uključuju recall@k, precision@k, MRR, nDCG, stabilnost tie-break-a, cit
 
 `eval:rag:offline` koristi samo lažni deterministički embedder i ne pristupa mreži. `eval:rag:live` traži eksplicitnu potvrdu, prikazuje procenjeni broj embeddings/LLM poziva i trošak pre slanja, i beleži modele/verzije/ishode. Live rezultati se nikada ne biraju po najboljem pokušaju.
 
-Generisanje se dodatno procenjuje RAGAS-stil metrikama `faithfulness`, `answer relevancy`, `context precision` i `context recall` u TypeScript-u, uz ograničen LLM sudija preko postojećeg adaptera. Te metrike mere odgovor/kontekst i ne menjaju determinističke ishode. Opciono se rezultati izvoze u format pogodan za Python RAGAS alate.
+`eval:rag:offline` poredi lexical-only, vector-only, hybrid i hybrid+rerank na istim case ID-jevima i meri metrike, kašnjenje i paritet InMemory/SQLite VectorStore-a. Predložene oznake se prikazuju samo kao razvojna dijagnostika. TypeScript RAGAS-style evaluator izračunava četiri metrike lokalnim heuristikama; `eval:rag:live` je odvojen, koristi sintetički ljudski pregledan skup i zahteva immutable approval, limite i eksplicitno priznanje da cena nije dostupna. Nijedan evaluator ne menja determinističke ishode.
 
 ## Zahtevi i kriterijumi prihvatanja
 
 | ID | Zahtev | Kriterijum prihvatanja |
 |---|---|---|
 | RAG-01 | Upit se gradi samo od `ProfileSchema` validiranog profila. | Nijedna retrieval/embedding funkcija ne prima sirov korisnički tekst. Nepoznate vrednosti ostaju odsutne. |
-| RAG-02 | Srpski termini rade nad engleskim korpusom. | Verzionsani deterministički rečnik normalizuje podržane termine; testovi pokrivaju srpske upite i engleske izvore. Nema slobodnog prevoda modelom u retrieval putanji. |
+| RAG-02 | Srpski termini rade nad engleskim korpusom. | Verzionsani rečnik, ćirilična transliteracija i normalizacija đ/dž rade deterministički; nepoznati termini ostaju u upitu i označeni su u tragu. |
 | RAG-03 | Ponašanje bez dijagnoze je eksplicitno. | Bez pretraživog koncepta vraćaju se svi metadata-dozvoljeni zapisi do limita u stabilnom ID redosledu, nikad početni ulazni redosled. |
-| RAG-04 | Metadata filtering ne nagađa. | Filteri koriste samo poznata, normalizovana polja; nepoznate vrednosti ne postaju tvrdi exclusion filteri. |
+| RAG-04 | Metadata filtering ne nagađa. | Poznata state/status polja filtriraju se kao posebna faza; vrednost nepoznata u korpusu se ne primenjuje kao tvrdi filter. |
 | RAG-05 | Obim kandidata je odvojen od obima kriterijumske procene. | Matcher dobija sve pregledane kriterijume svake izabrane studije. Test dokazuje da nepretražen exclusion kriterijum i dalje daje `excluded`. |
-| RAG-06 | Leksički retrieval radi na studiji i odlomku. | MiniSearch indeksira relevantne tekstualne/metapodatkovne prikaze; tie-break je deterministički. |
+| RAG-06 | Leksički retrieval radi na studiji i odlomku. | MiniSearch indeks se gradi jednom po inicijalizovanom korpusu; prazno/nepovezano pretraživanje ne vraća proizvoljne najbliže rezultate. |
 | RAG-07 | `VectorStore` je zamenljiv. | Postoji memorijska implementacija za testove/CI/offline i odobrena ugrađena implementacija za lokalni/demo/live rad; zajednički ugovorni test proverava paritet. |
-| RAG-08 | Embeddings su kontrolisani. | Dozvoljen je samo `text-embedding-3-small`; nedostupan ključ/model daje jasnu grešku, bez fallback-a. Indeks manifestuje vektorsku dimenziju. |
+| RAG-08 | Embeddings su kontrolisani i otporni na greške. | Dozvoljen je samo `text-embedding-3-small`; timeout, 429/5xx ili nevalidan odgovor imaju ograničene pokušaje, zatim lex-only fallback sa tragom. Query embeddings keširaju se po modelu i hash-u upita. |
 | RAG-09 | Indeksiranje je inkrementalno i ograničeno. | `index:build` prihvata oba data-root-a, kešira hash teksta+modela, prikazuje procenu pre poziva, traži potvrdu preko praga i poštuje batch/timeout/retry/max-chunks. |
-| RAG-10 | Fuzija je ponovljiva. | RRF kombinuje rangove bez uvođenja presude; deterministički reranker i stabilni NCT ID tie-break daju isti red za isti snapshot. |
+| RAG-10 | Fuzija je ponovljiva i rerankiranje ograničeno. | RRF pravi kandidate; top-N studija/odlomaka rerankira deterministički ili jednim opcionim Gemini pozivom sa strogim `{id, score}` izlazom. Greška/invalidan izlaz vraća RRF redosled. |
 | RAG-11 | Kontekst i citati su bezbedni. | Kontekst ne prelazi `MAX_CONTEXT_CHARS`; ID-jevi i postojeća server provera citata ostaju; studijski tekst je jasno označen kao nepouzdan. |
 | RAG-12 | Zlonameran odlomak ne menja matcher. | Adversarial fixture može dospeti u kontekst kao nepouzdan tekst; alatni izlaz/presude/pitanja ostaju funkcija samo validiranog profila, pregledanih kriterijuma i determinističkog koda. |
 | RAG-13 | Retrieval skup je verzionisan i ima anotaciono poreklo. | Schema v2 dodaje `relevanceRule`, `labelStatus`, `reviewer`, `reviewedAt`, `kind` i `split`; nepotvrđene oznake ostaju `proposed`/`TODO`. V1 ostaje nepromenljiv. Obrasci bez dostupnog korpusa opisuju se bez relevantnih ID-jeva ili oznaka. |
-| RAG-14 | Retrieval metrike su proverljive i primerene tipu slučaja. | Samo potvrđeni `ranking` slučajevi ulaze u recall@k, precision@k, MRR i nDCG; `behavior`/`negative`/`injection`/`language` slučajevi se zasebno proveravaju. Metrike se grupišu po dev/test split-u, a k ne prelazi polovinu studija u korpusu. |
-| RAG-15 | Generisanje ima odvojenu RAGAS-stil evaluaciju. | TS implementacija računa četiri navedene metrike uz ograničen, eksplicitno odobren live sudija; offline testovi koriste determinističke odgovore i nikad mrežu. |
+| RAG-14 | Retrieval metrike su proverljive i primerene tipu slučaja. | Offline poređenje izvršava lexical/vector/hybrid/hybrid+rerank na istim ID-jevima; meri recall/precision/MRR/nDCG, latency i paritet skladišta. Nepotvrđene oznake su jasno označene kao dijagnostika. |
+| RAG-15 | Generisanje ima odvojenu RAGAS-stil evaluaciju. | TypeScript evaluator računa faithfulness, answer relevancy, context precision/recall; live sudija je poseban guarded command, a heuristički offline rezultat nije semantički dokaz. |
 | RAG-16 | Live trošak je vidljiv pre poziva. | Live evaluator prikazuje pozive/model/trošak procenjen pre početka, zahteva eksplicitnu potvrdu i beleži stvarni rezultat bez biranja najboljeg pokušaja. |
 | RAG-17 | Podaci upućeni embedding provajderu su dokumentovani. | `docs/data-map.md` navodi da se šalju samo javni tekst studija i deterministički upit izveden iz sintetičkog validiranog profila; tajne ostaju serverske. |
 

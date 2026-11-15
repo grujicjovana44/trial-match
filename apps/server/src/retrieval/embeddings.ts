@@ -17,18 +17,26 @@ const EmbeddingEnvironmentSchema = z
   })
   .strict();
 
-const EmbeddingResponseSchema = z.object({
-  data: z
-    .array(
-      z.object({
-        index: z.number().int().nonnegative(),
-        embedding: z.array(z.number().finite()).min(1),
-      }),
-    )
-    .min(1),
-  model: z.string(),
-  usage: z.object({ prompt_tokens: z.number().int().nonnegative() }),
-});
+const EmbeddingResponseSchema = z
+  .object({
+    data: z
+      .array(
+        z
+          .object({
+            index: z.number().int().nonnegative(),
+            embedding: z.array(z.number().finite()).min(1),
+          })
+          .passthrough(),
+      )
+      .min(1),
+    model: z.string(),
+    usage: z
+      .object({ prompt_tokens: z.number().int().nonnegative() })
+      .passthrough(),
+  })
+  .passthrough();
+
+class NonRetryableEmbeddingError extends Error {}
 
 export type EmbeddingConfig = z.infer<typeof EmbeddingEnvironmentSchema>;
 export type EmbeddingBatch = {
@@ -106,49 +114,44 @@ export class OpenAIEmbeddingClient implements Embedder {
     if (input.length === 0 || input.some((text) => !text.trim()))
       throw new Error("Embedding ulaz mora sadržati neprazne tekstove.");
 
-    let response: Response | undefined;
-    let lastNetworkError: unknown;
     for (let attempt = 0; attempt <= this.maxRetries; attempt += 1) {
       try {
-        response = await this.transport(`${this.baseUrl}/embeddings`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            input,
-            model: this.model,
-            encoding_format: "float",
-          }),
-          signal: AbortSignal.timeout(this.timeoutMs),
-        });
+        return await this.embedOnce(input);
       } catch (error) {
-        lastNetworkError = error;
-        if (attempt === this.maxRetries)
-          throw new Error(
-            "OpenAI embeddings zahtev nije uspeo ili je istekao timeout.",
-            {
-              cause: error,
-            },
-          );
-        await new Promise((resolve) => setTimeout(resolve, 100 * 2 ** attempt));
-        continue;
+        if (
+          attempt === this.maxRetries ||
+          error instanceof NonRetryableEmbeddingError
+        )
+          throw error;
+        await new Promise((resolve) =>
+          setTimeout(resolve, 100 * 2 ** attempt),
+        );
       }
-      if (response.ok || (response.status < 500 && response.status !== 429))
-        break;
-      if (attempt < this.maxRetries)
-        await new Promise((resolve) => setTimeout(resolve, 100 * 2 ** attempt));
     }
+    throw new Error("OpenAI embeddings zahtev nije uspeo nakon ponovnih pokušaja.");
+  }
 
-    if (!response)
-      throw new Error("OpenAI embeddings zahtev nije dobio HTTP odgovor.", {
-        cause: lastNetworkError,
-      });
-    if (!response.ok)
-      throw new Error(
-        `OpenAI embeddings zahtev nije uspeo (HTTP ${response.status}); proverite ključ, model i pristup endpoint-u.`,
-      );
+  private async embedOnce(input: readonly string[]): Promise<EmbeddingBatch> {
+    const response = await this.transport(`${this.baseUrl}/embeddings`, {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + this.apiKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        input,
+        model: this.model,
+        encoding_format: "float",
+      }),
+      signal: AbortSignal.timeout(this.timeoutMs),
+    });
+    if (!response.ok) {
+      const message =
+        `OpenAI embeddings zahtev nije uspeo (HTTP ${response.status}); proverite ključ, model i pristup endpoint-u.`;
+      if (response.status !== 429 && response.status < 500)
+        throw new NonRetryableEmbeddingError(message);
+      throw new Error(message);
+    }
 
     let payload: unknown;
     try {

@@ -35,24 +35,9 @@ DOMEN ZA DEMO: studije za dijabetes tip 2 (kriterijumi su uglavnom numerički i 
 
 GRANICE: aplikacija je samo za čitanje. Nema upisa sa posledicama u stvarnom svetu (nema prijave u studiju, slanja poruka ni zakazivanja). Zato uslovni testovi X-01 do X-03 iz zadatka NISU primenljivi; to izričito dokumentuj.
 
-================================================================
-2. KONTEKST: OVO JE OCENJIVAN ZAVRŠNI PROJEKAT BOOTCAMP-A
-================================================================
-Ovo je završni timski projekat SITA AI Bootcamp-a (tim od 4 člana, 2 nedelje, prezentacija 25. novembra 2026, odbrana 20 minuta u kojoj svaki član objašnjava svoj deo). Ocenjivanje: 80 zajedničkih i 20 individualnih bodova, prema 8 zahteva CAP-01 do CAP-08. Repozitorijum mora omogućiti mentoru da proveri svaki zahtev:
-  CAP-01 Specifikacija i plan: korisnici, problem, glavni tok sa granom (dopuna / odbijanje / kontrolisana greška), gde se koristi AI a šta ostaje u determinističkom kodu, granice obima, kriterijumi prihvatanja sa stabilnim ID-jevima (AC-01...), arhitektura, odgovornosti, pretpostavke i rizici.
-  CAP-02 Funkcionalna aplikacija i AI ugovor: TypeScript UI + serverski API, STVARAN poziv modela u glavnom toku, ključevi samo na serveru, runtime validacija korisničkog ulaza, izlaza modela i argumenata alata (TypeScript tip ili "as Result" NIJE validacija), strukturisan odgovor sa statusima, UI stanja: početno, obrada, uspeh, zahtev za dopunom, greška, prazan rezultat.
-  CAP-03 Kontrolisan kontekst i izvori: mali pripremljen skup podataka sa manifestom (naziv, verzija/datum, poreklo, uslovi korišćenja, izmene, poznata ograničenja; sintetički podaci jasno označeni), stabilni identifikatori izvora, serverska provera da se vraćeni citati odnose na izvore dostupne u OVOM izvršavanju, ponašanje kada nema dovoljno osnova.
-  CAP-04 Workflow i deterministički alat: workflow sa stanjem i pravilima prelaza i bar jednom stvarnom granom (dopuna), stvaran deterministički alat koji zaista utiče na glavni rezultat, dokumentovan ugovor alata (naziv, svrha, ulazna/izlazna šema, dozvoljen opseg, efekti, greške, vremenski limit), model ne dobija proizvoljan kod, shell, SQL ni mrežne adrese.
-  CAP-05 Evaluacija i dokazano poboljšanje: najmanje 16 unapred definisanih slučajeva, baseline na prvoj kompletnoj verziji (uključujući neuspehe), pregled bar jednog stvarnog trace-a, jedna hipoteza, jedna ciljana izmena, ponovno pokretanje ISTOG skupa, poređenje po ID-ju slučaja, prijavljene regresije. Baseline se nikada ne izmišlja niti naknadno rekonstruiše.
-  CAP-06 Bezbednost i pouzdanost: mapa podataka, tabela rizika, rukovanje prompt injection-om, granice alata koje sprovodi server, limiti (veličina ulaza, veličina konteksta, broj poziva modela i alata, vremenski limit, ograničeni ponovni pokušaji), bezbedan prikaz izlaza modela.
-  CAP-07 Ponovljivo pokretanje i predaja: README, lockfile, .env.example, smoke provera, jasno razdvojene offline i žive provere evaluacije, provera iz čistog checkout-a koju radi drugi član tima, označena verzija (tag), mapa dokaza.
-  CAP-08 Individualni doprinos i rad sa AI alatima: svaki član ima suštinski tehnički doprinos i pregled rada drugog člana; kratak fajl sa instrukcijama za coding agente (AGENTS.md); po jedan primer proverene AI pomoći za svakog člana.
-Opciono (NE donosi dodatne bodove): javni deployment, više modela/agenata, embeddings, vektorska baza, više uloga, mobilni klijent, streaming. Zadatak izričito kaže da nisu potrebni autonomni agent, MCP server ni agentski framework. Svako "agentsko" ponašanje ovde je OGRANIČENA petlja koju kontroliše server (ograničen broj rundi dopune).
-
-Teme bootcamp-a koje projekat mora vidljivo da pokaže: razvoj vođen specifikacijom sa coding agentima (SpecKit), dizajn API-ja i strukturisani izlazi, inženjering konteksta, tool calling, workflow sa stanjem, RAG (hibridna pretraga, reranking, citati, provera vernosti), evaluacija, bezbednost (prompt injection, granice alata), pouzdanost (timeout-i, ograničeni pokušaji, rezervni tokovi), ponovljivost.
 
 ================================================================
-3. OBIM
+2. OBIM
 ================================================================
 JEZGRO (proizvod):
   - Slobodan tekst sintetičkog profila pacijenta na ulazu, validiran strukturisan profil na izlazu. Ulaz može biti na srpskom (latinica ili ćirilica) ili engleskom, a decimale mogu biti sa zarezom ili tačkom.
@@ -86,7 +71,7 @@ Manifest (data/manifest.json) mora sadržati: izvor (ClinicalTrials.gov, U.S. Na
 U interfejsu prikaži izvor i datum snimka ("Izvor: ClinicalTrials.gov, snimak od ..."). Citati se prikazuju u originalu na engleskom, a objašnjenje je na srpskom.
 
 ================================================================
-4. DEMO SCENARIO (aplikacija mora da ga izvede od početka do kraja)
+3. DEMO SCENARIO (aplikacija mora da ga izvede od početka do kraja)
 ================================================================
 (U evaluaciji se scenario izvodi nad probnim studijama T-A, T-B, T-C iz data/fixtures/; u živom demou nad pravim korpusom.)
 Lekar ukuca: "Muškarac, 62 godine, dijabetes tip 2, HbA1c 8,1%, kreatinin 1,3 mg/dL, visina 178 cm, težina 92 kg, na metforminu."
@@ -100,7 +85,7 @@ Lekar ukuca: "Muškarac, 62 godine, dijabetes tip 2, HbA1c 8,1%, kreatinin 1,3 m
 Alternativna grana: ako je odgovor "da, koristio je insulin", Studija A je isključena i, ako nijedna studija ne preostane, status je insufficient_evidence sa razlogom no_matching_trial. Aplikacija ne sme da ponudi "najbližu" studiju kao podobnu.
 
 ================================================================
-5. ARHITEKTURA
+4. ARHITEKTURA
 ================================================================
 Monorepo, pnpm workspaces, Node 20+, TypeScript strict svuda. Tačne verzije zavisnosti zakucane, lockfile commit-ovan (ako ne možeš da generišeš lockfile bez pristupa mreži, reci to i uputi me da pokrenem pnpm install). **Dopuna odluke B-01 (2026-11-07):** razvojni Node runtime je `24.22.1` LTS, pnpm `12.16.1`; TypeScript `5.9.3`, Fastify `5.12.5`, React/React DOM `19.3.1`, Vite `8.3.5`, Zod `4.6.7`, Vitest `5.0.5`, MiniSearch `7.2.0`, ESLint `10.13.0`, `typescript-eslint` `8.71.0`, Prettier `3.9.10`, jsdom `30.1.3`, `@testing-library/react` `16.3.3` i `@testing-library/user-event` `14.6.8`. Tačne verzije su pinovane u `package.json`; `.nvmrc` i `engines.node` navode minimalni podržani Node `24.15.0`, `.npmrc` ima `save-exact=true`. Korisnik je potvrdio pravilo da sva izdanja budu starija od 14 dana na dan 2026-11-07. `pnpm-lock.yaml` je proverljiv komandom `pnpm install --frozen-lockfile --lockfile-only --offline`; commit se odlaže do prvog implementacionog prolaza po korisničkom zahtevu. Razlog minimalne verzije dokumentovan je u [docs/decisions.md](./decisions.md).
 
@@ -143,7 +128,7 @@ Gde se koristi AI (najviše 4 naplativa model poziva po izvršavanju, svi kroz a
 Gde se AI NE koristi: pretvaranje jedinica, eGFR/BMI, evaluacija pravila, presude po studijama, izbor sledećeg pitanja, provera citata, provera brojeva, dozvola za izvršavanje bilo kog alata, pravila za starost i pol (uzimaju se direktno iz strukturisanih polja izvora).
 
 ================================================================
-6. UGOVORI PODATAKA (definiši kao Zod šeme u packages/shared; tipove izvedi iz šema)
+5. UGOVORI PODATAKA (definiši kao Zod šeme u packages/shared; tipove izvedi iz šema)
 ================================================================
 Statusi API odgovora: ok | needs_clarification | insufficient_evidence | rejected | error.
   - insufficient_evidence nosi razlog: no_matching_trial | not_in_sources.
@@ -155,7 +140,7 @@ Semantika trovalentne logike: svaki kriterijum se evaluira kao met / not_met / u
 Identifikatori izvora su stabilni: <trialId>#inc-<n> i <trialId>#exc-<n>.
 
 ================================================================
-7. WORKFLOW (eksplicitna mašina stanja, dokumentovana u docs/architecture.md sa dijagramom)
+6. WORKFLOW (eksplicitna mašina stanja, dokumentovana u docs/architecture.md sa dijagramom)
 ================================================================
 Stanja: received -> awaiting_input -> ready -> running_tool -> completed | failed | rejected.
   - received: identifikator izvršavanja + validiran ulaz.
@@ -167,7 +152,7 @@ Pravila: nevalidan prelaz baca grešku; različita izvršavanja nikada ne dele s
 Algoritam izbora sledećeg pitanja (deterministički): među neisključenim studijama, za svako polje koje ima nepoznate kriterijume izračunaj score = broj studija koje imaju nepoznat kriterijum na tom polju; razrešenje izjednačenja: broj studija kod kojih je to polje JEDINI nepoznati podatak, zatim naziv polja po abecedi. Pitaj za polje sa najvećim score-om. Napiši unit testove, uključujući izjednačenja.
 
 ================================================================
-8. DETERMINISTIČKI ALATI (registar alata, lista dozvoljenih, ugovor po alatu)
+7. DETERMINISTIČKI ALATI (registar alata, lista dozvoljenih, ugovor po alatu)
 ================================================================
 Svaki alat dokumentuje: naziv, svrhu, ulaznu šemu, izlaznu šemu, dozvoljen opseg podataka, moguće efekte (nema, samo čitanje), greške, vremenski limit. Izvršilac proverava argumente I poslovna pravila pre poziva i odbija nepoznate nazive alata i argumente van opsega PRE pristupa zaštićenim podacima. Spoljni zahtev ne može da proširi skup operacija.
 Alati: compute_egfr, compute_bmi, evaluate_criteria (matcher), select_next_question. Neuspešan alat NIKADA ne sme proizvesti poruku da je radnja uspela i ne sme se ponavljati bez ograničenja.
@@ -180,7 +165,7 @@ Formule i konverzije, proverene prema izvorima koje je korisnik dostavio (7. nov
 Formule, izvori i kontrolne vrednosti su dostavljeni, ali B-03 nije formalno potvrđen kao provera prema originalnim publikacijama: odgovorna osoba još mora uneti izvor, datum provere i ime pregledavaoca. Dok se to ne zabeleži, zadržati oznaku „PROVERITI prema originalnoj publikaciji“. Kontrolne vrednosti izračunate referentnom implementacijom proveravaju se sa tolerancijom ±0,01; zaokružene ručne vrednosti sa ±0,5. Tehničke opsege koristiti isključivo kao granice validacije unosa. Svaki novi ili izmenjeni medicinski obračun/prag takođe mora imati izvor i ostaje označen do provere.
 
 ================================================================
-9. RAG / DIZAJN PRONALAŽENJA
+8. RAG / DIZAJN PRONALAŽENJA
 ================================================================
 Korpus: normalizovani zapisi studija iz data/trials/ (pregledani demo korpus od oko 15-20 studija), svaki sa metapodacima (id, naslov, stanja, status, faza, lokacije), sažetkom i tekstom kriterijuma podeljenim na odlomke sa stabilnim identifikatorima. Probne studije iz data/fixtures/ koriste isti pipeline. Novi ili izmenjeni izvori ulaze ponovnim pokretanjem `index:build`; izvorni podaci ostaju odvojeni od lokalno generisanih fajlova indeksa.
 Tok (interfejsi, da se svaka faza može zameniti):
@@ -198,7 +183,7 @@ Numeričko uzemljenje: svaki broj u tekstu objašnjenja mora postojati u izraču
 Opšte znanje modela: NIJE dozvoljeno za činjenice domena u demo toku. Ako je pitanje van izvora (npr. neželjena dejstva leka), vrati insufficient_evidence sa razlogom not_in_sources.
 
 ================================================================
-10. INTEGRACIJA SA JEZIČKIM MODELOM
+9. INTEGRACIJA SA JEZIČKIM MODELOM
 ================================================================
 - Interfejs adaptera: generateStructured(promptId, input, zodSchema, options) -> validiran rezultat | tipizovana greška. Provajder i identifikator modela dolaze iz env promenljivih (LLM_PROVIDER, LLM_MODEL, promenljiva za API ključ) i beleže se u svakom trace-u. Izbor provajdera: TODO (ja ću ga odrediti).
 - Promptovi su verzionisani fajlovi u prompts/; identifikatori verzija prompta beleže se u trace-ovima. Nepouzdan sadržaj (tekst korisnika, tekst studije) je jasno ograničen graničnicima, a prompt navodi da instrukcije unutar njega treba ignorisati, ALI ovlašćenja sprovodi kod, a ne prompt.
@@ -206,7 +191,7 @@ Opšte znanje modela: NIJE dozvoljeno za činjenice domena u demo toku. Ako je p
 - Offline režim: mock adapter omogućava testiranje celog toka bez plaćenih poziva. DEMO REŽIM mora biti vidljivo označen u UI-ju i u API meta podacima. Sama mock demonstracija nikada ne dokazuje da integracija radi: živa evaluacija sa pravim modelom je zaseban korak.
 
 ================================================================
-11. ZAHTEVI ZA BEZBEDNOST I POUZDANOST (docs/security.md mora sadržati mapu podataka, tabelu rizika, testove, zaštite i preostala ograničenja)
+10. ZAHTEVI ZA BEZBEDNOST I POUZDANOST (docs/security.md mora sadržati mapu podataka, tabelu rizika, testove, zaštite i preostala ograničenja)
 ================================================================
 - Tajne samo u serverskom env-u; nikada u repozitorijumu, klijentskom bundle-u, logovima, trace-ovima ni snimcima ekrana. .env.example navodi samo nazive promenljivih.
 - Runtime validacija (Zod) za: tela HTTP zahteva (čak i kada klijent već validira), izlaz modela, argumente alata, konfiguraciju, podatke o studijama pri učitavanju.
@@ -218,7 +203,7 @@ Opšte znanje modela: NIJE dozvoljeno za činjenice domena u demo toku. Ako je p
 - Ograničenja ulaza: odbij apsurdne vrednosti, preveliki ulaz i sadržaj koji nije tekst.
 
 ================================================================
-12. SISTEM EVALUACIJE (CAP-05, najveća oblast bodovanja posle same aplikacije)
+11. SISTEM EVALUACIJE 
 ================================================================
 eval/cases.jsonl sadrži 16 fiksnih slučajeva i koristi ISKLJUČIVO sintetičke probne studije iz data/fixtures/ (stabilna očekivanja; pravi snimak ih ne sme menjati). Po slučaju beleži: case_id, purpose, execution_mode (real_model | offline | simulated_fault), input ili sled poruka, initial_state, versions, expected_properties (mašinski proverljivo), forbidden_outcomes, oznaku critical_boundary, metod provere. Ne zahtevaj identičan tekst kada je više formulacija podjednako ispravno; deterministički numerički rezultati proveravaju se tačno ili u navedenoj toleranciji.
 Probne studije (sintetičke, označene u manifestu):
@@ -247,12 +232,12 @@ Slučaj prolazi samo ako prođu SVE obavezne provere. Dodatni slučajevi van ovi
 Komande runnera: eval:offline (besplatno, bez modela), eval:live (PRAVI model, košta novac; odbija da se pokrene bez izričitog potvrdnog flega), eval:compare <baseline> <final> (tabela po ID-ju slučaja: pre, posle, šta se promenilo, veza ka dokazu). Rezultati se upisuju u eval/results/<oznaka>/ sa results.jsonl, summary.json i traces/. Folder baseline je nepromenljiv: runner mora odbiti da ga prepiše. Svako pokretanje beleži git commit, verziju skupa slučajeva, verziju podataka (manifest), verzije prompta, verziju šeme, identifikator modela i podešavanja. Odvojeno prikaži (nikada spojeno u jednu "AI tačnost"): funkcionalni uspeh EV-01..09 kao k/n samo za stvarno izvršene slučajeve; dry-run EV-07..09 ne ulazi u broj prolaza ni imenilac, bezbednost EV-10, determinističke i fault provere EV-11..16, plus preciznost i odziv parsiranja prema zlatnom skupu ručno obeleženih kriterijuma, podršku citata, trajanje, broj poziva modela i alata, tokene kada ih provajder vraća. U Fazi 1 isporučuju se format skupa, učitavač i skripta za metrike sa 6–10 početnih primera iz probnih studija; pun skup od oko 30 označenih kriterijuma pripada Fazi 2. Trošak, ako se prikazuje, je procena uz model, cenovnik i datum. Mali skup služi za razvoj i poređenje verzija, a ne kao statistički dokaz; ne sakrivaj varijacije i ne biraj samo najbolje pokušaje. Šablon procesa poboljšanja ide u docs/evaluation.md: jedna konkretna rečenica problema, pogođeni EV slučajevi, baseline rezultat, događaj u trace-u, hipoteza, izmena + commit, poređenje na istom skupu, provera regresije, odluka da li se izmena zadržava. Ako baseline već prolazi sve, poboljšanje može ciljati trošak, kašnjenje ili jasnoću; nikada ne izmišljaj neuspeh.
 
 ================================================================
-13. KORISNIČKI INTERFEJS (apps/web, React + Vite)
+12. KORISNIČKI INTERFEJS (apps/web, React + Vite)
 ================================================================
 Jedan ekran: unos sintetičkog profila ili pitanja o činjenici studije (textarea), slanje, zatim stanja: početno, obrada (aria-live, ne može se poslati dvaput), needs_clarification (prikazuje pitanje, dugmad za odgovor plus slobodan tekst, čuva ono što je već uneto), uspeh (rangirane studije; po studiji kartica sa zbirom i tabelom kriterijuma: kriterijum, uočena vrednost, ikona statusa + tekstualna oznaka, identifikator izvora sa proširivim citatom u originalu), nema rezultata / insufficient_evidence (jasno objašnjenje, bez izmišljene ponude ili odgovora iz opšteg znanja), rejected (objašnjava granicu), greška (jasna poruka + ponovni pokušaj gde ima smisla). Posle završenog rezultata, jednostavno polje „Šta ako?“ šalje eksplicitnu hipotetičku izmenu pod istim `runId`; to nije novi unos i ne menja nepomenuta profilna polja. Baner DEMO REŽIM kada je aktivan mock adapter. Stalno vidljivo kratko upozorenje: sintetički podaci, nije medicinski savet, nije dijagnoza; i izvor podataka sa datumom snimka. Kontrola „Novi unos“ započinje novo izvršavanje umesto cancel događaja. Ključne kontrole imaju oznake i dostupne su tastaturom; status se nikada ne prenosi samo bojom. Svi tekstovi na srpskom (latinica) iz jednog i18n fajla.
 
 ================================================================
-14. DOKUMENTACIJA KOJU TREBA NAPRAVITI (stvaran sadržaj iz ovog opisa, bez praznih generičkih odeljaka; eksplicitan TODO tamo gde nešto nije poznato)
+13. DOKUMENTACIJA KOJU TREBA NAPRAVITI (stvaran sadržaj iz ovog opisa, bez praznih generičkih odeljaka; eksplicitan TODO tamo gde nešto nije poznato)
 ================================================================
 - README.md (u celosti na srpskom, latinicom): svrha i ciljni korisnik; rečenica sa osnovnim principom; glavni tok; preduslovi (verzija Node-a, pnpm); instalacija iz lockfile-a; konfiguracija i gde se unosi serverski ključ; kako se preuzima snimak podataka i pokreće pnpm data:prepare; priprema/reset demo podataka; pokretanje aplikacije; komande za proveru tipova, lint, build, test, smoke; ODVOJENI odeljci za offline provere i za živu evaluaciju (upozorenje o trošku); demo ulazi sa očekivanim rezultatima; poznata ograničenja; link ka docs/evidence-map.md.
 - docs/spec.md: problem, korisnici, tok, uloga AI-ja naspram koda, obim unutar/van, AC-01..AC-10 (ispod), arhitektura, stanja workflow-a, pretpostavke i rizici, plan.
@@ -274,23 +259,23 @@ Kriterijumi prihvatanja (stabilni ID-jevi; svaki ima početni uslov, radnju i pr
   AC-11 (proširenje, samo specifikacija) provera doslednosti, kako je opisano u odeljku 3.
 
 ================================================================
-15. UPOTREBA SPECKIT-a
+14. UPOTREBA SPECKIT-a
 ================================================================
 Ovaj repozitorijum koristi GitHub Spec Kit (razvoj vođen specifikacijom). Ja (korisnik) sama pokrećem `specify init`; ne pretpostavljaj opcije komandne linije, po potrebi pogledaj `specify --help`. Zavisno od instalirane verzije, komande se prikazuju kao /speckit.* ili $speckit-*. Tok: constitution -> specify -> clarify -> plan -> tasks -> analyze -> implement. Folder funkcionalnosti: specs/001-trialmatch-core. Održavaj stabilne AC ID-jeve kroz specifikaciju, zadatke, testove i mapu dokaza. Kad god se ponašanje promeni, ažuriraj specifikaciju i dokumentaciju u istoj izmeni. Specifikacije opisuju ŠTA i ZAŠTO; tehnološki stek pripada koraku plan.
 
 ================================================================
-16. ALATI I NIVO KVALITETA
+15. ALATI I NIVO KVALITETA
 ================================================================
 TypeScript strict; bez "any" bez obrazloženja u komentaru; ESLint + Prettier; Vitest za unit testove (matcher, izvedene vrednosti, izbor pitanja, mašina stanja, provera citata, numeričko uzemljenje, validacija, izvršilac alata, skripta za pripremu podataka) i mali API smoke test; npm skripte: dev, build, typecheck, lint, test, smoke, data:prepare, compile:rules, eval:offline, eval:live, eval:compare; GitHub Actions koji pokreće typecheck, lint, build i offline testove (nikada plaćene pozive). Poruke commitova na srpskom, kratke i jasne. Male izmene koje se lako pregledaju.
 
 ================================================================
-17. AGENTS.md (napravi odmah) I TIM
+16. AGENTS.md (napravi odmah) I TIM
 ================================================================
 Napravi KRATAK AGENTS.md (na srpskom): svrha projekta, osnovni princip, pregled arhitekture, pravila koda (strict TS, validacija na svakoj granici, bez tajni, bez plaćenih poziva u testovima), komande za provere, granice podataka (samo sintetički profili; pravi podaci o studijama samo iz data/raw/ koji ručno postavlja čovek; bez skrejpovanja i pristupa mreži), kako se prihvataju izmene (ažuriraj specifikaciju + dokumentaciju, zadrži AC ID-jeve, pokreni offline provere), i upućivanje na docs/project-brief.md i specs/.
 Tim od četiri člana sa oblastima: A korisnički tok, UI i kriterijumi prihvatanja; B serverski API, šeme i pouzdanost; C AI integracija, pronalaženje i workflow; D evaluacija, bezbednosne provere i ponovljivost. Svaka oblast ima vodećeg člana i drugog člana koji pregleda rad. Odrazi to u docs/team.md (imena su rezervisana mesta).
 
 ================================================================
-18. FAZE ISPORUKE
+17. FAZE ISPORUKE
 ================================================================
 FAZA 1 (ono što ću tražiti da izgradiš komandom /implement): skelet repozitorijuma i alati; zajedničke šeme; konfiguracija + sprovođenje limita; skripta data:prepare sa testovima; izvedene vrednosti; matcher; izbor pitanja; registar/izvršilac alata; mašina stanja i skladište izvršavanja; provera citata; numeričko uzemljenje; mock LLM adapter; API koji radi u DEMO REŽIMU; minimalan web UI sa svim stanjima; evaluacioni okvir sa svih 16 slučajeva definisanih. EV-07–EV-09 ostaju označeni real_model; u Fazi 1 mogu se izvršiti samo dry-run-om sa skriptovanim mock odgovorom radi provere okvira, a dry-run nikada se ne prikazuje kao izvršen/prošao EV slučaj. EV-11–EV-16 imaju offline/fault pokretanja prema režimu. Faza 1 obuhvata format zlatnog skupa, učitavač i skriptu za metrike sa 6–10 početnih primera iz probnih studija; pun skup od oko 30 označenih kriterijuma pripada Fazi 2. Dokumentacija popunjena iz ovog opisa; .env.example; CI. Unit testovi za svaki deterministički modul.
 FAZA 2: pravi adapter provajdera + živo izvlačenje/objašnjenje, pregled i ručna pravila za 15-20 studija iz snimka (compile:rules), prvo živo pokretanje evaluacije (ono postaje BASELINE, sačuvan nedirnut).

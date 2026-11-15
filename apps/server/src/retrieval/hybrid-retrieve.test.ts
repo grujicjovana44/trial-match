@@ -171,6 +171,131 @@ describe("hibridni retrieval", () => {
     expect(embedder.calls).toBe(0);
     expect(result.contextText).toBe("");
   });
+
+  it("pada nazad na leksički retrieval bez pada zahteva kad embedding poziv ne uspe", async () => {
+    const trial = studyWithUnretrievedExclusion();
+    const embedder: Embedder = {
+      model: "text-embedding-3-small",
+      async embed() {
+        throw new Error("simulated timeout");
+      },
+    };
+    const retriever = new HybridTrialRetriever(new InMemoryVectorStore(), embedder);
+    const result = await retriever.retrieve(
+      { stated_diagnoses: ["dijabetes tipa 2"] },
+      [trial],
+      { maxCandidates: 1, maxSnippets: 1, maxContextChars: 1000 },
+    );
+
+    expect(result.trials.map((item) => item.trialId)).toEqual(["T-X"]);
+    expect(result.retrievalTrace?.embedding).toBe("lexical_fallback");
+  });
+
+  it("odbacuje vektorski najbližu studiju ispod minimalne relevantnosti", async () => {
+    const trial = studyWithUnretrievedExclusion();
+    const store = new InMemoryVectorStore();
+    store.upsert(
+      buildRagDocuments([trial]).map((document) => ({
+        id: document.id,
+        trialId: document.trialId,
+        kind: document.kind,
+        vector: embedderTestVector(0),
+      })),
+    );
+    const retriever = new HybridTrialRetriever(store, new KeywordFakeEmbedder());
+    const result = await retriever.retrieve(
+      { stated_diagnoses: ["unmatched syndrome"] },
+      [trial],
+      {
+        maxCandidates: 1,
+        maxSnippets: 1,
+        maxContextChars: 1000,
+        sources: { lexical: false, vector: true },
+      },
+    );
+
+    expect(result.trials).toEqual([]);
+    expect(result.retrievalTrace?.embedding).toBe("used");
+  });
+
+  it("kešira query embeddings po hash-u modela i upita", async () => {
+    const trial = studyWithUnretrievedExclusion();
+    const trials = [trial];
+    const embedder = new KeywordFakeEmbedder();
+    const retriever = new HybridTrialRetriever(new InMemoryVectorStore(), embedder);
+    const options = { maxCandidates: 1, maxSnippets: 1, maxContextChars: 1000 };
+
+    await retriever.retrieve(
+      { stated_diagnoses: ["dijabetes tipa 2"] },
+      trials,
+      options,
+    );
+    const firstCallCount = embedder.calls;
+    await retriever.retrieve(
+      { stated_diagnoses: ["dijabetes tipa 2"] },
+      trials,
+      options,
+    );
+
+    expect(firstCallCount).toBe(1);
+    expect(embedder.calls).toBe(firstCallCount);
+  });
+
+  it("primenjuje samo poznate metadata filtere pre rangiranja", async () => {
+    const trial = studyWithUnretrievedExclusion();
+    trial.locations = ["California, United States"];
+    trial.overallStatus = "Recruiting";
+    const retriever = new HybridTrialRetriever(
+      new InMemoryVectorStore(),
+      new KeywordFakeEmbedder(),
+    );
+
+    const result = await retriever.retrieve({ age: 62 }, [trial], {
+      maxCandidates: 1,
+      maxSnippets: 0,
+      maxContextChars: 0,
+      metadataFilters: { state: "California", status: "Recruiting" },
+    });
+
+    expect(result.trials.map((item) => item.trialId)).toEqual(["T-X"]);
+    expect(result.retrievalTrace?.metadataFilters).toEqual({
+      state: "california",
+      status: "recruiting",
+    });
+
+    const unknown = await retriever.retrieve({ age: 62 }, [trial], {
+      maxCandidates: 1,
+      maxSnippets: 0,
+      maxContextChars: 0,
+      metadataFilters: { state: "Atlantis", status: "Closed" },
+    });
+    expect(unknown.trials.map((item) => item.trialId)).toEqual(["T-X"]);
+    expect(unknown.retrievalTrace?.metadataFilters).toEqual({});
+  });
+
+  it("vraća RRF redosled kad reranker nije dostupan", async () => {
+    const trial = studyWithUnretrievedExclusion();
+    const retriever = new HybridTrialRetriever(
+      new InMemoryVectorStore(),
+      new KeywordFakeEmbedder(),
+      undefined,
+      {
+        id: "gemini",
+        async rerank() {
+          throw new Error("simulated provider failure");
+        },
+      },
+    );
+
+    const result = await retriever.retrieve(
+      { stated_diagnoses: ["dijabetes tipa 2"] },
+      [trial],
+      { maxCandidates: 1, maxSnippets: 1, maxContextChars: 1000 },
+    );
+
+    expect(result.trials.map((item) => item.trialId)).toEqual(["T-X"]);
+    expect(result.retrievalTrace?.reranking).toBe("rrf_fallback");
+  });
 });
 
 function embedderTestVector(index: number): number[] {

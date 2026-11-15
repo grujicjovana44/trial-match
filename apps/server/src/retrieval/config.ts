@@ -9,5 +9,8 @@ export const INDEX_TOKEN_CONFIRMATION_THRESHOLD = 50_000;
 export const RAG_MAX_CANDIDATES = 10;
 export const RAG_MAX_SNIPPETS = 5;
 export const RAG_MAX_RETRIEVAL_HITS = 100;
+export const RAG_MAX_RERANK_CANDIDATES = 20;
+export const RAG_MAX_VECTOR_DISTANCE = 1.1;
+export const RAG_MIN_LEXICAL_SCORE = 0.05;
 
 export const SUPPORTED_NODE_MINIMUM = "24.15.0";

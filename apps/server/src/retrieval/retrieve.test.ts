@@ -9,7 +9,7 @@ import { verifyCitation } from "../citations/verify.js";
 import { retrieveTrials } from "./retrieve.js";
 
 describe("offline pronalaženje", () => {
-  it("vraća samo izvore koji su stavljeni u kontekst tekućeg izvršavanja", () => {
+  it("vraća najviše pet relevantnih izvora iz konteksta tekućeg izvršavanja", () => {
     const trials = TrialSchema.array().parse(fixtureData);
     const result = retrieveTrials(
       { stated_diagnoses: ["dijabetes tip 2"] },
@@ -17,11 +17,12 @@ describe("offline pronalaženje", () => {
       { maxCandidates: 10, maxSnippets: 5, maxContextChars: 12000 },
     );
     expect(result.trials).toHaveLength(3);
-    expect(result.sourceIds).toHaveLength(5);
-    expect(result.contextText).toContain(result.sourceIds[0]);
+    expect(result.sourceIds.length).toBeLessThanOrEqual(5);
+    for (const sourceId of result.sourceIds)
+      expect(result.contextText).toContain(sourceId);
   });
 
-  it("rerangira studije po broju kriterijuma koje profil može trenutno da proveri", () => {
+  it("rangira po upitu, a matcher dobija sva pravila izabrane studije", () => {
     const trials = TrialSchema.array().parse(fixtureData);
     const result = retrieveTrials(
       {
@@ -35,7 +36,22 @@ describe("offline pronalaženje", () => {
       trials,
       { maxCandidates: 3, maxSnippets: 5, maxContextChars: 12000 },
     );
-    expect(result.trials[0]?.trialId).toBe("T-A");
+    const trial = result.trials.find((candidate) => candidate.trialId === "T-A");
+    expect(trial?.criteria).toHaveLength(4);
+  });
+
+  it("koristi poznata laboratorijska polja kada dijagnoza nije uneta", () => {
+    const trials = TrialSchema.array().parse(fixtureData);
+    const result = retrieveTrials(
+      {
+        age: 62,
+        hba1c: { value: 8.1, unit: "%" },
+        stated_diagnoses: [],
+      },
+      trials,
+      { maxCandidates: 10, maxSnippets: 5, maxContextChars: 12000 },
+    );
+    expect(result.trials.length).toBeGreaterThan(0);
   });
 
   it("proverava različite citate istog izvora prema originalnom eligibility tekstu", () => {

@@ -4,23 +4,72 @@ import type {
   Trial,
   DerivedValue,
 } from "../../../../packages/shared/src/index.js";
-import {
-  getObservedValue,
-  missingFieldsForCriterion,
-} from "../matcher/evaluate-criteria.js";
+import { buildRagDocuments, type RagDocument } from "./documents.js";
+import { buildRetrievalQueries } from "./query.js";
+import { filterKnownMetadata } from "./metadata.js";
 
 export type RetrievedContext = {
   trials: Trial[];
   sourceIds: string[];
   sourceTexts: Map<string, string>;
   contextText: string;
+  retrievalTrace?: {
+    untranslatedTerms: string[];
+    embedding: "used" | "lexical_fallback" | "not_needed";
+    reranking: "deterministic" | "gemini" | "rrf_fallback" | "disabled";
+    metadataFilters: { state?: string; status?: string };
+  };
 };
 
 export type RetrievalOptions = {
   maxCandidates: number;
   maxSnippets: number;
   maxContextChars: number;
+  rerank?: boolean;
+  metadataFilters?: { state?: string; status?: string };
 };
+
+type LexicalIndex = {
+  search: MiniSearch<RagDocument>;
+  documentsById: Map<string, RagDocument>;
+};
+const lexicalIndexes = new WeakMap<Trial[], LexicalIndex>();
+
+function lexicalIndexFor(trials: Trial[]): LexicalIndex {
+  const cached = lexicalIndexes.get(trials);
+  if (cached) return cached;
+  const documents = buildRagDocuments(trials);
+  const search = new MiniSearch<RagDocument>({
+    fields: ["text"],
+    idField: "id",
+    searchOptions: { prefix: true },
+  });
+  search.addAll(documents);
+  const index = {
+    search,
+    documentsById: new Map(documents.map((document) => [document.id, document])),
+  };
+  lexicalIndexes.set(trials, index);
+  return index;
+}
+
+function reciprocalRankFusion(rankings: readonly (readonly string[])[]): string[] {
+  const scores = new Map<string, number>();
+  for (const ranking of rankings) {
+    const seen = new Set<string>();
+    ranking.forEach((id, index) => {
+      if (seen.has(id)) return;
+      seen.add(id);
+      scores.set(id, (scores.get(id) ?? 0) + 1 / (60 + index + 1));
+    });
+  }
+  return [...scores]
+    .sort(
+      ([leftId, leftScore], [rightId, rightScore]) =>
+        rightScore - leftScore || leftId.localeCompare(rightId, "en"),
+    )
+    .map(([id]) => id);
+}
 
 export function retrieveTrials(
   profile: Profile,
@@ -30,103 +79,116 @@ export function retrieveTrials(
     excludeFields?: string[];
   },
 ): RetrievedContext {
-  type SearchTrial = Trial & { criteriaText: string };
-  const index = new MiniSearch<SearchTrial>({
-    fields: ["title", "conditions", "criteriaText"],
-    idField: "trialId",
-    storeFields: ["trialId"],
-    searchOptions: {
-      boost: { title: 2, conditions: 1, criteriaText: 1 },
-      prefix: true,
-    },
-  });
-  trials = trials.filter(
-    (trial) =>
-      !trial.criteria.some((c) =>
-        options.excludeFields?.includes(c.field ?? ""),
-      ),
-  );
-  const documents: SearchTrial[] = trials.map((trial) => ({
-    ...trial,
-    criteriaText: trial.criteria.map((criterion) => criterion.text).join(" "),
-  }));
-  index.addAll(documents);
-  const query = profile.stated_diagnoses?.join(" ") ?? "";
-  const matchedIds = query
-    ? new Set(
-        index
-          .search(query)
-          .slice(0, options.maxCandidates)
-          .map((hit) => String(hit.trialId)),
-      )
-    : new Set(
-        trials.slice(0, options.maxCandidates).map((trial) => trial.trialId),
+  const { search, documentsById } = lexicalIndexFor(trials);
+  const trialsById = new Map(trials.map((trial) => [trial.trialId, trial]));
+  const metadata = filterKnownMetadata(trials, options.metadataFilters);
+  const allowedTrialIds = new Set(metadata.trials.map((trial) => trial.trialId));
+  const queries = buildRetrievalQueries(profile, options.derived);
+  const queryTexts = queries.text
+    .split(";")
+    .map((query) => query.trim())
+    .filter(Boolean);
+  const studyRankings: string[][] = [];
+  const passageRankings: string[][] = [];
+  for (const query of queryTexts) {
+    const hits = search
+      .search(query)
+      .filter((hit) => hit.score >= 0.05)
+      .sort(
+        (left, right) =>
+          right.score - left.score ||
+          String(left.id).localeCompare(String(right.id), "en"),
       );
-  const selected = trials.filter((trial) => matchedIds.has(trial.trialId));
-  const resolvableFields = new Set([
-    "age",
-    "sex",
-    "hba1c",
-    "creatinine",
-    "height",
-    "weight",
-    "insulin_last_3_months",
-  ]);
-  const availableCriteria = (trial: Trial) =>
-    trial.criteria.filter(
-      (criterion) =>
-        criterion.checkability === "auto" &&
-        getObservedValue(profile, criterion.field ?? "age", options.derived) !==
-          null,
-    ).length;
-  const resolvableCriteria = (trial: Trial) =>
-    trial.criteria.filter(
-      (criterion) =>
-        criterion.checkability === "auto" &&
-        getObservedValue(profile, criterion.field ?? "age", options.derived) ===
-          null &&
-        missingFieldsForCriterion(
-          profile,
-          criterion.field ?? "age",
-          options.derived,
-        ).some((field) => resolvableFields.has(field)),
-    ).length;
-  selected.sort(
-    (left, right) =>
-      availableCriteria(right) - availableCriteria(left) ||
-      resolvableCriteria(right) - resolvableCriteria(left) ||
-      left.trialId.localeCompare(right.trialId, "en"),
-  );
-  selected.length = Math.min(selected.length, options.maxCandidates);
-  const snippets: string[] = [];
-  const sourceTexts = new Map<string, string>();
-  for (const trial of selected) {
-    for (const criterion of trial.criteria) {
-      const sourceText =
-        criterion.sourceId === `${trial.trialId}#unsplit-1` &&
-        trial.eligibilityText !== undefined
-          ? trial.eligibilityText
-          : criterion.sourceQuote;
-      sourceTexts.set(criterion.sourceId, sourceText);
-    }
+    studyRankings.push(
+      hits
+        .filter((hit) => {
+          const document = documentsById.get(String(hit.id));
+          return (
+            document?.kind === "study" &&
+            allowedTrialIds.has(document.trialId)
+          );
+        })
+        .map((hit) => documentsById.get(String(hit.id))!.trialId),
+    );
+    passageRankings.push(
+      hits
+        .filter((hit) => {
+          const document = documentsById.get(String(hit.id));
+          return (
+            document?.kind === "passage" &&
+            allowedTrialIds.has(document.trialId)
+          );
+        })
+        .map((hit) => String(hit.id)),
+    );
   }
-  let contextLength = 0;
-  const contextSourceIds: string[] = [];
-  for (const trial of selected) {
+  const rankedTrialIds =
+    queryTexts.length === 0
+      ? [...allowedTrialIds].sort((a, b) => a.localeCompare(b, "en"))
+      : reciprocalRankFusion([
+          ...studyRankings,
+          ...passageRankings.map((ranking) =>
+            ranking
+              .map((id) => documentsById.get(id)?.trialId)
+              .filter((id): id is string => id !== undefined),
+          ),
+        ]);
+  const selectedIds = new Set(rankedTrialIds.slice(0, options.maxCandidates));
+  const selected = rankedTrialIds
+    .filter((trialId) => selectedIds.has(trialId))
+    .map((trialId) => trialsById.get(trialId))
+    .filter((trial): trial is Trial => trial !== undefined);
+  const sourceTexts = new Map<string, string>();
+  for (const trial of selected)
     for (const criterion of trial.criteria) {
-      if (snippets.length >= options.maxSnippets) break;
-      const next = `${criterion.sourceId}: ${criterion.sourceQuote}`;
-      const addedLength = next.length + (snippets.length > 0 ? 1 : 0);
-      if (contextLength + addedLength > options.maxContextChars) continue;
-      snippets.push(next);
-      contextLength += addedLength;
-      contextSourceIds.push(criterion.sourceId);
+      sourceTexts.set(
+        criterion.sourceId,
+        criterion.sourceId === `${trial.trialId}#unsplit-1` &&
+          trial.eligibilityText !== undefined
+          ? trial.eligibilityText
+          : criterion.sourceQuote,
+      );
     }
+
+  const fallbackPassageIds =
+    queryTexts.length === 0
+      ? [...documentsById.values()]
+          .filter((document) => document.kind === "passage")
+          .map((document) => document.id)
+      : reciprocalRankFusion(passageRankings);
+  const snippets: string[] = [];
+  const sourceIds: string[] = [];
+  let contextLength = 0;
+  for (const id of fallbackPassageIds) {
+    if (snippets.length >= options.maxSnippets) break;
+    const document = documentsById.get(id);
+    if (
+      !document?.sourceId ||
+      !selectedIds.has(document.trialId) ||
+      options.excludeFields?.includes(
+        trialsById
+          .get(document.trialId)
+          ?.criteria.find((criterion) => criterion.id === id)?.field ?? "",
+      )
+    )
+      continue;
+    const snippet = `${document.sourceId}: ${document.text}`;
+    const addedLength = snippet.length + (snippets.length > 0 ? 1 : 0);
+    if (contextLength + addedLength > options.maxContextChars) continue;
+    snippets.push(snippet);
+    sourceIds.push(document.sourceId);
+    contextLength += addedLength;
   }
   return {
     trials: selected,
-    sourceIds: contextSourceIds,
+    sourceIds,
     sourceTexts,
     contextText: snippets.join("\n"),
+    retrievalTrace: {
+      untranslatedTerms: queries.untranslatedTerms,
+      embedding: "not_needed",
+      reranking: "disabled",
+      metadataFilters: metadata.applied,
+    },
   };
 }

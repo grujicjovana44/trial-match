@@ -47,6 +47,8 @@ Lokalni DEMO može zatražiti dopunu, na primer podatak o upotrebi insulina. Za 
 | `pnpm index:build`                 | Gradi/obnavlja lokalni inkrementalni RAG indeks                              |
 | `pnpm eval:offline`                | Offline i simulirane fault provere; živi slučajevi se preskaču               |
 | `pnpm eval:live -- ...`            | Zahteva `--confirm-live`, scope odobrenje, limits i serverski ključ          |
+| `pnpm eval:rag:offline`           | Poredi lexical/vector/hybrid/hybrid+rerank bez mrežnih poziva                 |
+| `pnpm eval:rag:live -- ...`        | RAGAS sudija; zahteva sintetički pregledan skup i strogo approval ograničenje |
 | `pnpm data:prepare [ulaz] [izlaz]` | Lokalno validira normalizovani skup ili uvozi CTG v2 JSON; ne pristupa mreži |
 | `pnpm gold:metrics`                | Izračunava profilne mock metrike                                             |
 | `pnpm gold:criteria ...`           | Izračunava odvojenu metriku ljudski označenih kriterijuma                    |
@@ -59,7 +61,9 @@ CI pokreće samo lokalne provere, bez modelskih API poziva.
 
 ### RAG indeks (lokalno, eksplicitno)
 
-Za promenu ili dodavanje podataka pokrenite `pnpm build`, zatim prvo `pnpm embeddings:check` (jedan mali stvarni poziv), pa `pnpm index:build`. Indeksiranje čita `data/trials/` i `data/fixtures/`, prikazuje procenu tokena i traži potvrdu kada pređe podešeni prag. Embeddings dozvoljava samo `text-embedding-3-small`; prosleđuje se tekst studija i kriterijumskih odlomaka, a pri retrieval-u samo normalizovani upit iz validiranog sintetičkog profila — nikad sirov profil. Potrebne promenljive su u `.env.example`; stvarni `.env` ostaje lokalni i ne commit-uje se. SQLite fajl indeksa je u `data/index/` i ne commit-uje se.
+Za pripremu indeksa bez mreže pokrenite `pnpm build`, pa `node dist/scripts/index-build.js --estimate-only`; ova opcija prikazuje broj studija, tekstova i procenjene tokene bez API ključa, baze ili embedding poziva. Trošak se prikazuje kao nedostupan dok nema proverene cene i datuma. **Stvarni `pnpm index:build` se pokreće tek nakon odobrenja.** Embeddings dozvoljava samo `text-embedding-3-small`; indeksiranje šalje javne tekstove studija/odlomaka, a retrieval samo upitne aspekte validiranog sintetičkog profila. SQLite fajl indeksa je u `data/index/` i ne commit-uje se.
+
+`RAG_RERANKER=deterministic|gemini|disabled` konfiguriše drugu fazu nakon RRF-a. Gemini koristi jedan ograničen zahtev, vraća samo `{id, score}` i pri grešci ostaje RRF poredak. `pnpm eval:rag:offline` poredi četiri retrieval varijante na istim slučajevima, meri lokalno kašnjenje/paritet VectorStore-a i koristi samo lažni embedder. Predložene anotacije su dijagnostika, ne kvalitetom potvrđen dokaz. RAGAS-style TypeScript metrike su zasebne od matchera; `eval:rag:live` zahteva human-reviewed sintetički skup, approval fajl i potvrdu da cena nije dostupna.
 
 ## Podaci i izvori
 
