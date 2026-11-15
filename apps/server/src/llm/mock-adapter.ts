@@ -31,6 +31,10 @@ function extractMeasurement(
   return value === undefined ? undefined : { value, unit: match[2] };
 }
 
+function containsPhrase(text: string, phrase: RegExp): boolean {
+  return phrase.test(text);
+}
+
 export class MockLlmAdapter implements LlmAdapter {
   readonly providerId = "mock";
   async generate(
@@ -53,6 +57,9 @@ export class MockLlmAdapter implements LlmAdapter {
   extract(profileText: string): Extraction {
     this.calls += 1;
     const text = profileText.toLocaleLowerCase("sr");
+    const normalizedText = text
+      .normalize("NFD")
+      .replace(/\p{M}/gu, "");
     if (
       /\b(?:hba1c|kreatinin|creatinine|visina|težina|tezina)\s*(?:[:=]\s*)?(?:abc|invalid|neispravno)\b/u.test(
         text,
@@ -86,8 +93,30 @@ export class MockLlmAdapter implements LlmAdapter {
       const age = parseLocalizedNumber(ageMatch[1]);
       if (age !== undefined && Number.isInteger(age)) profile.age = age;
     }
-    if (/\b(žena|ženski|ženskog pola)\b/u.test(text)) profile.sex = "female";
-    if (/\b(muškarac|muški|muškog pola)\b/u.test(text)) profile.sex = "male";
+    if (
+      containsPhrase(
+        normalizedText,
+        /(?:^|[^\p{L}\p{N}_])(?:zena|zenski(?:\s+pol)?|zenskog\s+pola|zenskom\s+polu|female)(?=$|[^\p{L}\p{N}_])/u,
+      ) ||
+      containsPhrase(
+        text,
+        /(?:^|[^\p{L}\p{N}_])(?:жена|женски(?:\s+пол)?|женског\s+пола|женском\s+полу)(?=$|[^\p{L}\p{N}_])/u,
+      )
+    ) {
+      profile.sex = "female";
+    }
+    if (
+      containsPhrase(
+        normalizedText,
+        /(?:^|[^\p{L}\p{N}_])(?:muskarac|muski(?:\s+pol)?|muskog\s+pola|muskom\s+polu|male)(?=$|[^\p{L}\p{N}_])/u,
+      ) ||
+      containsPhrase(
+        text,
+        /(?:^|[^\p{L}\p{N}_])(?:мушкарац|мушки(?:\s+пол)?|мушког\s+пола|мушком\s+полу)(?=$|[^\p{L}\p{N}_])/u,
+      )
+    ) {
+      profile.sex = "male";
+    }
 
     const hba1c = extractMeasurement(
       text,
@@ -163,7 +192,14 @@ export class MockLlmAdapter implements LlmAdapter {
       profile.insulin_last_3_months = true;
     }
     if (
-      /\b(dijabetes tip 2|šećerna bolest tip 2|type 2 diabetes)\b/u.test(text)
+      containsPhrase(
+        normalizedText,
+        /(?:^|[^\p{L}\p{N}_])(?:(?:dijabetes|diabetes)\s+tip(?:a)?\s*(?:2|ii)|secerna\s+bolest\s+tip(?:a)?\s*(?:2|ii)|type\s+2\s+diabetes(?:\s+mellitus)?|diabetes\s+type\s+2)(?=$|[^\p{L}\p{N}_])/u,
+      ) ||
+      containsPhrase(
+        text,
+        /(?:^|[^\p{L}\p{N}_])(?:дијабетес\s+тип(?:а)?\s*(?:2|ii|ии)|шећерна\s+болест\s+тип(?:а)?\s*(?:2|ii|ии))(?=$|[^\p{L}\p{N}_])/u,
+      )
     ) {
       profile.stated_diagnoses = ["dijabetes tip 2"];
     }

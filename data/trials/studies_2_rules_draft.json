@@ -44,6 +44,28 @@
         "unit": "kg/m²"
       },
       {
+        "id": "NCT07924436#inc-4",
+        "trialId": "NCT07924436",
+        "kind": "inclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Willing to participate and provide informed consent.",
+        "sourceId": "NCT07924436#unsplit-1",
+        "sourceQuote": "* Willing to participate and provide informed consent.",
+        "reason": "Kriterijum zahteva ljudsku proveru."
+      },
+      {
+        "id": "NCT07924436#inc-5",
+        "trialId": "NCT07924436",
+        "kind": "inclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "Group 1: Presence of type 2 diabetes mellitus OR Group 2: Absence of type 2 diabetes mellitus.",
+        "sourceId": "NCT07924436#unsplit-1",
+        "sourceQuote": "* For Group 1: Presence of type 2 diabetes mellitus.\n* For Group 2: Absence of type 2 diabetes mellitus.",
+        "reason": "Alternativne kohorte; jedan od uslova važi u zavisnosti od grupe. Ne evaluirati kao dva istovremeno obavezna kriterijuma."
+      },
+      {
         "id": "NCT07924436#exc-1",
         "trialId": "NCT07924436",
         "kind": "exclusion",
@@ -188,6 +210,28 @@
         "sourceId": "NCT07409714#unsplit-1",
         "sourceQuote": "* If on SGLT2 inhibitor, ACEi/ARB or GLP-1RA, stable dose for 4 weeks",
         "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07409714#inc-9",
+        "trialId": "NCT07409714",
+        "kind": "inclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Patient or guardian able to provide consent",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* Patient or guardian able to provide consent",
+        "reason": "Kriterijum zahteva ljudsku proveru."
+      },
+      {
+        "id": "NCT07409714#exc-1",
+        "trialId": "NCT07409714",
+        "kind": "exclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* T1D",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* T1D",
+        "reason": "Kriterijum zahteva ljudsku proveru."
       },
       {
         "id": "NCT07409714#exc-2",

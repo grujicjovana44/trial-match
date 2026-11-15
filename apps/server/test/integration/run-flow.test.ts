@@ -1,12 +1,16 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { createApp } from "../../src/api/app.js";
 import { parseConfig } from "../../src/config/index.js";
+import { TrialMatchService } from "../../src/service/trialmatch.js";
 
 const profileText =
   "Muškarac, 62 godine, dijabetes tip 2, HbA1c 8,1%, kreatinin 1,3 mg/dL, visina 178 cm, težina 92 kg, na metforminu.";
 
 describe("API tok DEMO provere", () => {
-  const app = createApp();
+  const service = new TrialMatchService({
+    config: parseConfig({ NODE_ENV: "test", DEMO_MODE: "true" }),
+  });
+  const app = createApp({ service });
   afterAll(async () => app.close());
 
   it("nastavlja isti runId posle pitanja i obrađuje hipotezu", async () => {
@@ -19,6 +23,18 @@ describe("API tok DEMO provere", () => {
     const initial = first.json();
     expect(initial.status).toBe("needs_clarification");
     expect(initial.meta.modelCalls).toBe(1);
+    expect(initial.meta.toolCalls).toBe(4);
+    const toolCalls = () =>
+      service.sessions
+        .get(initial.runId)!
+        .events.filter((event) => event.step === "tool")
+        .map((event) => event.tool);
+    expect(toolCalls()).toEqual([
+      "compute_egfr",
+      "compute_bmi",
+      "evaluate_criteria",
+      "select_next_question",
+    ]);
     expect(initial.question.field).toBe("insulin_last_3_months");
 
     const answered = await app.inject({
@@ -30,7 +46,28 @@ describe("API tok DEMO provere", () => {
     expect(answered.json().runId).toBe(initial.runId);
     expect(answered.json().status).toBe("ok");
     expect(answered.json().meta.modelCalls).toBe(1);
-    expect(answered.json().meta.toolCalls).toBe(2);
+    expect(answered.json().meta.toolCalls).toBe(6);
+    expect(toolCalls()).toEqual([
+      "compute_egfr",
+      "compute_bmi",
+      "evaluate_criteria",
+      "select_next_question",
+      "evaluate_criteria",
+      "select_next_question",
+    ]);
+    expect(answered.json().explanation).toBe(
+      "Ovo je preliminarna provera kriterijuma. Nepoznati i ručno proveravani uslovi zahtevaju procenu lekara.",
+    );
+    expect(answered.json().results.length).toBeGreaterThan(0);
+    expect(
+      answered
+        .json()
+        .results.flatMap(
+          (trial: { criteria: { citation: { quote: string } }[] }) =>
+            trial.criteria.map((criterion) => criterion.citation.quote),
+        )
+        .every((quote: string) => quote.length > 0),
+    ).toBe(true);
 
     const changed = await app.inject({
       method: "POST",
@@ -42,7 +79,17 @@ describe("API tok DEMO provere", () => {
     expect(changed.json().profile.insulin_last_3_months).toBe(false);
     expect(changed.json().profile.hba1c.value).toBe(9);
     expect(changed.json().meta.modelCalls).toBe(2);
-    expect(changed.json().meta.toolCalls).toBe(3);
+    expect(changed.json().meta.toolCalls).toBe(8);
+    expect(toolCalls()).toEqual([
+      "compute_egfr",
+      "compute_bmi",
+      "evaluate_criteria",
+      "select_next_question",
+      "evaluate_criteria",
+      "select_next_question",
+      "evaluate_criteria",
+      "select_next_question",
+    ]);
     expect(
       changed
         .json()
@@ -85,6 +132,29 @@ describe("API tok DEMO provere", () => {
   });
 });
 
+it("odbija inicijalizaciju korpusa sa nepotvrđenom licencom", async () => {
+  const service = new TrialMatchService({
+    config: parseConfig({ NODE_ENV: "test", DEMO_MODE: "true" }),
+    manifest: {
+      name: "test-corpus",
+      version: "unconfirmed-license-test",
+      date: "2026-11-15",
+      origin: "test fixture",
+      synthetic: false,
+      license: "NEPOTVRĐENO",
+      transformations: "test fixture",
+      limitations: [],
+      downloadedCount: 0,
+      includedCount: 0,
+    },
+    trials: [],
+  });
+
+  await expect(service.initialize()).rejects.toThrow(
+    "Licenca korpusa nije potvrđena za upotrebu.",
+  );
+});
+
 it("003: manifest, isključenja i ćirilični limit čuvaju ugovor", async () => {
   const app = createApp();
   try {
@@ -118,7 +188,7 @@ it("učitava dve stvarne studije iz DATA_DIR i vraća rezultate bez greške cita
     config: parseConfig({
       NODE_ENV: "test",
       DEMO_MODE: "true",
-      DATA_DIR: "data/rule_sets/studies_2_lt_20261114",
+      DATA_DIR: "data/rule_sets/studies_2_approved_20261115_1539",
     }),
   });
   try {
@@ -136,7 +206,7 @@ it("učitava dve stvarne studije iz DATA_DIR i vraća rezultate bez greške cita
     expect(response.status).not.toBe("error");
     expect(response.meta).toMatchObject({
       dataSynthetic: false,
-      dataVersion: "rules-72b33d1faec2",
+      dataVersion: "rules-0b88455b00ae",
       demoMode: true,
     });
     expect(
@@ -196,8 +266,7 @@ it("učitava dve stvarne studije iz DATA_DIR i vraća rezultate bez greške cita
       expect(statuses).toEqual(boundary.statuses);
       expect(
         study.criteria.find(
-          (criterion: { id: string }) =>
-            criterion.id === "NCT07409714#exc-4",
+          (criterion: { id: string }) => criterion.id === "NCT07409714#exc-4",
         )?.observedValue,
       ).toBe(boundary.egfr);
     }

@@ -1,0 +1,23 @@
+{
+  "format": "trialmatch-source-provenance-v1",
+  "records": [
+    {
+      "nctId": "NCT07409714",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT07409714",
+      "retrievedAt": "2026-11-15T13:13:45.077Z",
+      "sha256": "f033adbfdfcfc903f673bf5877188e26feb5bad443b1d46951a050772e0ab1eb"
+    },
+    {
+      "nctId": "NCT07924436",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT07924436",
+      "retrievedAt": "2026-11-15T13:13:45.648Z",
+      "sha256": "57b0e57689aedb93bf754553964d777cd598dfd20217250a5cc0927166335e2d"
+    }
+  ],
+  "terms": {
+    "url": "https://clinicaltrials.gov/terms-conditions",
+    "retrievedAt": "2026-11-15T13:13:45.803Z",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "applicability": "ClinicalTrials.gov Terms and Conditions apply to use of the newly retrieved records. Attribute ClinicalTrials.gov as the source; some record content may be subject to third-party rights. No specific license is asserted here."
+  }
+}
