@@ -7,6 +7,7 @@ import type {
 import { buildRagDocuments, type RagDocument } from "./documents.js";
 import { buildRetrievalQueries } from "./query.js";
 import { filterKnownMetadata } from "./metadata.js";
+import type { EmbeddingFailureReason } from "./embeddings.js";
 
 export type RetrievedContext = {
   trials: Trial[];
@@ -16,6 +17,9 @@ export type RetrievedContext = {
   retrievalTrace?: {
     untranslatedTerms: string[];
     embedding: "used" | "lexical_fallback" | "not_needed";
+    retrievalMode: "hybrid" | "lexical_fallback" | "lexical_only";
+    fallbackReason?: EmbeddingFailureReason;
+    vectorHitCount: number;
     reranking: "deterministic" | "gemini" | "rrf_fallback" | "disabled";
     metadataFilters: { state?: string; status?: string };
   };
@@ -187,6 +191,8 @@ export function retrieveTrials(
     retrievalTrace: {
       untranslatedTerms: queries.untranslatedTerms,
       embedding: "not_needed",
+      retrievalMode: "lexical_only",
+      vectorHitCount: 0,
       reranking: "disabled",
       metadataFilters: metadata.applied,
     },

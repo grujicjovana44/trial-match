@@ -90,6 +90,8 @@ export async function buildVectorIndex(options: {
   embeddedTexts: number;
   reusedTexts: number;
   estimatedTokens: number;
+  embeddingCalls: number;
+  tokensUsed: number;
 }> {
   const documents = buildRagDocuments(options.corpus.trials);
   const maxChunks = options.maxChunks ?? MAX_CHUNKS_PER_INDEX_BUILD;
@@ -119,6 +121,8 @@ export async function buildVectorIndex(options: {
   const embeddingsByHash = new Map<string, number[]>();
   const missing: string[] = [];
   let reusedTexts = 0;
+  let embeddingCalls = 0;
+  let tokensUsed = 0;
   for (const textHash of uniqueHashes) {
     const cached = options.store.getCachedEmbedding(
       options.embedder.model,
@@ -152,6 +156,8 @@ export async function buildVectorIndex(options: {
     const batch = await options.embedder.embed(
       batchHashes.map((textHash) => uniqueTexts.get(textHash)!),
     );
+    embeddingCalls += 1;
+    tokensUsed += batch.tokens;
     if (
       batch.dimensions !== EMBEDDING_DIMENSIONS ||
       batch.vectors.length !== batchHashes.length
@@ -210,5 +216,7 @@ export async function buildVectorIndex(options: {
     embeddedTexts: missing.length,
     reusedTexts,
     estimatedTokens,
+    embeddingCalls,
+    tokensUsed,
   };
 }

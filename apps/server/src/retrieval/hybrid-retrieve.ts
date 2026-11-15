@@ -6,7 +6,12 @@ import {
   type Trial,
 } from "../../../../packages/shared/src/index.js";
 import { buildRagDocuments, type RagDocument } from "./documents.js";
-import type { Embedder } from "./embeddings.js";
+import {
+  EmbeddingError,
+  embeddingFailureReason,
+  type Embedder,
+  type EmbeddingFailureReason,
+} from "./embeddings.js";
 import { hashText } from "./indexing.js";
 import { buildRetrievalQueries } from "./query.js";
 import type { RetrievedContext, RetrievalOptions } from "./retrieve.js";
@@ -35,6 +40,9 @@ export interface CandidateReranker {
 export type RetrievalTrace = {
   untranslatedTerms: string[];
   embedding: "used" | "lexical_fallback" | "not_needed";
+  retrievalMode: "hybrid" | "lexical_fallback" | "lexical_only";
+  fallbackReason?: EmbeddingFailureReason;
+  vectorHitCount: number;
   reranking: "deterministic" | "gemini" | "rrf_fallback" | "disabled";
   metadataFilters: { state?: string; status?: string };
 };
@@ -182,6 +190,7 @@ export class HybridTrialRetriever {
     const vectorRankings: string[][] = [];
     const lexicalScores = new Map<string, number>();
     let embeddingState: RetrievalTrace["embedding"] = "not_needed";
+    let fallbackReason: EmbeddingFailureReason | undefined;
     let vectorHits: VectorHit[] = [];
 
     if (queryTexts.length > 0) {
@@ -230,10 +239,19 @@ export class HybridTrialRetriever {
           if (missingQueries.length > 0) {
             const batch = await this.embedder.embed(missingQueries);
             if (batch.vectors.length !== missingQueries.length)
-              throw new Error(
+              throw new EmbeddingError(
+                "embedding_invalid",
                 "Query embedding odgovor nema vektor za svaki upit.",
               );
-            checkSearchVector(batch.vectors, batch.dimensions);
+            try {
+              checkSearchVector(batch.vectors, batch.dimensions);
+            } catch (error) {
+              throw new EmbeddingError(
+                "embedding_invalid",
+                "Query embedding odgovor sadrži nevažeći vektor.",
+                { cause: error },
+              );
+            }
             let nextVector = 0;
             for (let index = 0; index < queryTexts.length; index += 1) {
               if (vectors[index]!.length > 0) continue;
@@ -250,8 +268,19 @@ export class HybridTrialRetriever {
           }
           const dimensions = vectors[0]?.length ?? 0;
           if (dimensions === 0)
-            throw new Error("Query embedding odgovor je prazan.");
-          checkSearchVector(vectors, dimensions);
+            throw new EmbeddingError(
+              "embedding_invalid",
+              "Query embedding odgovor je prazan.",
+            );
+          try {
+            checkSearchVector(vectors, dimensions);
+          } catch (error) {
+            throw new EmbeddingError(
+              "embedding_invalid",
+              "Query embedding odgovor sadrži nevažeći vektor.",
+              { cause: error },
+            );
+          }
           embeddingState = "used";
           const hitLimit = Math.min(
             RAG_MAX_RETRIEVAL_HITS,
@@ -277,8 +306,9 @@ export class HybridTrialRetriever {
                 .map((hit) => hit.id),
             );
           }
-        } catch {
+        } catch (error) {
           embeddingState = "lexical_fallback";
+          fallbackReason = embeddingFailureReason(error);
           vectorHits = [];
           vectorRankings.length = 0;
         }
@@ -454,6 +484,14 @@ export class HybridTrialRetriever {
       retrievalTrace: {
         untranslatedTerms: queries.untranslatedTerms,
         embedding: embeddingState,
+        retrievalMode:
+          embeddingState === "used"
+            ? "hybrid"
+            : embeddingState === "lexical_fallback"
+              ? "lexical_fallback"
+              : "lexical_only",
+        ...(fallbackReason ? { fallbackReason } : {}),
+        vectorHitCount: new Set(vectorHits.map((hit) => hit.id)).size,
         reranking: rerankingState,
         metadataFilters: metadata.applied,
       },

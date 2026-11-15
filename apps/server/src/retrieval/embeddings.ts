@@ -36,7 +36,45 @@ const EmbeddingResponseSchema = z
   })
   .passthrough();
 
-class NonRetryableEmbeddingError extends Error {}
+export type EmbeddingFailureReason =
+  | "embedding_timeout"
+  | "embedding_http_429"
+  | `embedding_http_${number}`
+  | "embedding_invalid"
+  | "embedding_network_error"
+  | "embedding_error";
+
+export class EmbeddingError extends Error {
+  constructor(
+    readonly reason: EmbeddingFailureReason,
+    message: string,
+    options?: ErrorOptions,
+  ) {
+    super(message, options);
+    this.name = "EmbeddingError";
+  }
+}
+
+class NonRetryableEmbeddingError extends EmbeddingError {}
+
+export function embeddingFailureReason(
+  error: unknown,
+): EmbeddingFailureReason {
+  if (error instanceof EmbeddingError) return error.reason;
+  if (
+    error instanceof Error &&
+    (error.name === "AbortError" || error.name === "TimeoutError")
+  )
+    return "embedding_timeout";
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error.code === "ETIMEDOUT" || error.code === "ABORT_ERR")
+  )
+    return "embedding_timeout";
+  return "embedding_error";
+}
 
 export type EmbeddingConfig = z.infer<typeof EmbeddingEnvironmentSchema>;
 export type EmbeddingBatch = {
@@ -112,7 +150,10 @@ export class OpenAIEmbeddingClient implements Embedder {
 
   async embed(input: readonly string[]): Promise<EmbeddingBatch> {
     if (input.length === 0 || input.some((text) => !text.trim()))
-      throw new Error("Embedding ulaz mora sadržati neprazne tekstove.");
+      throw new NonRetryableEmbeddingError(
+        "embedding_invalid",
+        "Embedding ulaz mora sadržati neprazne tekstove.",
+      );
 
     for (let attempt = 0; attempt <= this.maxRetries; attempt += 1) {
       try {
@@ -128,46 +169,71 @@ export class OpenAIEmbeddingClient implements Embedder {
         );
       }
     }
-    throw new Error("OpenAI embeddings zahtev nije uspeo nakon ponovnih pokušaja.");
+    throw new EmbeddingError(
+      "embedding_error",
+      "OpenAI embeddings zahtev nije uspeo nakon ponovnih pokušaja.",
+    );
   }
 
   private async embedOnce(input: readonly string[]): Promise<EmbeddingBatch> {
-    const response = await this.transport(`${this.baseUrl}/embeddings`, {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + this.apiKey,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        input,
-        model: this.model,
-        encoding_format: "float",
-      }),
-      signal: AbortSignal.timeout(this.timeoutMs),
-    });
+    let response: Response;
+    try {
+      response = await this.transport(`${this.baseUrl}/embeddings`, {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + this.apiKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          input,
+          model: this.model,
+          encoding_format: "float",
+        }),
+        signal: AbortSignal.timeout(this.timeoutMs),
+      });
+    } catch (error) {
+      const reason = embeddingFailureReason(error);
+      throw new EmbeddingError(
+        reason === "embedding_timeout"
+          ? reason
+          : "embedding_network_error",
+        "OpenAI embeddings transport nije uspeo.",
+        { cause: error },
+      );
+    }
     if (!response.ok) {
       const message =
         `OpenAI embeddings zahtev nije uspeo (HTTP ${response.status}); proverite ključ, model i pristup endpoint-u.`;
       if (response.status !== 429 && response.status < 500)
-        throw new NonRetryableEmbeddingError(message);
-      throw new Error(message);
+        throw new NonRetryableEmbeddingError(
+          `embedding_http_${response.status}`,
+          message,
+        );
+      throw new EmbeddingError(
+        `embedding_http_${response.status}`,
+        message,
+      );
     }
 
     let payload: unknown;
     try {
       payload = await response.json();
     } catch (error) {
-      throw new Error("OpenAI embeddings odgovor nije validan JSON.", {
-        cause: error,
-      });
+      throw new EmbeddingError(
+        "embedding_invalid",
+        "OpenAI embeddings odgovor nije validan JSON.",
+        { cause: error },
+      );
     }
     const parsed = EmbeddingResponseSchema.safeParse(payload);
     if (!parsed.success)
-      throw new Error(
+      throw new EmbeddingError(
+        "embedding_invalid",
         "OpenAI embeddings odgovor nema očekivanu strukturu ili dimenziju.",
       );
     if (parsed.data.model !== this.model)
-      throw new Error(
+      throw new EmbeddingError(
+        "embedding_invalid",
         `OpenAI embeddings endpoint je vratio model '${parsed.data.model}' umesto traženog '${this.model}'.`,
       );
     const data = [...parsed.data.data].sort(
@@ -177,13 +243,17 @@ export class OpenAIEmbeddingClient implements Embedder {
       data.length !== input.length ||
       data.some((entry, index) => entry.index !== index)
     )
-      throw new Error("OpenAI embeddings odgovor nema vektor za svaki ulaz.");
+      throw new EmbeddingError(
+        "embedding_invalid",
+        "OpenAI embeddings odgovor nema vektor za svaki ulaz.",
+      );
     const dimensions = data[0]!.embedding.length;
     if (
       dimensions !== EMBEDDING_DIMENSIONS ||
       data.some((entry) => entry.embedding.length !== dimensions)
     )
-      throw new Error(
+      throw new EmbeddingError(
+        "embedding_invalid",
         `OpenAI embeddings dimenzija nije očekivanih ${EMBEDDING_DIMENSIONS}.`,
       );
     return {
