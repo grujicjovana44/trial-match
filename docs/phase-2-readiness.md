@@ -26,7 +26,7 @@ Ovaj izveštaj opisuje trenutno nekomitovano radno stablo na grani `rag`. Nije p
 
 ## Preostalo pre merge-a
 
-- `eval/rag/retrieval-v1.json` je assistant-authored nacrt; ljudska adjudikacija nije urađena. `baseline-v1.json` je nepromenljiv, ali njegove metrike su privremene i nisu dokaz kvaliteta.
+- `eval/rag/retrieval-v1.json` i `baseline-v1.json` ostaju nepromenjeni. `retrieval-v2.json` sadrži predložene oznake (`TODO` pregledavaoci/datumi) i opisne corpus-v1 obrasce; ljudska adjudikacija nije urađena. Merenja na v0-dev su razvojna, bez zaključaka.
 - `index:build` nije pokrenut; nema lokalnog izgrađenog indeksa i tekst studija nije poslat embeddings provajderu. `embeddings:check` je koristio samo sintetički upit.
 - Nisu završeni metadata filteri, poseban deterministic reranker, `eval:rag:offline` poređenje lexical/vector/hybrid/reranked varijanti ni TypeScript RAGAS/`eval:rag:live` evaluator.
 - Stvarni EV baseline sa LLM-om, browser review i GitHub CI status nisu provereni. Paket studija ima lokalne review metapodatke, ali njihov identitet/licenca/poreklo nisu nezavisno potvrđeni.

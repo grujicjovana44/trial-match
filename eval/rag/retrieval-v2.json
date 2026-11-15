@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 2,
+  "datasetId": "rag-retrieval-v2",
+  "corpusSnapshotId": "rag-corpus-v0-dev",
+  "annotationStatus": "pending_human_review",
+  "annotationMethod": "Proposed carry-forward from assistant-authored v1 draft. Relevance rules describe source/profile criteria independently of retrieval output. No labels are confirmed.",
+  "corpus": [
+    {
+      "path": "data/fixtures/trials.json",
+      "version": "synthetic-trials-v1",
+      "sha256": "f368d13bff16dc5ad69636513281ed18ea8601978a83d6c3c000dd4b0cde4950"
+    },
+    {
+      "path": "data/rule_sets/studies_2_approved_20261115_1539/trials.json",
+      "version": "rules-0b88455b00ae",
+      "sha256": "4b39b15a92b3ce20591c70ed54bb60e81a453c10b2c3a5dd2052b00ec3c8a2e5"
+    }
+  ],
+  "cases": [
+    {
+      "caseId": "RAG-001",
+      "language": "sr",
+      "profile": {
+        "age": 52,
+        "sex": "female",
+        "stated_diagnoses": ["gojaznost", "dijabetes tip 2"]
+      },
+      "relevantTrialIds": ["NCT07924436"],
+      "relevantPassageIds": [
+        "NCT07924436#inc-1",
+        "NCT07924436#inc-3",
+        "NCT07924436#inc-5"
+      ],
+      "rationale": "Predložena studija i odlomci preneti iz nacrta v1; još nisu ljudski potvrđeni.",
+      "relevanceRule": "Studija je relevantna ako njen izvorni opis obuhvata dijabetes tipa 2 i profilni koncept gojaznosti; relevantan odlomak mora neposredno opisivati jedan od tih ciljnih konceptualnih kriterijuma. Podobnost profila nije deo relevantnosti.",
+      "labelStatus": "proposed",
+      "reviewer": "TODO",
+      "reviewedAt": "TODO",
+      "kind": "ranking",
+      "split": "dev"
+    },
+    {
+      "caseId": "RAG-002",
+      "language": "en",
+      "profile": {
+        "age": 20,
+        "stated_diagnoses": ["type 2 diabetes", "renal health"]
+      },
+      "relevantTrialIds": ["NCT07409714"],
+      "relevantPassageIds": [
+        "NCT07409714#inc-1",
+        "NCT07409714#inc-3",
+        "NCT07409714#exc-4"
+      ],
+      "rationale": "Predložena studija i odlomci preneti iz nacrta v1; još nisu ljudski potvrđeni.",
+      "relevanceRule": "Studija je relevantna ako izvorni naslov, stanja ili sažetak obuhvataju dijabetes tipa 2 kod adolescenata/mladih odraslih i bubrežni kontekst; relevantan odlomak mora neposredno navoditi uzrast, dijabetes ili bubrežnu funkciju. Oznaka ne predstavlja podobnost.",
+      "labelStatus": "proposed",
+      "reviewer": "TODO",
+      "reviewedAt": "TODO",
+      "kind": "ranking",
+      "split": "test"
+    },
+    {
+      "caseId": "RAG-003",
+      "language": "sr",
+      "profile": {
+        "stated_diagnoses": ["dijabetes tip 2"]
+      },
+      "relevantTrialIds": [],
+      "relevantPassageIds": [],
+      "rationale": "Razvojni slučaj ponašanja; ne daje rangirajuće oznake.",
+      "relevanceRule": "Ovo je provera ponašanja, ne relevantnosti: kada postoji pretraživi široki koncept i sve studije korpusa ga obrađuju, očekuje se izbor svih studija; njihov međusobni redosled se ne boduje.",
+      "labelStatus": "proposed",
+      "reviewer": "TODO",
+      "reviewedAt": "TODO",
+      "kind": "behavior",
+      "split": "dev",
+      "behaviorExpectation": "all_studies_selected"
+    },
+    {
+      "caseId": "RAG-004",
+      "language": "none",
+      "profile": {
+        "age": 62
+      },
+      "relevantTrialIds": [],
+      "relevantPassageIds": [],
+      "rationale": "Razvojni slučaj ponašanja; ne daje rangirajuće oznake.",
+      "relevanceRule": "Ovo je provera ponašanja, ne relevantnosti: bez dijagnoze ili drugog pretraživog koncepta bira se skup studija do kandidatskog limita u stabilnom ID redosledu i ne poziva se embeddings.",
+      "labelStatus": "proposed",
+      "reviewer": "TODO",
+      "reviewedAt": "TODO",
+      "kind": "behavior",
+      "split": "test",
+      "behaviorExpectation": "stable_fallback_order"
+    }
+  ],
+  "plannedPatterns": [
+    {
+      "pattern": "no_matching_query",
+      "kind": "negative",
+      "description": "Sintetički profil čiji pretraživi koncept nema ekvivalent u nijednoj studiji korpusa; opisati očekivano odsustvo relevantnih pogodaka bez dodeljivanja studija ili odlomaka.",
+      "corpusVersionRequired": "corpus-v1",
+      "status": "description_only"
+    },
+    {
+      "pattern": "serbian_synonyms_and_cyrillic",
+      "kind": "language",
+      "description": "Isti klinički koncept izražen srpskim sinonimima, latinicom i ćirilicom, u odnosu na engleski izvor; anotirati tek kada se korpus v1 zamrzne.",
+      "corpusVersionRequired": "corpus-v1",
+      "status": "description_only"
+    },
+    {
+      "pattern": "malicious_indexed_passage",
+      "kind": "injection",
+      "description": "Studija sadrži odlomak sa instrukcijom usmerenom modelu; proveriti da tekst može biti nepouzdan kontekst, ali ne menja matcher presudu ni alatni izlaz.",
+      "corpusVersionRequired": "corpus-v1",
+      "status": "description_only"
+    },
+    {
+      "pattern": "lexical_hard_negatives",
+      "kind": "negative",
+      "description": "Više studija deli reči sa upitom, ali se razlikuje po populaciji ili kliničkom kontekstu; unapred definisati relevantnost iz izvora pre pokretanja retrieval-a.",
+      "corpusVersionRequired": "corpus-v1",
+      "status": "description_only"
+    }
+  ]
+}

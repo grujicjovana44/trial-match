@@ -1,6 +1,6 @@
 # Odluke projekta
 
-Ovaj dokument beleži odluke za osnovni TrialMatch, razmotrene alternative i posledice. Korisnik je 2026-11-07 dostavio izvore i potvrdio formule, konverzije i kontrolne vrednosti; tehničke granice unosa nisu medicinski referentni opsezi.
+Ovaj dokument beleži odluke za osnovni TrialMatch, razmotrene alternative i posledice. Korisnik je 2026-11-07 dostavio izvore, formule, konverzije i kontrolne vrednosti; formalna provera prema originalnim publikacijama po B-03 ostaje nepotvrđena dok odgovorna osoba ne zabeleži izvor, datum i ime. Tehničke granice unosa nisu medicinski referentni opsezi.
 
 ## Potvrđene odluke
 
@@ -105,15 +105,15 @@ Faza 1 nema `cancel` događaj u toku provere. Korisnik koji želi drugi profil b
 
 Tačne verzije su izabrane i potvrđene u odluci „Tehnički stack i tačne verzije“. `.npmrc` treba da zadrži `save-exact=true`; pre implementacije treba proveriti da `pnpm-lock.yaml` zaključava sve zavisnosti iz `package.json`. Commit lockfile-a se odlaže do prvog implementacionog prolaza.
 
-## Potvrđene formule i reference (B-03)
+## Formule i reference na proveri (B-03)
 
 - **eGFR**: CKD-EPI 2021 po kreatininu, bez rase. Inker LA et al. (2021), *New Creatinine- and Cystatin C–Based Equations to Estimate GFR without Race*, *New England Journal of Medicine* 385:1737–1749, DOI `10.1056/NEJMoa2102953`, PMID `34554658`; implementacioni izvor: NIDDK, *2021 CKD-EPI Creatinine Equation*. Korisnik je potvrdio formulu.
-- **eGFR kontrolne vrednosti**: muškarac 62 g., kreatinin 1,3 mg/dL → `62.11 mL/min/1.73 m²`; žena 70 g., kreatinin 1,0 mg/dL → `60.61 mL/min/1.73 m²`; tolerancija za obe `±0.01`.
-- **BMI**: CDC, *Calculating BMI*, `kg / m²`; 92 kg i 178 cm → `29.04 kg/m²`, tolerancija `±0.01`.
+- **eGFR kontrolne vrednosti**: muškarac 62 g., kreatinin 1,3 mg/dL → `62.11 mL/min/1.73 m²`; žena 70 g., kreatinin 1,0 mg/dL → `60.61 mL/min/1.73 m²`.
+- **BMI**: CDC, *Calculating BMI*, `kg / m²`; 92 kg i 178 cm → `29.04 kg/m²`.
 - **Kreatinin**: NIDDK, *GFR equations and conversion factors*; µmol/L u mg/dL deljenjem sa `88.4`.
 - **HbA1c**: NGSP, *IFCC Standardization of HbA1c*; IFCC mmol/mol u NGSP % po `0.09148 × vrednost + 2.152`.
 
-Korisnik je izričito potvrdio da su formule, konverzije i kontrolne vrednosti provereni prema dostavljenim izvorima. Za tehničke ulazne granice nije dostavljen medicinski izvor, jer se one koriste samo kao sanity check, a ne kao medicinski opseg. B-03 je razrešen; svaka nova ili izmenjena formula/prag bez korisničke potvrde mora ostati označen „PROVERITI prema originalnoj publikaciji“. Nezavisna mrežna provera izvora nije rađena.
+Formule, konverzije i kontrolne vrednosti su dostavljeni uz izvore, ali odgovorna osoba još nije zabeležila proveru prema originalnim publikacijama, datum i ime; B-03 ostaje otvoren. Kontrolne vrednosti izračunate referentnom implementacijom koriste toleranciju ±0,01, a zaokružene ručne vrednosti ±0,5. Tehničke ulazne granice služe samo kao sanity check. Svaka formula/prag ostaje označen „PROVERITI prema originalnoj publikaciji“ dok provera ne bude evidentirana.
 
 ### UI testovi
 
@@ -133,7 +133,7 @@ Mrežni retry se primenjuje samo na model-provider pozive. Lokalna greška deter
 
 ### Status blokatora
 
-B-02 i B-04–B-11 su razrešeni odlukama u ovom dokumentu ili projektnom brief-u; njihove odredbe treba dosledno sprovesti kroz specifikaciju, plan, zadatke i testove. B-03 je razrešen korisnički dostavljenim izvorima, formulama i kontrolnim vrednostima; opsezi validacije su tehnički sanity check. `not_in_sources` je razrešen postojećim poljem `profileText` i intent klasifikacijom. B-01 verzije i lockfile su provereni; ostaje lokalna dostupnost izabranog Node.js `24.22.1` runtime-a. Commit lockfile-a je odložen do prvog implementacionog prolaza po korisničkom zahtevu. Pružalac/model za živu fazu i uslovi korišćenja stvarnog snimka ostaju ljudske odluke za Fazu 2, ne blokatori sintetičke Faze 1.
+B-02 i B-04–B-11 su razrešeni odlukama u ovom dokumentu ili projektnom brief-u; njihove odredbe treba dosledno sprovesti kroz specifikaciju, plan, zadatke i testove. B-03 ostaje otvoren do formalne provere koju će odgovorna osoba evidentirati; izvori, formule i kontrolne vrednosti su dostavljeni, a opsezi validacije su samo tehnički sanity check. `not_in_sources` je razrešen postojećim poljem `profileText` i intent klasifikacijom. B-01 verzije i lockfile su provereni; ostaje lokalna dostupnost izabranog Node.js `24.22.1` runtime-a. Commit lockfile-a je odložen do prvog implementacionog prolaza po korisničkom zahtevu. Pružalac/model za živu fazu i uslovi korišćenja stvarnog snimka ostaju ljudske odluke za Fazu 2, ne blokatori sintetičke Faze 1.
 
 ## Interfejs (funkcionalnost 002)
 

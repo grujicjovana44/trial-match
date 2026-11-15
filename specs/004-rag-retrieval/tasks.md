@@ -4,8 +4,8 @@ Svaki zadatak je vezan za RAG ID-jeve iz [specifikacije](spec.md). Postojeći AC
 
 ## Paket 0 — benchmark pre izmene retrieval-a
 
-- [ ] RAG-T401 Napraviti sintetički retrieval skup sa srpskim i engleskim validiranim profilima, relevantnim studijama/tačnim criterion ID-jima, korpusnim verzijama/hash-evima i ljudskim anotacionim poreklom. Ne označiti assistant draft kao ljudski odobren. **Status:** skup postoji kao nacrt; ljudska adjudikacija je i dalje potrebna. **Zahtevi:** RAG-02, RAG-13.
-- [ ] RAG-T402 Dodati offline metrike recall@k, precision@k, MRR, nDCG, citation validity, context limit i deterministic rerun. Zamrznuti trenutni MiniSearch baseline bez prepisivanja i uz sačuvan git/corpus/dataset identitet. **Status:** baseline-v1 je sačuvan za nacrt anotacija; metrike su privremene i posle ljudske adjudikacije potreban je novi immutable baseline. **Zahtevi:** RAG-13, RAG-14. **Blokira:** svi retrieval algoritamski radovi.
+- [ ] RAG-T401 Napraviti sintetički retrieval skup sa srpskim i engleskim validiranim profilima, relevantnim studijama/tačnim criterion ID-jima, korpusnim verzijama/hash-evima i ljudskim anotacionim poreklom. Ne označiti assistant draft kao ljudski odobren. **Status:** v1 ostaje nepromenljiv; novi `retrieval-v2.json` dodaje anotacioni status/pregled/split i opisne corpus-v1 obrasce. Sve postojeće oznake su predložene; ljudska adjudikacija je potrebna. **Zahtevi:** RAG-02, RAG-13.
+- [ ] RAG-T402 Dodati offline metrike recall@k, precision@k, MRR, nDCG, citation validity, context limit i deterministic rerun. Zamrznuti MiniSearch baseline bez prepisivanja i uz sačuvan git/corpus/dataset identitet. **Status:** v1 baseline ostaje nepromenljiv; v2 runner izuzima behavior/proposed/disputed slučajeve iz rangiranja, ograničava k na polovinu korpusa i razdvaja dev/test. Svaka metrika nad v0-dev je razvojna, bez zaključaka. **Zahtevi:** RAG-13, RAG-14. **Blokira:** sve retrieval algoritamske evaluacije.
 
 ## Paket 1 — izbor baze
 
