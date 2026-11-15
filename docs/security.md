@@ -11,7 +11,7 @@
 
 Zahtevi, podaci sa diska, argumenti alata i odgovori proveravaju se runtime Zod šemama. API ograničava veličinu ulaza i učestalost poziva. Alati imaju allowlist i vremensko ograničenje. Citati se proveravaju prema izvornim odlomcima tekućeg izvršavanja. UI ispisuje tekst kao tekst i koristi React escaping.
 
-Trenutna ograničenja: run store, idempotency cache i rate limits su process-local; restart briše stanje. Testovi bezbednosti i šeme ne dokazuju semantičku potkrepljenost providerskog odgovora. Ključ, poreklo endpoint-a i upita, uslovi korišćenja, ljudski pregled pravila, cena i live transport nisu potvrđeni. Lokalni eval guard traži odobren opseg; cena nije dostupna bez proverenog cenovnika.
+Trenutna ograničenja: run store, idempotency cache i rate limits su process-local; restart briše stanje. Run store zadržava najviše 1.000 zapisa po 30 minuta, a idempotency cache najviše 1.000 ključeva sa rokom od 60 sekundi. Testovi bezbednosti i šeme ne dokazuju semantičku potkrepljenost providerskog odgovora. Ključ, poreklo endpoint-a i upita, uslovi korišćenja, ljudski pregled pravila, cena i live transport nisu potvrđeni. Lokalni eval guard traži odobren opseg; cena nije dostupna bez proverenog cenovnika.
 
 Offline evaluacioni tragovi prolaze kroz fiksnu allowlist-u metapodataka; sirov profil, vrednosti okruženja, tajne i unutrašnje rezonovanje se ne zapisuju. Ovo ne zamenjuje bezbednosni pregled tragova stvarnog modela u Fazi 2.
 
