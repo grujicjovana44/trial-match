@@ -39,31 +39,41 @@ describe("RAG retrieval ranking metrics", () => {
 describe("RAG retrieval dataset v2", () => {
   const dataset = RetrievalDatasetSchema.parse(retrievalDatasetV2);
 
-  it("validira predložene anotacije i ostavlja v1 van izmene", () => {
+  it("validira delimično adjudikovane anotacije i ostavlja v1 van izmene", () => {
     expect(dataset.schemaVersion).toBe(2);
     expect(dataset.corpusSnapshotId).toBe("rag-corpus-v0-dev");
     expect(dataset.cases).toHaveLength(4);
+    expect(dataset.annotationStatus).toBe("pending_human_review");
     expect(
-      dataset.cases.every(
-        (testCase) =>
-          testCase.labelStatus === "proposed" &&
-          testCase.reviewer === "TODO" &&
-          testCase.reviewedAt === "TODO",
-      ),
-    ).toBe(true);
+      dataset.cases.map(({ caseId, labelStatus, reviewer }) => [
+        caseId,
+        labelStatus,
+        reviewer,
+      ]),
+    ).toEqual([
+      ["RAG-001", "confirmed", "JG"],
+      ["RAG-002", "confirmed", "JG"],
+      ["RAG-003", "confirmed", "JG"],
+      ["RAG-004", "confirmed", "JG"],
+    ]);
   });
 
-  it("ne boduje behavior slučajeve niti predložene/osporene oznake", () => {
+  it("boduje samo potvrđene rangirajuće slučajeve", () => {
     const behavior = dataset.cases.find(
       (testCase) => testCase.kind === "behavior",
     );
-    const proposedRanking = dataset.cases.find(
-      (testCase) => testCase.kind === "ranking",
+    const firstConfirmedRanking = dataset.cases.find(
+      (testCase) => testCase.caseId === "RAG-001",
+    );
+    const confirmedRanking = dataset.cases.find(
+      (testCase) => testCase.caseId === "RAG-002",
     );
     expect(behavior).toBeDefined();
-    expect(proposedRanking).toBeDefined();
+    expect(firstConfirmedRanking).toBeDefined();
+    expect(confirmedRanking).toBeDefined();
     expect(isMetricEligibleCase(behavior!)).toBe(false);
-    expect(isMetricEligibleCase(proposedRanking!)).toBe(false);
+    expect(isMetricEligibleCase(firstConfirmedRanking!)).toBe(true);
+    expect(isMetricEligibleCase(confirmedRanking!)).toBe(true);
     expect(
       isMetricEligibleCase({
         kind: "ranking",
@@ -80,7 +90,7 @@ describe("RAG retrieval dataset v2", () => {
 
   it("zahteva reviewer i datum zajedno sa confirmed/disputed statusom", () => {
     const partiallyReviewed = structuredClone(retrievalDatasetV2);
-    partiallyReviewed.cases[0]!.reviewer = "Reviewer";
+    partiallyReviewed.cases[1]!.reviewer = "TODO";
     expect(RetrievalDatasetSchema.safeParse(partiallyReviewed).success).toBe(
       false,
     );

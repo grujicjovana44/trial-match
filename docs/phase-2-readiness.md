@@ -26,13 +26,13 @@ Ovaj izveštaj opisuje trenutno nekomitovano radno stablo na grani `rag`. Nije p
 | `node dist/scripts/index-build.js --estimate-only` | 5 studija, 20 dokumenata, 192 procenjena tokena; cena nepoznata (`null`); bez index build-a |
 | `pnpm embeddings:check`                            | Ranije PASS — jedan sintetički poziv; nije ponovljen u ovoj završnoj proveri                |
 
-Offline RAG izveštaj je razvojna dijagnostika, jer su sve oznake `proposed`/`pending_human_review`: paired nDCG delta hybrid→rerank je 0 za RAG-001, +0.369 za RAG-002, a ranking metrike za RAG-003/004 nisu izračunate. Ovo nije dokaz poboljšanja kvaliteta. Lokalno merenje VectorStore latencije nije produkcioni SLO.
+Sva četiri postojeća RAG slučaja su adjudikovana: RAG-001/002 su rangirajući, a RAG-003/004 behavior slučajevi bez ranking metrika. Paired nDCG delte hybrid→rerank su 0 za RAG-001 i +0.369 za RAG-002. Dva slučaja na korpusu od pet studija nisu dokaz opšteg poboljšanja. Lokalno merenje VectorStore latencije nije produkcioni SLO.
 
 `pnpm eval:offline` prethodno beleži commit `4c22035` kao source revision, dok su izmene u radnom stablu nekomitovane; zato taj izveštaj nije baseline za ovaj diff.
 
 ## Preostalo pre merge-a
 
-- `eval/rag/retrieval-v1.json` i `baseline-v1.json` ostaju nepromenjeni. `retrieval-v2.json` sadrži predložene oznake (`TODO` pregledavaoci/datumi) i opisne corpus-v1 obrasce; ljudska adjudikacija nije urađena. Merenja na v0-dev su razvojna, bez zaključaka.
+- `eval/rag/retrieval-v1.json` i `baseline-v1.json` ostaju nepromenjeni. Sva četiri slučaja u `retrieval-v2.json` adjudikovana su od JG; planned patterns su samo opisni, bez konkretnih slučajeva ili oznaka. Globalni dataset status ostaje `pending_human_review`.
 - `index:build` nije pokrenut; nema lokalnog izgrađenog indeksa i tekst studija nije poslat embeddings provajderu. `embeddings:check` je koristio samo sintetički upit.
 - Retrieval implementacija/evaluatori i offline RAG poređenje su završeni, ali oznake nisu ljudski adjudikovane; nije potvrđeno da reranking poboljšava kvalitet. TypeScript RAGAS-style metrike su lokalne heuristike, ne semantički dokaz.
 - Estimate-only nije slao tekst niti pozivao embeddings provajdera; stvarni index build čeka korisničko odobrenje.
