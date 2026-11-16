@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import MiniSearch from "minisearch";
+import { describe, expect, it, vi } from "vitest";
 import fixtureData from "../../../../data/fixtures/trials.json" with { type: "json" };
 import {
   ProfileSchema,
@@ -74,6 +75,40 @@ function studyWithUnretrievedExclusion(): Trial {
 }
 
 describe("hibridni retrieval", () => {
+  it("gradi MiniSearch indeks jednom za isti skup studija kroz više upita", async () => {
+    const trial = studyWithUnretrievedExclusion();
+    const trials = [trial];
+    const addAll = vi.spyOn(MiniSearch.prototype, "addAll");
+    try {
+      const retriever = new HybridTrialRetriever(
+        new InMemoryVectorStore(),
+        new KeywordFakeEmbedder(),
+        trials,
+      );
+      const options = {
+        maxCandidates: 1,
+        maxSnippets: 1,
+        maxContextChars: 1000,
+        sources: { lexical: true, vector: false },
+        rerank: false,
+      };
+      await retriever.retrieve(
+        { stated_diagnoses: ["dijabetes tipa 2"] },
+        trials,
+        options,
+      );
+      await retriever.retrieve(
+        { stated_diagnoses: ["dijabetes tipa 2"] },
+        trials,
+        options,
+      );
+
+      expect(addAll).toHaveBeenCalledTimes(1);
+    } finally {
+      addAll.mockRestore();
+    }
+  });
+
   it("odabira studiju, ali matcher i dalje isključuje zbog exclusion kriterijuma van konteksta", async () => {
     const trial = studyWithUnretrievedExclusion();
     const embedder = new KeywordFakeEmbedder();
@@ -182,7 +217,10 @@ describe("hibridni retrieval", () => {
         throw new Error("simulated timeout");
       },
     };
-    const retriever = new HybridTrialRetriever(new InMemoryVectorStore(), embedder);
+    const retriever = new HybridTrialRetriever(
+      new InMemoryVectorStore(),
+      embedder,
+    );
     const result = await retriever.retrieve(
       { stated_diagnoses: ["dijabetes tipa 2"] },
       [trial],
@@ -207,7 +245,10 @@ describe("hibridni retrieval", () => {
         vector: embedderTestVector(0),
       })),
     );
-    const retriever = new HybridTrialRetriever(store, new KeywordFakeEmbedder());
+    const retriever = new HybridTrialRetriever(
+      store,
+      new KeywordFakeEmbedder(),
+    );
     const result = await retriever.retrieve(
       { stated_diagnoses: ["unmatched syndrome"] },
       [trial],
@@ -227,7 +268,10 @@ describe("hibridni retrieval", () => {
     const trial = studyWithUnretrievedExclusion();
     const trials = [trial];
     const embedder = new KeywordFakeEmbedder();
-    const retriever = new HybridTrialRetriever(new InMemoryVectorStore(), embedder);
+    const retriever = new HybridTrialRetriever(
+      new InMemoryVectorStore(),
+      embedder,
+    );
     const options = { maxCandidates: 1, maxSnippets: 1, maxContextChars: 1000 };
 
     await retriever.retrieve(

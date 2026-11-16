@@ -63,6 +63,14 @@ CI pokreće samo lokalne provere, bez modelskih API poziva.
 
 Za pripremu indeksa bez mreže pokrenite `pnpm build`, pa `node dist/scripts/index-build.js --estimate-only`; ova opcija prikazuje broj studija, tekstova i procenjene tokene bez API ključa, baze ili embedding poziva. Trošak se prikazuje kao nedostupan dok nema proverene cene i datuma. **Stvarni `pnpm index:build` se pokreće tek nakon odobrenja.** Embeddings dozvoljava samo `text-embedding-3-small`; indeksiranje šalje javne tekstove studija/odlomaka, a retrieval samo upitne aspekte validiranog sintetičkog profila. SQLite fajl indeksa je u `data/index/` i ne commit-uje se.
 
+`index:build` podrazumevano čita `data/trials/` i `data/fixtures/` i piše `data/index/rag.sqlite`. Za drugi korpus ponovite `--corpus-root <direktorijum>` za svaki izabrani koren i navedite zasebnu `--index-path <fajl>` putanju. Na primer, RAG v2 procena bez mrežnih poziva:
+
+```sh
+node dist/scripts/index-build.js --corpus-root data/fixtures --corpus-root data/rule_sets/studies_2_approved_20261115_1539 --index-path data/index/rag-v2-eval.sqlite --estimate-only
+```
+
+Izabrani koreni se koriste umesto podrazumevanih; sirovi import nije uključen. Eksplicitno navedena putanja indeksa koja već postoji se ne prepisuje. Korpus odbija isti `trialId` sa različitim sadržajem i navodi oba izvora; isti sadržaj se koristi jednom. Originalni kriterijumski ID, `sourceId` i `sourceQuote` ostaju neizmenjeni.
+
 `RAG_RERANKER=deterministic|gemini|disabled` konfiguriše drugu fazu nakon RRF-a. Gemini koristi jedan ograničen zahtev, vraća samo `{id, score}` i pri grešci ostaje RRF poredak. `pnpm eval:rag:offline` poredi četiri retrieval varijante na istim slučajevima, meri lokalno kašnjenje/paritet VectorStore-a i koristi samo lažni embedder. Predložene anotacije su dijagnostika, ne kvalitetom potvrđen dokaz. RAGAS-style TypeScript metrike su zasebne od matchera; `eval:rag:live` zahteva human-reviewed sintetički skup, approval fajl i potvrdu da cena nije dostupna.
 
 ## Podaci i izvori

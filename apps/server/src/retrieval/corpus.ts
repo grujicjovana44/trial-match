@@ -34,7 +34,6 @@ export type RagCorpus = {
 type CandidateTrial = {
   trial: Trial;
   source: CorpusSource;
-  modifiedAt: number;
   contentHash: string;
 };
 
@@ -67,6 +66,11 @@ function sha256(value: string | Buffer): string {
   return createHash("sha256").update(value).digest("hex");
 }
 
+export function hashRagSourceContent(contents: string | Buffer): string {
+  const text = Buffer.isBuffer(contents) ? contents.toString("utf8") : contents;
+  return sha256(text.replace(/\r\n/gu, "\n"));
+}
+
 function isUnconfirmedLicense(license: string): boolean {
   return /nepotvrđeno|unconfirmed|unverified/iu.test(license);
 }
@@ -96,7 +100,6 @@ export async function loadRagCorpus(
 
       let trials: Trial[] | undefined;
       let version: string | undefined;
-      let modifiedAt = 0;
       if (Array.isArray(raw)) {
         const parsed = TrialSchema.array().safeParse(raw);
         if (parsed.success) {
@@ -118,10 +121,6 @@ export async function loadRagCorpus(
           }
           trials = envelope.data.trials;
           version = manifest.version;
-          modifiedAt = Date.parse(
-            manifest.downloadDate ??
-              `${manifest.date ?? "1970-01-01"}T00:00:00Z`,
-          );
         } else if (
           typeof raw === "object" &&
           raw !== null &&
@@ -146,7 +145,7 @@ export async function loadRagCorpus(
       const source: CorpusSource = {
         path: relative(workingDirectory, path).split(sep).join("/"),
         version,
-        sha256: sha256(contents),
+        sha256: hashRagSourceContent(contents),
       };
       sources.push(source);
       for (const trial of trials) {
@@ -154,28 +153,27 @@ export async function loadRagCorpus(
         const candidate: CandidateTrial = {
           trial,
           source,
-          modifiedAt,
           contentHash,
         };
         const existing = candidateTrials.get(trial.trialId);
-        if (!existing || candidate.modifiedAt > existing.modifiedAt) {
-          candidateTrials.set(trial.trialId, candidate);
-          continue;
-        }
-        if (
-          candidate.modifiedAt === existing.modifiedAt &&
-          candidate.contentHash !== existing.contentHash
-        )
+        if (existing && candidate.contentHash !== existing.contentHash)
           throw new Error(
-            `Studija ${trial.trialId} ima različit sadržaj u izvorima ${existing.source.path} i ${source.path} sa istim vremenom verzije.`,
+            `Studija ${trial.trialId} ima različit sadržaj u izvorima ${existing.source.path} i ${source.path}.`,
           );
+        if (existing) {
+          console.info(
+            `Identičan duplikat studije ${trial.trialId} u izvorima ${existing.source.path} i ${source.path}; koristi se jednom.`,
+          );
+        } else {
+          candidateTrials.set(trial.trialId, candidate);
+        }
       }
     }
   }
 
   if (candidateTrials.size === 0)
     throw new Error(
-      "Nema validiranih Trial zapisa u data/trials/ ili data/fixtures/.",
+      "Nema validiranih Trial zapisa u izabranim izvorima korpusa.",
     );
   const orderedSources = sources.sort((left, right) =>
     left.path.localeCompare(right.path, "en"),

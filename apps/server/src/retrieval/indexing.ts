@@ -7,6 +7,7 @@ import {
   EMBEDDING_BATCH_SIZE,
   EMBEDDING_DIMENSIONS,
   INDEX_TOKEN_CONFIRMATION_THRESHOLD,
+  INDEX_TOKEN_ESTIMATE_CALIBRATION_FACTOR,
   MAX_CHUNKS_PER_INDEX_BUILD,
 } from "./config.js";
 import type { RagCorpus } from "./corpus.js";
@@ -50,10 +51,16 @@ export function hashText(text: string): string {
   return createHash("sha256").update(text, "utf8").digest("hex");
 }
 
-export function estimateEmbeddingTokens(texts: readonly string[]): number {
+export function estimateRawEmbeddingTokens(texts: readonly string[]): number {
   return texts.reduce(
     (total, text) => total + Math.ceil(Buffer.byteLength(text, "utf8") / 4),
     0,
+  );
+}
+
+export function estimateEmbeddingTokens(texts: readonly string[]): number {
+  return Math.ceil(
+    estimateRawEmbeddingTokens(texts) * INDEX_TOKEN_ESTIMATE_CALIBRATION_FACTOR,
   );
 }
 
@@ -61,7 +68,7 @@ export function estimatePendingEmbeddings(
   corpus: RagCorpus,
   store: PersistentVectorStore,
   model: string,
-): { uniqueTexts: number; tokens: number } {
+): { uniqueTexts: number; rawTokens: number; tokens: number } {
   const pendingTexts = new Map<string, string>();
   for (const document of buildRagDocuments(corpus.trials)) {
     const textHash = hashText(document.text);
@@ -72,6 +79,7 @@ export function estimatePendingEmbeddings(
     .map(([, text]) => text);
   return {
     uniqueTexts: missingTexts.length,
+    rawTokens: estimateRawEmbeddingTokens(missingTexts),
     tokens: estimateEmbeddingTokens(missingTexts),
   };
 }
@@ -89,6 +97,7 @@ export async function buildVectorIndex(options: {
   manifest: RagIndexManifest;
   embeddedTexts: number;
   reusedTexts: number;
+  rawEstimatedTokens: number;
   estimatedTokens: number;
   embeddingCalls: number;
   tokensUsed: number;
@@ -143,9 +152,9 @@ export async function buildVectorIndex(options: {
     }
   }
 
-  const estimatedTokens = estimateEmbeddingTokens(
-    missing.map((textHash) => uniqueTexts.get(textHash)!),
-  );
+  const missingTexts = missing.map((textHash) => uniqueTexts.get(textHash)!);
+  const rawEstimatedTokens = estimateRawEmbeddingTokens(missingTexts);
+  const estimatedTokens = estimateEmbeddingTokens(missingTexts);
   if (estimatedTokens > threshold && options.confirmLarge !== true)
     throw new Error(
       `Procena je ${estimatedTokens} tokena, iznad praga ${threshold}. Potrebna je eksplicitna potvrda pre embeddings poziva.`,
@@ -215,6 +224,7 @@ export async function buildVectorIndex(options: {
     manifest,
     embeddedTexts: missing.length,
     reusedTexts,
+    rawEstimatedTokens,
     estimatedTokens,
     embeddingCalls,
     tokensUsed,
