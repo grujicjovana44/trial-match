@@ -208,7 +208,7 @@ Postojeći AC-01–AC-11 zadržavaju ID-jeve i značenje iz projektnog brief-a. 
 - Korisnički profili i demonstracioni primeri su sintetički; sistem ne prima stvarne podatke pacijenata.
 - Studijski kriterijumi koji se koriste za automatsku proveru dostupni su i potkrepljeni izvorom. Kriterijum koji nema dovoljnu potporu ne proglašava se ispunjenim ili neispunjenim.
 - Rezultat koji ispunjava sve automatski proverljive kriterijume i dalje zahteva ljudsku procenu i nije odluka o podobnosti.
-- Korisnik je dostavio i potvrdio izvore, formule, konverzije i kontrolne vrednosti navedene u `docs/project-brief.md` i `docs/decisions.md`. Navedeni opsezi profila su isključivo tehničke granice unosa, ne medicinski/laboratorijski referentni opsezi.
+- Korisnik je dostavio izvore, formule, konverzije i kontrolne vrednosti navedene u `docs/project-brief.md` i `docs/decisions.md`; formalna provera prema originalnim publikacijama ostaje otvorena do evidencije izvora, datuma i odgovorne osobe. Opsezi profila su isključivo tehničke granice unosa, ne medicinski/laboratorijski referentni opsezi.
 - Redosled studija je određen presudom, udelom kriterijuma `met` i NCT ID-jem; NCT ID se pretvara u velika slova i sortira rastuće leksikografski.
 - Jedna runda dopune je jedan validno oblikovan odgovor na trenutno pitanje, uključujući dvosmislen odgovor; posle pet rundi novo pitanje završava izvršavanje kontrolisanom greškom `question_round_limit`. Hipoteza nije runda odgovora, ali dopuna nakon nje jeste.
 

@@ -214,6 +214,7 @@ export const TrialSchema = z
   .object({
     trialId: z.string().min(1),
     title: z.string().min(1),
+    summary: z.string().min(1).optional(),
     conditions: z.array(z.string()),
     overallStatus: z.string().nullable(),
     phase: z.string().nullable(),

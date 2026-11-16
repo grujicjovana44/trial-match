@@ -538,6 +538,7 @@ export function createReviewDraft(
     const draftTrial: z.infer<typeof DraftTrialSchema> = {
       trialId: trial.trialId.toUpperCase(),
       title: trial.title,
+      ...(trial.summary === undefined ? {} : { summary: trial.summary }),
       conditions: trial.conditions,
       overallStatus: trial.overallStatus,
       phase: trial.phase,

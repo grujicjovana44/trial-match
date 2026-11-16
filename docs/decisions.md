@@ -1,6 +1,6 @@
 # Odluke projekta
 
-Ovaj dokument beleži odluke za osnovni TrialMatch, razmotrene alternative i posledice. Korisnik je 2026-11-07 dostavio izvore i potvrdio formule, konverzije i kontrolne vrednosti; tehničke granice unosa nisu medicinski referentni opsezi.
+Ovaj dokument beleži odluke za osnovni TrialMatch, razmotrene alternative i posledice. Korisnik je 2026-11-07 dostavio izvore, formule, konverzije i kontrolne vrednosti; formalna provera prema originalnim publikacijama po B-03 ostaje nepotvrđena dok odgovorna osoba ne zabeleži izvor, datum i ime. Tehničke granice unosa nisu medicinski referentni opsezi.
 
 ## Potvrđene odluke
 
@@ -40,11 +40,27 @@ EV-09 i korisnička priča 3 izričito zahtevaju bezbedan ishod za pitanje o či
 
 Ovaj negativni slučaj je dodat u AC-05 uz postojeći `no_matching_trial` slučaj; AC ID ostaje stabilan jer oba predstavljaju nedovoljno dokaza. Hipotetička izmena iz EV-06 obuhvaćena je postojećim AC-03 kao nastavak istog validiranog izvršavanja. Oba proširenja su zabeležena u projektnom brief-u i tabeli sledljivosti specifikacije.
 
-### Minimalna RAG i provera objašnjenja
+### RAG za Fazu 2 — odluka revidirana 2026-11-15
 
-MiniSearch koristi mala slova i podrazumevanu tokenizaciju biblioteke, pretražuje naslov, stanja i izvorne odlomke; stabilno razrešenje jednakih rezultata je po ID-ju studije. Podrazumevani reranker je deterministički: prvo broj automatski proverljivih kriterijuma sa poznatom vrednošću, zatim broj kriterijuma koji mogu biti razjašnjeni dopunom, pa ID studije. Ovaj redosled služi samo odabiru izvora/kandidata i ne menja presude matchera.
+Ranija odluka da je za mali korpus dovoljna samo leksička pretraga više ne važi. Faza 2 obuhvata ugrađeno vektorsko skladište, embeddings i hibridnu pretragu uz RRF; posle toga je odobren i ograničeni opcioni Gemini reranker uz deterministički default/test reranker i fallback na RRF. Baza SQLite + sqlite-vec je odobrena; nova zavisnost je pinovana i ugrađeni smoke test je prošao.
 
-Serverska provera može deterministički da potvrdi da je citat iz tekućeg izvršavanja i da je tekst tačan podniz izvornog odlomka; ona ne može sama da dokaže semantičku potkrepljenost proizvoljne parafraze. Zato se ne prikazuje modelom dodata tvrdnja bez dozvoljenog izvora, a objašnjenje koje ne prođe provere citata ili brojeva zamenjuje se kratkim serverskim šablonom zasnovanim na rezultatima. Semantička podrška citata proverava se i ljudski u evaluaciji; ne tvrdi se da je automatski dokaziva.
+Traženi redosled je: prvo verzionisan i ljudski pregledan skup sintetičkih upita/relevantnih studija i odlomaka, zatim zamrznut MiniSearch baseline, pa retrieval izmene. Trenutni skup i MiniSearch baseline su assistant-authored nacrt i privremeno merenje; adjudikacija nije završena, pa ovaj uslov nije ispunjen i metrike nisu benchmark kvaliteta. Baseline sa pravim modelom nije pokrenut; to je odvojena, plaćena provera i nije uslov za offline retrieval baseline.
+
+Upit se izvodi isključivo iz runtime-validiranog strukturisanog profila, nikad iz sirovog teksta. Polja i poznate vrednosti se serijalizuju deterministički; srpski dijagnostički termini se mapiraju kroz verzionisan, kontrolisan srpsko-engleski rečnik ka terminima jezika korpusa. Nepoznate termine ne prevodimo slobodnim modelskim pozivom. Bez dijagnoze/koncepta pretrage vraćaju se sve studije koje prođu poznate metadata filtere, sortirane stabilno po normalizovanom ID-ju i ograničene `maxCandidates` limitom; ne uzimaju se prvi zapisi ulaznog niza.
+
+Retrieval bira samo skup studija koje će biti razmatrane. Za svaku izabranu studiju matcher dobija i ocenjuje sve pregledane kriterijume; rangirani odlomci služe samo za kontekst objašnjenja/citata i ne smeju da uklone kriterijum iz matchera. Zato kriterijum isključenja koji nije dospeo u kontekst i dalje može i mora da isključi studiju. Izabrani odlomci ostaju nepouzdani podaci, a postojeća serverska provera izvora/citata ostaje obavezna.
+
+Indeks koristi i embeddinge na nivou studije (naslov, stanja i sažetak) i na nivou kriterijumskog odlomka. Brojčani kriterijumi sami po sebi nisu dobar semantički opis studije. Vektorski sadržaj je zamenljiv kroz `VectorStore`: memorijska implementacija služi testovima/CI/offline evaluaciji, a izabrana ugrađena baza lokalnom demo i živom radu. Datoteke indeksa se generišu lokalno, nose manifest modela/dimenzije/hash/verzija i ne commit-uju se.
+
+Odluka za ugrađenu bazu (2026-11-15): izabrani su tačno pinovani `sqlite-vec` 0.1.9 i Node-ov `node:sqlite`; ne dodavati drugi SQLite binding niti drugu bazu. `sqlite-vec` 0.1.9 je objavljen 2026-03-31; njegova [Node integracija](https://alexgarcia.xyz/sqlite-vec/js.html) navodi Node 23.5+, a npm paketi postoje za macOS arm64/x64, Linux arm64/x64 i Windows x64. `node:sqlite` je u Node 24 release candidate ([Node.js dokumentacija](https://nodejs.org/docs/latest-v24.x/api/sqlite.html)), a `sqlite-vec` je pre-1.0. Iako upstream podržava Node 23.5+, projekat zahteva Node `24.15.0+`: izbegava se EOL Node 23, a CI proverava minimalnu i trenutno korišćenu verziju. `pnpm sqlite:smoke` je prošao na Node 24.22.1/macOS arm64: dozvola `allowExtension`, učitavanje native ekstenzije, upis i KNN upit.
+
+[LanceDB Node SDK 0.41.0](https://github.com/lancedb/lancedb/releases/tag/v0.41.0) (2026-10-29) je razmatran; zahteva Node >=22, pruža ugrađeni native SDK za macOS arm64 i Linux x64/arm64 i ima `apache-arrow` peer dependency. SQLite je izabran zbog jednostavne lokalne SQLite datoteke, bez zasebnog procesa, Docker-a ili Arrow sloja, kao i gotovih binarnih paketa za tražene macOS/Linux platforme i Windows x64. Trade-off su `node:sqlite` release-candidate stabilnost i sqlite-vec pre-1.0 API. `VectorStore` zadržava mogućnost zamene. Pretraga koristi tačnu brute-force `vec_distance_L2` nad svim redovima, ne aproksimativni indeks. Nepodržane kombinacije OS/CPU odbijaju se jasnom greškom; poznato nepodržan je, između ostalog, Windows arm64.
+
+Jedini odobren embedding model je `text-embedding-3-small`, uz allowlist proveru, eksplicitan `EMBEDDING_MODEL`, inkrementalni keš teksta i modela i query cache po upitu/modelu. Timeout, 429/5xx i nevalidan odgovor dobijaju ograničene pokušaje; nakon toga samo retrieval prelazi na lexical-only i beleži fallback, bez pada zahteva. Indeksiranje je jedini namerni batch API tok; `embeddings:check` je ranije koristio jedan mali sintetički poziv. Testovi/CI koriste lažni deterministički embedder.
+
+Offline evaluator poredi lexical/vector/hybrid/hybrid+rerank na istim ID-jevima, prikazuje paired razliku i meri VectorStore paritet/kašnjenje. Nacrt oznaka nije ljudski adjudikovan, pa njegove metrike su samo dijagnostika, ne dokaz da reranking pomaže. TypeScript RAGAS-style evaluator je heuristički; odvojeni live judge zahteva pregledan sintetički skup, approval i limite. Nijedna metrika ili reranker ne menja determinističke presude. Slučaj sa zlonamernim odlomkom proverava da je tekst nepouzdan kontekst i ne može promeniti matcherov rezultat.
+
+Serverska provera može deterministički da potvrdi da je citat iz tekućeg izvršavanja i da je tekst tačan podniz izvornog odlomka; ona ne može sama da dokaže semantičku potkrepljenost proizvoljne parafraze. Zato se ne prikazuje modelom dodata tvrdnja bez dozvoljenog izvora, a objašnjenje koje ne prođe provere citata ili brojeva zamenjuje se kratkim serverskim šablonom zasnovanim na rezultatima. Semantička podrška citata proverava se i evaluacijom; ne tvrdi se da je automatski dokaziva.
 
 ### Vrednosti ograničenja
 
@@ -65,7 +81,7 @@ Brojevi su granice proizvoda za kontrolu resursa i pouzdanosti, ne klinički pra
 
 ### Tehnički stack i tačne verzije
 
-Korisnik je izabrao Node.js `24.22.1`, pnpm `12.16.1`, TypeScript `5.9.3`, Fastify `5.12.5`, React/React DOM `19.3.1`, Vite `8.3.5`, Zod `4.6.7`, Vitest `5.0.5`, MiniSearch `7.2.0`, ESLint `10.13.0`, `typescript-eslint` `8.71.0`, Prettier `3.9.10`, jsdom `30.1.3`, Testing Library React `16.3.3` i user-event `14.6.8`; `package.json` je izvor tačnih verzija ostalih paketa. Korisnik je potvrdio pravilo izdanja starijeg od 14 dana. `.nvmrc`, `engines.node` i `.npmrc` su usklađeni; `pnpm install --frozen-lockfile --lockfile-only --offline` prolazi sa pnpm `12.16.1`. Lokalni Node je i dalje `24.20.0`, pa treba preći na `24.22.1` pre izvršavanja projekta. Commit se i dalje odlaže do prvog implementacionog prolaza.
+Korisnik je izabrao Node.js `24.22.1`, pnpm `12.16.1`, TypeScript `5.9.3`, Fastify `5.12.5`, React/React DOM `19.3.1`, Vite `8.3.5`, Zod `4.6.7`, Vitest `5.0.5`, MiniSearch `7.2.0`, ESLint `10.13.0`, `typescript-eslint` `8.71.0`, Prettier `3.9.10`, jsdom `30.1.3`, Testing Library React `16.3.3` i user-event `14.6.8`; `package.json` je izvor tačnih verzija ostalih paketa. Korisnik je potvrdio pravilo izdanja starijeg od 14 dana. `.nvmrc`, `engines.node` i `.npmrc` su usklađeni; `pnpm install --frozen-lockfile --lockfile-only --offline` prolazi sa pnpm `12.16.1`. Lokalni Node je potvrđen kao `24.22.1` na macOS arm64. Commit se i dalje odlaže do prvog implementacionog prolaza.
 
 ### Tehničke granice validacije profila
 
@@ -89,15 +105,15 @@ Faza 1 nema `cancel` događaj u toku provere. Korisnik koji želi drugi profil b
 
 Tačne verzije su izabrane i potvrđene u odluci „Tehnički stack i tačne verzije“. `.npmrc` treba da zadrži `save-exact=true`; pre implementacije treba proveriti da `pnpm-lock.yaml` zaključava sve zavisnosti iz `package.json`. Commit lockfile-a se odlaže do prvog implementacionog prolaza.
 
-## Potvrđene formule i reference (B-03)
+## Formule i reference na proveri (B-03)
 
 - **eGFR**: CKD-EPI 2021 po kreatininu, bez rase. Inker LA et al. (2021), *New Creatinine- and Cystatin C–Based Equations to Estimate GFR without Race*, *New England Journal of Medicine* 385:1737–1749, DOI `10.1056/NEJMoa2102953`, PMID `34554658`; implementacioni izvor: NIDDK, *2021 CKD-EPI Creatinine Equation*. Korisnik je potvrdio formulu.
-- **eGFR kontrolne vrednosti**: muškarac 62 g., kreatinin 1,3 mg/dL → `62.11 mL/min/1.73 m²`; žena 70 g., kreatinin 1,0 mg/dL → `60.61 mL/min/1.73 m²`; tolerancija za obe `±0.01`.
-- **BMI**: CDC, *Calculating BMI*, `kg / m²`; 92 kg i 178 cm → `29.04 kg/m²`, tolerancija `±0.01`.
+- **eGFR kontrolne vrednosti**: muškarac 62 g., kreatinin 1,3 mg/dL → `62.11 mL/min/1.73 m²`; žena 70 g., kreatinin 1,0 mg/dL → `60.61 mL/min/1.73 m²`.
+- **BMI**: CDC, *Calculating BMI*, `kg / m²`; 92 kg i 178 cm → `29.04 kg/m²`.
 - **Kreatinin**: NIDDK, *GFR equations and conversion factors*; µmol/L u mg/dL deljenjem sa `88.4`.
 - **HbA1c**: NGSP, *IFCC Standardization of HbA1c*; IFCC mmol/mol u NGSP % po `0.09148 × vrednost + 2.152`.
 
-Korisnik je izričito potvrdio da su formule, konverzije i kontrolne vrednosti provereni prema dostavljenim izvorima. Za tehničke ulazne granice nije dostavljen medicinski izvor, jer se one koriste samo kao sanity check, a ne kao medicinski opseg. B-03 je razrešen; svaka nova ili izmenjena formula/prag bez korisničke potvrde mora ostati označen „PROVERITI prema originalnoj publikaciji“. Nezavisna mrežna provera izvora nije rađena.
+Formule, konverzije i kontrolne vrednosti su dostavljeni uz izvore, ali odgovorna osoba još nije zabeležila proveru prema originalnim publikacijama, datum i ime; B-03 ostaje otvoren. Kontrolne vrednosti izračunate referentnom implementacijom koriste toleranciju ±0,01, a zaokružene ručne vrednosti ±0,5. Tehničke ulazne granice služe samo kao sanity check. Svaka formula/prag ostaje označen „PROVERITI prema originalnoj publikaciji“ dok provera ne bude evidentirana.
 
 ### UI testovi
 
@@ -117,7 +133,7 @@ Mrežni retry se primenjuje samo na model-provider pozive. Lokalna greška deter
 
 ### Status blokatora
 
-B-02 i B-04–B-11 su razrešeni odlukama u ovom dokumentu ili projektnom brief-u; njihove odredbe treba dosledno sprovesti kroz specifikaciju, plan, zadatke i testove. B-03 je razrešen korisnički dostavljenim izvorima, formulama i kontrolnim vrednostima; opsezi validacije su tehnički sanity check. `not_in_sources` je razrešen postojećim poljem `profileText` i intent klasifikacijom. B-01 verzije i lockfile su provereni; ostaje lokalna dostupnost izabranog Node.js `24.22.1` runtime-a. Commit lockfile-a je odložen do prvog implementacionog prolaza po korisničkom zahtevu. Pružalac/model za živu fazu i uslovi korišćenja stvarnog snimka ostaju ljudske odluke za Fazu 2, ne blokatori sintetičke Faze 1.
+B-02 i B-04–B-11 su razrešeni odlukama u ovom dokumentu ili projektnom brief-u; njihove odredbe treba dosledno sprovesti kroz specifikaciju, plan, zadatke i testove. B-03 ostaje otvoren do formalne provere koju će odgovorna osoba evidentirati; izvori, formule i kontrolne vrednosti su dostavljeni, a opsezi validacije su samo tehnički sanity check. `not_in_sources` je razrešen postojećim poljem `profileText` i intent klasifikacijom. B-01 verzije i lockfile su provereni; ostaje lokalna dostupnost izabranog Node.js `24.22.1` runtime-a. Commit lockfile-a je odložen do prvog implementacionog prolaza po korisničkom zahtevu. Pružalac/model za živu fazu i uslovi korišćenja stvarnog snimka ostaju ljudske odluke za Fazu 2, ne blokatori sintetičke Faze 1.
 
 ## Interfejs (funkcionalnost 002)
 

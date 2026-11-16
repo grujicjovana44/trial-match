@@ -17,6 +17,17 @@ describe("minimalni tragovi", () => {
       environment: { API_KEY: "tajna-vrednost" },
       profile: { age: 62, stated_diagnoses: ["privatni podatak"] },
       chain_of_thought: "unutrašnje rezonovanje",
+      events: [
+        {
+          step: "retrieval",
+          durationMs: 1,
+          outcome: "lexical_fallback:disabled",
+          retrievalMode: "lexical_fallback",
+          fallbackReason: "embedding_http_401",
+          vectorHitCount: 0,
+          selectedTrialIds: ["NCT12345678"],
+        },
+      ],
     });
 
     expect(Object.keys(trace)).toEqual([
@@ -34,6 +45,12 @@ describe("minimalni tragovi", () => {
     expect(JSON.stringify(trace)).not.toContain("tajna-vrednost");
     expect(JSON.stringify(trace)).not.toContain("privatni podatak");
     expect(JSON.stringify(trace)).not.toContain("unutrašnje rezonovanje");
+    expect(trace.events[0]).toMatchObject({
+      retrievalMode: "lexical_fallback",
+      fallbackReason: "embedding_http_401",
+      vectorHitCount: 0,
+      selectedTrialIds: ["NCT12345678"],
+    });
   });
 
   it("odbija trag bez obaveznih metapodataka", () => {

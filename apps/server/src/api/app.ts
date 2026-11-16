@@ -38,6 +38,7 @@ export function createApp(options: AppOptions = {}): FastifyInstance {
   const operations = new Operations(options.now);
   const rateLimits = new Map<string, { startedAt: number; count: number }>();
 
+  app.addHook("onClose", async () => service.close());
   app.addHook("onRequest", async (request, reply) => {
     if (request.headers.origin === config.WEB_ORIGIN) {
       reply.header("Access-Control-Allow-Origin", config.WEB_ORIGIN);
@@ -163,6 +164,7 @@ export function createApp(options: AppOptions = {}): FastifyInstance {
   app.get("/health", async () => ({
     status: "ok",
     demoMode: config.DEMO_MODE,
+    retrievalMode: service.retrievalMode,
     providerId: service.adapter.providerId,
     modelId: service.adapter.modelId,
   }));

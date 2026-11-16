@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 2,
+  "datasetId": "rag-retrieval-v2",
+  "corpusSnapshotId": "rag-corpus-v0-dev",
+  "annotationStatus": "pending_human_review",
+  "annotationMethod": "Human review by JG on 2026-11-15. Conditional labels were resolved against the frozen local corpus snapshot. RAG-001/RAG-002 and behavior expectations RAG-003/RAG-004 are confirmed. Other planned patterns remain description-only. Relevance rules are independent of retrieval output.",
+  "corpus": [
+    {
+      "path": "data/fixtures/trials.json",
+      "version": "synthetic-trials-v1",
+      "sha256": "f368d13bff16dc5ad69636513281ed18ea8601978a83d6c3c000dd4b0cde4950"
+    },
+    {
+      "path": "data/rule_sets/studies_2_approved_20261115_1539/trials.json",
+      "version": "rules-0b88455b00ae",
+      "sha256": "4b39b15a92b3ce20591c70ed54bb60e81a453c10b2c3a5dd2052b00ec3c8a2e5"
+    }
+  ],
+  "cases": [
+    {
+      "caseId": "RAG-001",
+      "language": "sr",
+      "profile": {
+        "age": 52,
+        "sex": "female",
+        "stated_diagnoses": ["gojaznost", "dijabetes tip 2"]
+      },
+      "relevantTrialIds": ["NCT07924436"],
+      "relevantPassageIds": ["NCT07924436#inc-3", "NCT07924436#inc-5"],
+      "rationale": "JG je pregledao slučaj 2026-11-15; uslovna oznaka je zatim razrešena proverom zamrznutog izvora. T-A/T-B/T-C su samo T2D; NCT07409714 nema summary, navodi samo T2D u title/conditions, a BMI <40 je podobnosni prag. Po pravilu recenzenta nije relevantan za gojaznost. NCT07924436 je relevantan. Inc-1 je uklonjen jer je pol. JG je naknadno potvrdio da inc-3 (BMI >=30) u ovoj studiji definiše gojaznost, pa su inc-3 i inc-5 relevantni.",
+      "relevanceRule": "Studija je relevantna ako u naslovu, stanjima, sažetku ili cilju obuhvata I dijabetes tipa 2 I gojaznost (kao ciljnu populaciju ili stratum). Studija koja obuhvata samo jedan koncept, ili ga pominje samo kroz prag podobnosti (npr. BMI opseg), nije relevantna. Odlomak je relevantan ako neposredno navodi jedan od ta dva koncepta (ili prag koji u toj studiji definiše gojaznost) i pripada relevantnoj studiji. Pol, uzrast i podobnost profila ne ulaze u relevantnost.",
+      "labelStatus": "confirmed",
+      "reviewer": "JG",
+      "reviewedAt": "2026-11-15T23:02:07.188+01:00",
+      "kind": "ranking",
+      "split": "dev"
+    },
+    {
+      "caseId": "RAG-002",
+      "language": "en",
+      "profile": {
+        "age": 20,
+        "stated_diagnoses": ["type 2 diabetes", "renal health"]
+      },
+      "relevantTrialIds": ["NCT07409714"],
+      "relevantPassageIds": ["NCT07409714#exc-4", "NCT07409714#exc-5"],
+      "rationale": "Pregledao JG 2026-11-15. Inc-1 je uzrast, koji nije koncept upita. Inc-3 je uklonjen jer tekst navodi dijabetes bez eksplicitnog tipa 2, kako zahteva pravilo. Exc-4 navodi eGFR, a exc-5 albuminuriju/bubrežno oštećenje. T-A/T-B pominju eGFR samo kao prag podobnosti i nisu relevantni po pravilu.",
+      "relevanceRule": "Studija je relevantna ako u naslovu, stanjima, sažetku ili cilju obuhvata I dijabetes tipa 2 I bubrežno zdravlje/funkciju (kao ishod, populaciju ili temu). Pominjanje eGFR samo kao praga podobnosti nije dovoljno. Uzrast profila nije pretraživi koncept i ne ulazi u relevantnost. Odlomak je relevantan ako neposredno navodi dijabetes tipa 2 ili bubrežnu funkciju/oštećenje i pripada relevantnoj studiji.",
+      "labelStatus": "confirmed",
+      "reviewer": "JG",
+      "reviewedAt": "2026-11-15T23:02:07.188+01:00",
+      "kind": "ranking",
+      "split": "test"
+    },
+    {
+      "caseId": "RAG-003",
+      "language": "sr",
+      "profile": {
+        "stated_diagnoses": ["dijabetes tip 2"]
+      },
+      "relevantTrialIds": [],
+      "relevantPassageIds": [],
+      "rationale": "Pregledao JG 2026-11-15. Očekivanje važi za ovaj snapshot od pet studija samo kada RAG_MAX_CANDIDATES >= 5; ne ocenjuje se redosled.",
+      "relevanceRule": "Kada upit sadrži koncept dijabetesa tipa 2 i svih pet studija ovog korpusa ga obrađuje (NCT07924436 kao stratum), a RAG_MAX_CANDIDATES je >= 5, biraju se svih pet studija; njihov redosled se ne boduje. Ovo je provera ponašanja, ne kvaliteta rangiranja, i ne važi za veći korpus.",
+      "labelStatus": "confirmed",
+      "reviewer": "JG",
+      "reviewedAt": "2026-11-15T23:02:07.188+01:00",
+      "kind": "behavior",
+      "split": "dev",
+      "behaviorExpectation": "all_studies_selected"
+    },
+    {
+      "caseId": "RAG-004",
+      "language": "none",
+      "profile": {
+        "age": 62
+      },
+      "relevantTrialIds": [],
+      "relevantPassageIds": [],
+      "rationale": "Pregledao JG 2026-11-15. Očekivani redosled po localeCompare('en') za ovaj snapshot je NCT07409714, NCT07924436, T-A, T-B, T-C. Uzrast/pol filteri ne ograničavaju retrieval; podobnost ostaje matcher-ova odgovornost.",
+      "relevanceRule": "Bez dijagnoze ili drugog pretraživog koncepta bira se skup studija do kandidatskog limita u stabilnom ID redosledu (localeCompare 'en': NCT07409714, NCT07924436, T-A, T-B, T-C), embeddings se ne poziva, i nijedan filter po uzrastu ili polu ne skraćuje listu pre matchera.",
+      "labelStatus": "confirmed",
+      "reviewer": "JG",
+      "reviewedAt": "2026-11-15T23:02:07.188+01:00",
+      "kind": "behavior",
+      "split": "test",
+      "behaviorExpectation": "stable_fallback_order"
+    }
+  ],
+  "plannedPatterns": [
+    {
+      "pattern": "no_matching_query",
+      "kind": "negative",
+      "description": "Sintetički profil čiji pretraživi koncept nema ekvivalent u nijednoj studiji korpusa; opisati očekivano odsustvo relevantnih pogodaka bez dodeljivanja studija ili odlomaka.",
+      "corpusVersionRequired": "corpus-v1",
+      "status": "description_only"
+    },
+    {
+      "pattern": "serbian_synonyms_and_cyrillic",
+      "kind": "language",
+      "description": "Isti klinički koncept izražen srpskim sinonimima, latinicom i ćirilicom, u odnosu na engleski izvor; anotirati tek kada se korpus v1 zamrzne.",
+      "corpusVersionRequired": "corpus-v1",
+      "status": "description_only"
+    },
+    {
+      "pattern": "malicious_indexed_passage",
+      "kind": "injection",
+      "description": "Studija sadrži odlomak sa instrukcijom usmerenom modelu; proveriti da tekst može biti nepouzdan kontekst, ali ne menja matcher presudu ni alatni izlaz.",
+      "corpusVersionRequired": "corpus-v1",
+      "status": "description_only"
+    },
+    {
+      "pattern": "lexical_hard_negatives",
+      "kind": "negative",
+      "description": "Više studija deli reči sa upitom, ali se razlikuje po populaciji ili kliničkom kontekstu; unapred definisati relevantnost iz izvora pre pokretanja retrieval-a.",
+      "corpusVersionRequired": "corpus-v1",
+      "status": "description_only"
+    }
+  ]
+}
