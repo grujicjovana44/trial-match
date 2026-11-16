@@ -99,7 +99,7 @@ Svaka odluka ima oblik: odluka, obrazloženje, razmotrene alternative. Tvrdnje o
 
 **Odluka**: Sve studije otvorene, u redosledu servera. Iznad liste „Pregled studija“ sa vezama do svake studije. Brzina: CSS `content-visibility: auto` sa `contain-intrinsic-size` na kartici studije. Pojavljivanje: kašnjenje po kartici `min(indeks, 8) × 0,04 s`, pa poslednja kartica počinje najkasnije posle 0,32 s; redovi kriterijuma se ne animiraju pojedinačno.
 
-**Obrazloženje**: Odgovor korisnika u razjašnjenju (opcija A). `content-visibility` ne sakriva sadržaj od pretrage na stranici ni od čitača ekrana, a ne traži biblioteku za virtuelizaciju.
+**Obrazloženje**: Odgovor korisnika u razjašnjenju (opcija A). `content-visFibility` ne sakriva sadržaj od pretrage na stranici ni od čitača ekrana, a ne traži biblioteku za virtuelizaciju.
 
 **Alternative**: virtuelizovana lista: odbačeno (nova zavisnost; lomi pretragu na stranici i sidra); skupljanje isključenih studija: odbačeno odlukom korisnika.
 
