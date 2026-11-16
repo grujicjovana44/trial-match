@@ -12,6 +12,45 @@ Korisnik je potvrdio datum snimka kao 2026-11-12. Filesystem creation time je `2
 
 Tačan endpoint/izvoz, upit i filteri, da li su povezane stranice preuzete, i uslovi korišćenja/licence nisu dokumentovani. Zato se ovaj fajl još ne predstavlja kao potpun ili odobren korpus. Pre uvoza i upotrebe, čovek potvrđuje te metapodatke i pregledava pravila studija. Sve pripremne komande moraju raditi lokalno nad eksplicitnim ulazom; ne preuzimaju niti skrejpuju podatke.
 
+## ClinicalTrials.gov T2D skup od 20 studija (2026-11-16)
+
+Osamnaest dodatnih studija je pojedinačno preuzeto sa zvaničnog [ClinicalTrials.gov API v2](https://clinicaltrials.gov/api/v2/) endpoint-a; dve ranije odobrene studije ostaju neizmenjene. [Manifest porekla](raw/studies_20_api_provenance_2026-11-16.json) evidentira svih 20 ID-jeva, zvanične URL-jeve, datum preuzimanja, status regrutacije, dostupne `statusVerifiedDate` i `lastUpdatePostDate`, SHA-256 i putanju sačuvanog zapisa. Originalni zapisi za 18 novih studija su `raw/study_<NCT>_2026-11-16.json`; njihova agregacija za postojeći importer je `raw/studies_18_ctg_api_records_2026-11-16.json`. Licenca se ne pretpostavlja: pripisuje se ClinicalTrials.gov, napominju se moguća prava trećih strana i ne tvrdi se zasebna licenca.
+
+Novi import, split i pravila za ljudski rad su:
+
+- `review_candidates/studies_20_2026-11-16/import/studies_18_api_import_2026-11-16.json`
+- `review_candidates/studies_20_2026-11-16/review/studies_18_split_2026-11-16.json`
+- `review_candidates/studies_20_2026-11-16/review/studies_18_rules_draft_2026-11-16.json`
+
+Primenjene transformacije: originalni JSON je sačuvan zasebno po studiji; postojeći `data:prepare` normalizovao je naslove, uslove, sažetke, status i podržana strukturisana polja; `data:split` je sačuvao originalni eligibility tekst i doslovne citate uz postojeće `#unsplit-1`/`#inc-N`/`#exc-N` ID-jeve; `rules:draft` je napravio postojeći nacrt bez odobravanja. Nije menjana medicinska vrednost, izvorni tekst, prethodni odobreni paket, matcher, RAG algoritam ili indeks.
+
+| NCT ID | Status | Tekstualni kriterijumi/pravila | Strukturisana auto-proverljiva polja | Obrada |
+| --- | --- | ---: | ---: | --- |
+| NCT05439226 | RECRUITING | 17, svi `manual_review` | 2 | pending human review |
+| NCT05838287 | RECRUITING | 21, svi `manual_review` | 2 | pending human review |
+| NCT06118931 | RECRUITING | 16, svi `manual_review` | 1 | pending human review |
+| NCT06251323 | RECRUITING | 5, svi `manual_review` | 1 | pending human review; eligibility je na nivou klinike |
+| NCT06271382 | RECRUITING | 11, svi `manual_review` | 1 | pending human review |
+| NCT06296485 | RECRUITING | 14, svi `manual_review` | 1 | pending human review |
+| NCT06449833 | RECRUITING | 16, svi `manual_review` | 2 | pending human review |
+| NCT06852950 | RECRUITING | 18, svi `manual_review` | 1 | pending human review; mešovita T1D/T2D populacija |
+| NCT06862739 | RECRUITING | 17, svi `manual_review` | 2 | pending human review |
+| NCT06875193 | RECRUITING | 29, svi `manual_review` | 1 | pending human review |
+| NCT06888050 | RECRUITING | 16, svi `manual_review` | 2 | pending human review |
+| NCT07121504 | RECRUITING | 18, svi `manual_review` | 1 | pending human review |
+| NCT07350967 | RECRUITING | 23, svi `manual_review` | 2 | pending human review |
+| NCT07409714 | RECRUITING | 21 pravila: 17 `manual_review`, 4 `auto` | — | postojeći odobreni paket; neizmenjen |
+| NCT07574138 | RECRUITING | 13, svi `manual_review` | 0 | pending human review |
+| NCT07676773 | RECRUITING | 19, svi `manual_review` | 2 | pending human review |
+| NCT07767331 | RECRUITING | 3, svi `manual_review` | 1 | pending human review |
+| NCT07775846 | RECRUITING | 25, svi `manual_review` | 2 | pending human review |
+| NCT07919236 | RECRUITING | 19, svi `manual_review` | 2 | pending human review |
+| NCT07924436 | RECRUITING | 9 pravila: 6 `manual_review`, 3 `auto` | — | postojeći odobreni paket; neizmenjen |
+
+Sažetak obrade: 20 jedinstvenih stvarnih studija, 18 novih i 2 već odobrene; 300 novih tekstualnih kriterijuma čeka ljudski pregled, a 26 dodatnih strukturisanih polja može se deterministički proveriti bez ljudskog odobrenja. `data:split` je obradio svih 18 bez tehničkih problema i bez `needs_manual_split`; citati su doslovni podnizovi originalnog eligibility teksta. Dva postojeća paketa sadrže ukupno 30 odobrenih pravila, od kojih je 7 `auto`, a 23 ostaju `manual_review`.
+
+Postojeći `loadRagCorpus` validaciono učitava 20 jedinstvenih studija kada se eksplicitno koriste koreni `rule_sets/studies_2_approved_20261115_1539/` i `review_candidates/studies_20_2026-11-16/import/`. Novi kandidati nisu dodati podrazumevanom `data/trials/` ili `DATA_DIR` toku, pa DEMO i matcher ostaju nepromenjeni. Ovo je provera kompatibilnosti loader-a, ne izgrađen ili evaluiran RAG indeks. Postojeći RAG dokument-builder ne koristi originalni `eligibilityText`/`sources`, pa novih 300 izdvojenih kriterijuma još nema u passage pretrazi. Puna kriterijumska pretraga i matcher upotreba čekaju podršku za pending passages i ljudski pregled/odobrenje.
+
 ## Faza 2: lokalni uvoz i ljudski pregled
 
 `pnpm data:prepare data/raw/studies_50_recruiting_2026-11-12.json /tmp/trialmatch-003-import.json` validira CTG v2 oblik bez mrežnog pristupa. Izlaz sadrži normalizovane studije, izvorne odlomke, hash-eve, `needsManualSplit`, status stranice i problematične redove. Svaki kriterijum iz originalnog teksta ostaje `manual_review` dok čovek ne razdvoji i pregleda kriterijume. Uvoz ne dopunjava endpoint, query, paginaciju ni uslove korišćenja.

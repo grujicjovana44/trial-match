@@ -77,6 +77,10 @@ Izabrani koreni se koriste umesto podrazumevanih; sirovi import nije uključen. 
 
 Poreklo i ograničenja podataka opisani su u [data/README.md](data/README.md) i [data/manifest.json](data/manifest.json). Korisnik je dostavio jedan raw snimak u `data/raw/`; on još nije potvrđen ili uvezen u matcher. Nijedna komanda ne preuzima niti skrejpuje podatke.
 
+Od 2026-11-16 postoji pripremljen skup od 20 stvarnih T2D-povezanih studija: 18 novih ClinicalTrials.gov API v2 zapisa je preuzeto pojedinačno, a dve ranije odobrene studije ostaju neizmenjene. Izvori, URL-jevi, datumi, statusi i hash-evi su u [manifestu porekla](data/raw/studies_20_api_provenance_2026-11-16.json); novi uvoz i kriterijumi na čekanju su u `data/review_candidates/studies_20_2026-11-16/`. Novi kriterijumi nisu ljudski odobreni i ne ulaze u matcher. Ovaj direktorijum je izolovan od DEMO podrazumevanih putanja; nije napravljen indeks niti je pokrenuta embeddings/API evaluacija.
+
+Postojeći `loadRagCorpus` validaciono učitava 20 jedinstvenih zapisa kada se eksplicitno spoje odobreni paket `data/rule_sets/studies_2_approved_20261115_1539/` i novi import `data/review_candidates/studies_20_2026-11-16/import/`. To ne znači da je svih 300 novih tekstualnih odlomaka dostupno RAG pretrazi: postojeći dokument-builder ne indeksira `eligibilityText` ni `sources`. Za pretragu pojedinačnih novih kriterijuma potrebna je posebna podrška za pending passage korpus, bez njihovog ubacivanja u matcher.
+
 Formule za eGFR, BMI i konverzije imaju izvore u kodu i potvrđene su u [docs/project-brief.md](docs/project-brief.md). Odluke i alternative su u [docs/decisions.md](docs/decisions.md).
 
 ## Dokumentacija i dokazi

@@ -1,0 +1,1218 @@
+{
+  "format": "trialmatch-import-v2",
+  "sourceHash": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c",
+  "manifest": {
+    "name": "ClinicalTrials.gov API v2 — 18 additional T2D-related studies",
+    "version": "ctg-t2d-18-9505cb0d0313",
+    "date": "2026-11-16",
+    "origin": "Official ClinicalTrials.gov API v2 records retrieved individually; per-record URLs, retrieval dates, status dates and hashes are in data/raw/studies_20_api_provenance_2026-11-16.json.",
+    "synthetic": false,
+    "license": "ClinicalTrials.gov Terms and Conditions: https://clinicaltrials.gov/terms-conditions (source attribution required; third-party rights may apply; no separate license is asserted).",
+    "transformations": "Original API JSON retained per study in data/raw; locally normalized by the existing data:prepare importer; eligibility text and source IDs preserved; no medical criteria were changed.",
+    "limitations": [
+      "This import contains the 18 additions only; the two existing approved studies remain in their unchanged approved package.",
+      "All eligibility text and extracted criteria require human review; no approval is implied.",
+      "Some records describe mixed or system-level populations and may not be individual patient-matching candidates.",
+      "ClinicalTrials.gov attribution is retained; third-party rights may apply; no separate license is asserted."
+    ],
+    "downloadedCount": 18,
+    "sourceHash": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c",
+    "queryParameters": {
+      "api": "ClinicalTrials.gov API v2",
+      "search": "query.cond=type 2 diabetes",
+      "status": "RECRUITING,NOT_YET_RECRUITING",
+      "retrieval": "18 individually requested study records"
+    },
+    "includedCount": 18
+  },
+  "trials": [
+    {
+      "trialId": "NCT05439226",
+      "title": "Liver Fat as a Dietary Target of the Chinese Medical Nutrition Therapy (CMNT) Diet for Treating Type 2 Diabetes With Nonalcoholic Fatty Liver Disease",
+      "summary": "Type 2 diabetes (T2D) represents a serious public health problem. Patients with T2D and non-alcoholic fatty liver disease(NAFLD) demonstrate a poor metabolic profile and increase mortality compared with patients with only NAFLD or T2D. Nutritional intervention is the most basic treatment for T2D. Previous study showed that a Chinese medical nutrition therapy (CMNT) diet, which intermittent use of low-calorie medicinal food, has a glucose-lowering effect in T2D. This study aims to investigate the effect of a Chinese medical nutrition therapy (CMNT) diet accompanied by intermittent energy restriction on reducing liver fat and glycated hemoglobin (HbA1c) in patients with T2D and NAFLD.",
+      "conditions": [
+        "Type 2 Diabetes"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "NA",
+      "phases": [
+        "NA"
+      ],
+      "locations": [
+        "Physical Examination Center of Gezhouba central hospital of Sinopharm, Yichang, China",
+        "Hunan Shanshui physical examination center, Changsha, China",
+        "Jinheyuan Outpatient Department, National Sub-health Intervention Technology Achievement Application Center, Changsha, China"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n* Patients diagnosed with type 2 diabetes and NAFLD\n* Age between 18 and 75 years\n* BMI between 18.0 and 35.0 kg/m2\n* Weight stable for at least 3 months prior to the study (gain or loss \\< 4 kg)\n* Stable treatment for at least 3 months with 1-3 oral antidiabetic medications (with or without insulin therapy), or not yet received antidiabetic medication prior to the beginning of the study\n* Able to give written informed consent\n\nExclusion Criteria:\n\n* Self-reported a food allergy\n* Alcohol abuse in the last 3 months (alcohol intake greater than 20 g per day for women; Alcohol intake for men greater than 40 g per day)\n* Other liver diseases such as chronic hepatitis B and C, autoimmune hepatitis, primary biliary cirrhosis, hemochromatosis, nodular regenerative hyperplasia and focal nodular hyperplasia\n* Scheduled to be hospitalized for any surgical treatment during screening\n* Pregnant or planning of pregnancy during the study\n* Inability, physically or mentally, to adhere the procedures required by the study protocol\n* Level 3 hypoglycemic events (at least 3 times) occurring within the 90 days prior to screening\n* Hospitalization or emergency department visit for hyperglycemia, diabetic ketoacidosis, lactic acidosis, hyperosmolar nonketotic coma, or diabetes\n* History of cancer within the past 5 years\n* Acute coronary or cerebrovascular event in the past 90 days, or heart failure\n* Hemorrhagic or ischemic stroke within the last 6 months",
+      "criteria": [
+        {
+          "id": "NCT05439226#structured-minimumAge",
+          "trialId": "NCT05439226",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 18,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 18 Years",
+          "sourceId": "NCT05439226#structured-minimumAge",
+          "sourceQuote": "18 Years"
+        },
+        {
+          "id": "NCT05439226#structured-maximumAge",
+          "trialId": "NCT05439226",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "lte",
+          "value": 75,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "maximumAge: 75 Years",
+          "sourceId": "NCT05439226#structured-maximumAge",
+          "sourceQuote": "75 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT05838287",
+      "title": "Pioglitazone on Heart Failure in Type-2 Diabetes Mellitus Participants",
+      "summary": "Our goal of the study is to learn the effects of the diabetes medication named Pioglitazone, in type-2 diabetic obese participants with Heart failure. The main question it aims to answer are:\n\n1. To demonstrate that impaired mitochondrial function leading to reduced ATP generation plays a key pathophysiologic role in the development of heart failure with preserved ejection fraction (HFpEF) in obese type 2 diabetic (T2D) individuals.\n2. To demonstrate that pioglitazone, improves diastolic (as well as systolic) function by improving myocardial insulin sensitivity and by reducing both myocardial and epicardial fat content.",
+      "conditions": [
+        "Type 2 Diabetes Mellitus in Obese",
+        "Heart Failure With Preserved Ejection Fraction"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "PHASE4",
+      "phases": [
+        "PHASE4"
+      ],
+      "locations": [
+        "Texas Diabetes Institute/UH, San Antonio, United States"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n1. Provision of signed and dated informed consent form\n2. Stated willingness to comply with all study procedures and availability for the duration of the study\n3. Male or female, aged 30-70 years\n4. Body Mass Index (BMI) of 27.5-40kg/m²\n5. HbA1c of 6.5 to 10%\n6. Blood pressure of less than or equal to 145/65mmHg\n7. eGFR greater than 45 ml/min/1.73m²\n8. Subject must have HFpEF (EF \\> 50% by ECHO screening)\n9. NYHA class II-III heart failure\n10. Only T2D patients treated with diet/exercise, metformin, sulfonylurea, metformin/SU, DPP4i or insulin will be studied.\n11. For females of reproductive potential: use of highly effective contraception for at least 1 month prior to screening and agreement to use such a method during study participation and for an additional \\[4 weeks\\] after the end of study participation.\n12. For males of reproductive potential: use of condoms or other methods to ensure effective contraception with partner.\n\nExclusion Criteria:\n\n1. Subjects with history of osteoporosis or proliferative diabetic retinopathy\n2. Subjects with Heart failure due to restrictive or infiltrative cardiomyopathy, active myocarditis, constrictive pericarditis, severe valvular heart disease, etc. will be excluded\n3. Patients with symptomatic coronary artery disease.\n4. Subjects with significant change in diuretic management during the month prior to screening (defined by doubling of diuretic dose, or addition of another HF medication).\n5. Subjects treated with a GLP-1 RA or thiazolidinedione.\n6. Subjects treated with a SGLT2i\n7. Pregnancy or lactation\n8. Known allergic reactions to components of the study interventions.\n9. Any metal plates, parts, screws, shrapnel, pins in body, or cardiac (heart) pacemaker",
+      "criteria": [
+        {
+          "id": "NCT05838287#structured-minimumAge",
+          "trialId": "NCT05838287",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 30,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 30 Years",
+          "sourceId": "NCT05838287#structured-minimumAge",
+          "sourceQuote": "30 Years"
+        },
+        {
+          "id": "NCT05838287#structured-maximumAge",
+          "trialId": "NCT05838287",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "lte",
+          "value": 70,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "maximumAge: 70 Years",
+          "sourceId": "NCT05838287#structured-maximumAge",
+          "sourceQuote": "70 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT06118931",
+      "title": "Time-restricted Eating, Window Timing, Type 2 Diabetes Status and Sex on Glycemic Control",
+      "summary": "This study will evaluate the effectiveness of time-restricted eating (TRE), which is a form of intermittent fasting. When performing TRE, individuals consume all of their calories within a specific time window and then only consume water or other no calorie drinks the rest of the day. TRE is performed each day. There is no restriction on the quality or amount of food that people can consume during their eating window (ad libitum eating) with TRE, which can last anywhere from 4 to 12 hours. We are comparing three different 9-hour eating windows to determine whether the start and stop time of the eating window impact blood sugar control in individuals with obesity who also have or are at risk for type 2 diabetes. We also aim to determine if there are differences in the effects of the timing of eating window between males and females.",
+      "conditions": [
+        "Diabetes Mellitus, Type 2",
+        "Obesity",
+        "Prediabetic State",
+        "Hyperglycemia"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "NA",
+      "phases": [
+        "NA"
+      ],
+      "locations": [
+        "Remote Ontario-wide, Toronto, Canada"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n* Aged 40 years or older\n* Body mass index \\<50 kg/m2\n* Have access to an Apple or Android cellphone with Bluetooth.\n* Have type 2 diabetes or be at risk for type 2 diabetes (defined as self-report of pre-diabetes, a recent (within 12 months) measure of HbA1c between 5.7 and 6.4%, waist circumference (WC) that is BMI specific; for women: BMI \\>= 18.5-24.9, WC \\>= 80cm; BMI \\>= 25-29.9, WC \\>= 90cm; BMI \\>= 30-34.9, WC \\>= 105cm; BMI \\>= 35+, WC \\>= 115cm; for men: BMI \\>= 18.5-24.9, WC \\>= 90cm; BMI \\>= 25-29.9, WC \\>= 100cm; BMI \\>= 30-34.9, WC \\>= 110cm; BMI \\>= 35+, WC \\>= 125cm.\n\nExclusion Criteria:\n\n* Individuals with type 2 diabetes will be excluded if: (1) currently on \\>2 monotherapies for diabetes, (2) have had diabetes therapy medication or dosage changes \\<3 months, (3) self-reported hemoglobin A1c \\>9.0%, (4) taking exogenous insulin, or (5) taking sulfonylureas\n* The following exclusion criteria applies to all potential participants:\n\n  1. History of or referral for bariatric surgery\n  2. Weight loss \\>3% in the last 3 months\n  3. Taking antiobesity (weight loss) medications\n  4. Body weight \\>390lbs\n  5. Diagnosed with severe cognitive disorder that precludes them from giving consent\n  6. Inability or unwillingness to change their eating window to follow those prescribed in the study\n  7. Currently consistently eating during \\<11.5 hour period .\n  8. Physician-diagnosed eating disorder\n  9. Having a pacemaker or receiving dialysis.\n  10. Not having access to a Lifelabs location.",
+      "criteria": [
+        {
+          "id": "NCT06118931#structured-minimumAge",
+          "trialId": "NCT06118931",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 40,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 40 Years",
+          "sourceId": "NCT06118931#structured-minimumAge",
+          "sourceQuote": "40 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT06251323",
+      "title": "Implementing Scalable, PAtient-centered, Team-based, Technology-enabled Care for Adults With Type 2 Diabetes (iPATH)",
+      "summary": "Sixteen institutions will be selected from a HRSA uniform data system and have data collected for up to 3 years. Eight institutions will begin the iPATH practice transformation during year one, the other eight institutions will begin iPATH in year two. FQHC administrators, clinicians and staff will be enrolled to participate in the iPATH transformation in their clinic and will participate in qualitative interviews. Patient HbA1c data from the clinics will be collected for comparative data analysis during each year of the study.",
+      "conditions": [
+        "Diabetes Mellitus, Type 2"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "NA",
+      "phases": [
+        "NA"
+      ],
+      "locations": [
+        "Board of Trustees of the Leland Stanford Junior University, Stanford, United States",
+        "President and Fellows of Harvard College, T.H. Chan School, Boston, United States",
+        "The Ohio State University, Columbus, United States",
+        "Impactivo, LLC., San Juan, Puerto Rico"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n* Two largest clinic sites in multi-clinic FQHCs operating in or near Massachusetts, Ohio, California, Puerto Rico\n* We will prioritize FQHCs performing in the lower half of the distribution for A1c control, as these FQHCs have greater room for improvement.\n\nExclusion Criteria:\n\n* FQHCs that have a patient population comprised of more than 80% children\n* FQHCs that have a patient population multiplied by the FQHC's diabetes prevalence in the lowest 10% of all the clinics\n* FQHCs that have fewer than 5,000 or more than 50,000 patients.",
+      "criteria": [
+        {
+          "id": "NCT06251323#structured-minimumAge",
+          "trialId": "NCT06251323",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 18,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 18 Years",
+          "sourceId": "NCT06251323#structured-minimumAge",
+          "sourceQuote": "18 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT06271382",
+      "title": "The Effect Of Acupressure and Foot Exercise on Ankle Brachial Index in Individuals With Type 2 Diabetes",
+      "summary": "This study was planned with a randomized controlled experimental design to examine the effects of acupressure and ankle exercises on ankle brachial index in individuals with Type 2 diabetes.",
+      "conditions": [
+        "Diabetes Mellitus, Type 2"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "NA",
+      "phases": [
+        "NA"
+      ],
+      "locations": [
+        "Beşkavaklar Aile Sağlığı Merkezi, Bolu, Turkey (Türkiye)"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n* Being diagnosed with type 2 diabetes\n* Be 18 years or older\n* Ability to speak Turkish\n* Ability to establish verbal communication\n* Volunteering to participate in the research\n\nExclusion Criteria:\n\n* Presence of any psychiatric disease diagnosed by a physician\n* Presence of diabetic ulcers on both feet and legs\n* Presence of any amputation in the foot or leg\n* Having myalgia in the foot,\n* Foot fracture\n* Edema in the feet",
+      "criteria": [
+        {
+          "id": "NCT06271382#structured-minimumAge",
+          "trialId": "NCT06271382",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 18,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 18 Years",
+          "sourceId": "NCT06271382#structured-minimumAge",
+          "sourceQuote": "18 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT06296485",
+      "title": "Safer Aging With Diabetes Monitoring",
+      "summary": "Older adults with type 2 diabetes are at higher risk for severe hypoglycemia and its related complications (including hospitalization and death) when taking insulin. This study proposes to evaluate, in a randomized clinical trial, a strategy of safe insulin prescribing based on an educational program that leverages continuous glucose monitoring to support older adults at high risk for hypoglycemia. If the aims of this project are achieved, this novel care strategy could be widely applied to reduce severe hypoglycemia episodes in older, high-risk adults with type 2 diabetes.",
+      "conditions": [
+        "Diabetes Mellitus, Type 2",
+        "Hypoglycemia"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "NA",
+      "phases": [
+        "NA"
+      ],
+      "locations": [
+        "Kaiser Permanente Fremont, Fremont, United States",
+        "Kaiser Permanente Sacramento, Sacramento, United States",
+        "Kaiser Permanente San Jose, San Jose, United States",
+        "Kaiser Permanente San Leandro, San Leandro, United States",
+        "Kaiser Permanente Santa Clara, Santa Clara, United States",
+        "Kaiser Permanente - Union City, Union City, United States"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n* Age 75 years and older\n* Diagnosis of Type 2 Diabetes\n* Current treatment with insulin\n* Increased hypoglycemia risk (prior year hypoglycemia by self-report or utilization)\n* Able to communicate in English\n* Able to access email and the Internet\n\nExclusion Criteria:\n\n* On renal dialysis\n* Dementia\n* Pacemaker or Automatic Implantable Cardioverter Defibrillator\n* Using insulin pump\n* Severe Mental Illness\n* Severe Visual Impairment\n* In Hospice\n* Current or recent CGM use",
+      "criteria": [
+        {
+          "id": "NCT06296485#structured-minimumAge",
+          "trialId": "NCT06296485",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 75,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 75 Years",
+          "sourceId": "NCT06296485#structured-minimumAge",
+          "sourceQuote": "75 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT06449833",
+      "title": "Effect of Henagliflozein on Hepatic Fat Content in Patients With T2DM and NAFLD",
+      "summary": "This study focuses on the effects of Henagliflozein on hepatic fat content in patients with type 2 diabetes mellitus (DM) and nonalcoholic fatty liver disease (NAFLD). Sponsored by Zhujiang Hospital of Southern Medical University, this study is a multi-center, randomized, controlled clinical trial, aiming at exploring the difference in the reduction of liver fat content in the subjects compared with the control group after 24 weeks of treatment. Subjects from different medical centers diagnosed with T2DM and NAFLD will be randomly assigned to the treatment or control group in a 1:1 ratio, and subsequently initiate the intervention period of 24 weeks. In this trial, patients will be treated with 10 mg of Henagliflozein + metformin and 5 mg of Linagliptin + metformin as control, and the dose of metformin will be customized at 500-1500mg according to their individual blood glucose level. The check-points are set at the 8th, 16th and 24th week of the follow-up after the treatment, and nutritionists are available to provide dietary and exercise guidance.",
+      "conditions": [
+        "Type2 Diabetes Mellitus",
+        "Nonalcoholic Fatty Liver Disease"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "PHASE4",
+      "phases": [
+        "PHASE4"
+      ],
+      "locations": [
+        "Zhujiang Hospital of Southern Medical University, Guangzhou, China"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n1. Patients diagnosed with type 2 diabetes within 5 years (According to the diagnostic criteria of WHO Diabetes Classification 2019)\n2. Patients who are aware of the purpose of the trail, willing to participate in the trial and sign informed consent forms, and comply with all requirements (including those during follow-up and evaluation investigations)\n3. Well-controlled blood glucose through diet and exercise intervention, or stable treatment with 1 or 2 types of hypoglycemic drugs (metformin, sulfonylurea, glinide, α-glycosidase inhibitor ) for at least 8 weeks with a half or full recommended maximum tolerated dose in instructions.\n4. HbA1c: 7.0%-8.5%\n5. Patients diagnosed with non-alcoholic fatty liver disease (According to the diagnostic criteria of Guidelines for Diagnosis and Treatment of Non-alcoholic Fatty Liver Disease 2010)\n\nExclusion Criteria:\n\n1. Patients with type 1 diabetes, gestational diabetes or other special types of diabetes;\n2. Patients with any acute, chronic complication or risk that may cause greater adverse effects than benefits through the trial; or receiving other treatment currently that may affect subjects' compliance or the objectivity of the end point of this trial; (1)Patients with serious acute complications of diabetes in the past 6 months (Eg. diabetic ketoacidosis, hyperosmotic hyperglycemia coma); (2)Patients with unstable proliferative retinopathy or maculopathy,severe diabetic neuropathy, intermittent claudication or diabetic foot in the past 6 months; (3)Patients with serious liver dysfunction and chronic kidney disease or disease of other systems (Eg. Acute and chronic pancreatitis, liver cirrhosis, nephrotic syndrome ect. ); and those who do not meet the requirements after being evaluated by professionals; (4)Have a history of myocardial infarction, unstable angina pectoris, stroke or transient ischemic attack, or underwent coronary angioplasty, percutaneous coronary stenting or coronary artery bypass grafting 6 months before the screening; or screening for congestive heart failure (New York Heart Association NYHA grade III and IV), unstable or acute congestive heart failure, or persistent arrhythmias believed to be life-threatening within the first 6 months of the trail; (5)Have a history of hemorrhagic stroke or ischemic stroke in the past 6 months, and was evaluated by the researchers as not suitable to participate in this clinical trial; (6)Have a history of hypertension and was not effectively controlled before screening: systolic blood pressure (SBP) ≥ 160mmHg and / or diastolic blood pressure (DBP) ≥ 100mmHg;\n3. Have a history of other endocrine system diseases which affect glucose and lipid metabolism or have an effect on the body weight, such as: multiple endocrine adenomatosis, acromegaly, Cushing syndrome, hyperthyroidism;\n4. Have a history of malignant tumour within 5 years before screening, except for local basal cell carcinoma of the skin after treatment；\n5. Have a history of severe infection, trauma or major surgery within 3 months;\n6. Have a history of drug abuse with 5 years, including repeated use of dependence-producing drug unrelated to medical purposes, including addictive and habitual drugs leading to physical and psychic dependence;\n7. Have a history of participating any intervention drug or instrumental clinical trial 3 months before screening;\n8. Have a history of severe anemia or need regular blood transfusion treatment;\n9. Have a history of any medication or treatment below:\n\n(1)Using drugs that may cause weight change 90 days before screening, including diuretics, weight-loss drug etc.; (2)Using drugs that may affect blood glucose for \\>1 week within 12 weeks, such as oral/intravenous glucocorticoid, growth hormone, estrogen/progesterone, high-dose diuretics, antipsychotic drugs, etc., but low-dose diuretics for antihypertensive purposes (hydrochlorothiazide \\< 25mg/d, indapamide \\< 1.5 mg/d) are not included in this restriction; (3)Had bariatric sugery or planning to have bariatric surgery; 10.The laboratory results of patients meet the following standards:\n\n1. AlanineAminotransferase(ALT)and/oraspartateaminotransferase(AST) higher than 5 times of the upper limit of the normal value.\n2. Glomerular Filtration Rate (eGFR) estimated by CKD-EPI formula \\< 40mL/ (min·1.73m2); 11.Patients are currently pregnant, breastfeeding or planning a pregnancy; 12.Have a history of infectious diseases such as hepatitis B (HBs-Ag), hepatitis C (HCV-Ab), pulmonary tuberculosis or sexually transmitted active diseases such as HIV and syphilis; 13.Have a history of using anti-NASH drugs (vitamin E, ursodeoxycholic acid, s-Adenosylmethionine, betaine, silymarin, gemdibrozil, anti-TNF therapy, probiotics, ect.) within 3 months before random grouping; 14.Having structural and functional genitourinary abnormalities prone to cause genitourinary infection; 15.Patients with abnormal hematologic system or any diseases that may cause hemolysis or unstable erythrocyte; 16.Have a history of using immunomodulators, such as biological agents, cyclophosphamide, cyclosporine, etc.; 17.Patients with MRI incompatible metal or magnetic implant, device or materials.",
+      "criteria": [
+        {
+          "id": "NCT06449833#structured-minimumAge",
+          "trialId": "NCT06449833",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 18,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 18 Years",
+          "sourceId": "NCT06449833#structured-minimumAge",
+          "sourceQuote": "18 Years"
+        },
+        {
+          "id": "NCT06449833#structured-maximumAge",
+          "trialId": "NCT06449833",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "lte",
+          "value": 75,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "maximumAge: 75 Years",
+          "sourceId": "NCT06449833#structured-maximumAge",
+          "sourceQuote": "75 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT06852950",
+      "title": "Continuous Glucose Monitoring for Outpatient Diabetes Management After Hospital Discharge",
+      "summary": "This study aims to improve patient awareness of the utility of continuous glucose monitoring systems in blood glucose monitoring and to improve patient satisfaction regarding diabetes care, particularly in the matter of blood glucose monitoring, at the transitions of care from the inpatient setting to the ambulatory setting.",
+      "conditions": [
+        "Type 2 Diabetes Mellitus (T2DM)",
+        "Type 1 Diabetes Mellitus (T1DM)",
+        "Hyperglycemia"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "NA",
+      "phases": [
+        "NA"
+      ],
+      "locations": [
+        "Vanderbilt University Medical Center, Nashville, United States"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n* Non-pregnant adults, ages greater than or equal to 18 years, admitted to VUMC\n* Able to give informed consent\n* Hyperglycemia requiring insulin therapy including subcutaneous insulin injection or continuous subcutaneous insulin infusion (patient's own insulin pump) during hospitalization and at the time of discharge\n* POC glucose or venous glucose levels in the 24 hours prior to participation need to be 70-350 mg/dL\n* Need glucose readings greater than or equal to one time per day\n* Mental status and dexterity adequate to use Libre 3 Plus or Dexcom G7 sensors with Libre 3 or Dexcom G7 application on patient's smartphone\n\nExclusion Criteria:\n\n* Currently using Libre 3 Plus or Dexcom G7 CGMS during hospitalization or have used Libre 3 Plus or Dexcom G7 CGMS in the past 3 months\n* Does not have smartphone compatible with Libre 3 App or Dexcom G7 App\n* Received chemotherapy during current hospitalization\n* Planning on major surgery within 10-15 days\n* Hemodialysis or peritoneal dialysis\n* Requiring vasopressors, intubation, sedation, or admission to an intensive care unit\n* Vitamin C use of more than 500 milligrams per day\n* Hydroxyurea use\n* Acetaminophen use of more than 4 grams per day or 1 gram every 6 hours\n* Significant pitting edema (3+ or greater) i.e. cirrhosis with ascites, congestive heart failure with edema, nephrotic syndrome, or signs of poor perfusion\n* Presentation in diabetic ketoacidosis or hyperosmotic nonketotic state\n* Skin allergy to adhesives",
+      "criteria": [
+        {
+          "id": "NCT06852950#structured-minimumAge",
+          "trialId": "NCT06852950",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 18,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 18 Years",
+          "sourceId": "NCT06852950#structured-minimumAge",
+          "sourceQuote": "18 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT06862739",
+      "title": "Glycemic Control With Triple Pathway Approach Through Empagliflozin, Linagliptin and Metformin Combination",
+      "summary": "The efficacy and safety of a triple-pill combination therapy for advanced type 2 diabetes care. The study aims to assess the impact of 3 Oral Anti Diabetic (OAD) drugs on metabolic control, patient compliance, weight management, quality of life, diabetic treatment satisfaction and frequency of hypoglycemic events by combining them into a fixed-dose single pill.",
+      "conditions": [
+        "Diabetes Mellitus",
+        "Type 2 DM"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "PHASE4",
+      "phases": [
+        "PHASE4"
+      ],
+      "locations": [
+        "Faisalabad clinics, Faisalabad, Pakistan",
+        "Aap ka Clinic, Lahore, Pakistan"
+      ],
+      "eligibilityText": "Inclusion criteria\n\n1. Patients of any gender\n2. Patients aged between 18-80 years\n3. Patients having HbA1c 8 % or above\n4. Patients diagnosed with type II diabetes (more than at least 06 months)\n5. Patients already on at least 02 or more anti-diabetic agents\n6. Patients not allergic to empagliflozin, linagliptin, or metformin\n\nExclusion criteria\n\n1. Patients with age less than 18\n2. Patients with Type-I diabetes\n3. Patients having diabetes for less than 06 months\n4. Patients on GLP-1 and GIP\n5. Patients who are pregnant or lactating females\n6. Patients with decompensated chronic liver disease (DCLD)\n7. Patients with eGFR less than 30 ml\n8. Patients with end-stage heart failure (NYHA Class 4)\n9. Patients who are allergic to empagliflozin, linagliptin, or metformin\n10. Patients who are not willing to consent\n11. Patients who are unable to give medical history",
+      "criteria": [
+        {
+          "id": "NCT06862739#structured-minimumAge",
+          "trialId": "NCT06862739",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 18,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 18 Years",
+          "sourceId": "NCT06862739#structured-minimumAge",
+          "sourceQuote": "18 Years"
+        },
+        {
+          "id": "NCT06862739#structured-maximumAge",
+          "trialId": "NCT06862739",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "lte",
+          "value": 80,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "maximumAge: 80 Years",
+          "sourceId": "NCT06862739#structured-maximumAge",
+          "sourceQuote": "80 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT06875193",
+      "title": "DM Treatment to Evaluate the Efficacy and Safety of Dapagliflozin or Pioglitazone in Patients with Type 2 Diabetes",
+      "summary": "Key finding of DM Treatment with combination, A MuLticenter, Randomized, Parallel, Gathering Information of phase 4 Trial to Evaluate the Efficacy and Safety of Dapagliflozin or Pioglitazone add-on to Metformin and DPP-4 inhibitor in Patients with Type 2 Diabetes Who Have Inadequate Glycaemic Control on a Background Combination of Metformin and DPP-4 inhibitor(KLIMT Study)",
+      "conditions": [
+        "Type2diabetes"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "PHASE4",
+      "phases": [
+        "PHASE4"
+      ],
+      "locations": [
+        "Kyung Hee University Hospital at Gangdong, Seoul, South Korea"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n* Patients with type 2 diabetes who are 19 years of age or older at the date of written consent\n* Subjects who Receiving a stable dose of metformin and a DPP-4 inhibitor for at least the last 8 weeks at the time of screening\n* HbA1c ≤ 7.0% ≤ HbA1c \\< 10% at time of screening\n* BMI ≤ 18.5 kg/m2 ≤ 40 kg/m2 at time of screening\n* Subjects fully explained and understood the purpose and methods of this study and voluntarily gave written informed consent\n\nExclusion Criteria:\n\n* Patients with type 1 diabetes\n* Have a BMI \\> 40 kg/m2\n* Subjects who have moderate (Stage 3b) or severe kidney disease or an estimated glomerular filtration rate (eGFR, using the CKD-EPI formula) \\< 45 mL/min/1.73 m2\n* Patients with end stage renal disease or patients on dialysis\n* Patients with uncontrolled heart failure (NYHA class III - IV)\n* Patients with history of uncontrolled arrhythmia, myocardial infarction, unstable angina, coronary artery bypass graft surgery, cerebrovascular disease within 24 weeks prior to the screening visit\n* Patients with acute or chronic metabolic acidosis, including lactic acidosis, diabetic ketoacidosis (DKA) with or without coma, and patients with a history of ketoacidosis\n* Patients with diabetic coma or precoma\n* Patients with a history of severe hypoglycemia while taking metformin and DPP-4 inhibitors.\n* Patients with hematuria\n* Patients who receiving treatment for thyroid dysfunction at the time of screening\n* Malnourished, starving, or debilitated subjects\n* Patients with pituitary insufficiency or adrenal insufficiency\n* Patients with clinically significant hepatic disease with AST or ALT greater than 3 times the upper limit of normal\n* Patients with severe infectious diseases, perioperative, or clinically significant trauma\n* Have a history of substance abuse\n* Patients receiving insulin or sulfonylurea, thiazolidinedione, SGLT2 inhibitor, GLP-1 receptor agonist within 8 weeks prior to the screening visit\n* Patients who have received more than 2 consecutive weeks of corticosteroids within 8 weeks at the time of screening or who require treatment requiring repeated use of corticosteroids\n* Patients with a history of malignancy within the last 5 years\n* Participation in any other clinical trial within 12 weeks of screening in which an investigational drug or investigational medical device was administered or applied\n* Pregnant and breastfeeding women\n* Hypersensitivity to any of the drugs and components, including metformin, DPP-4 inhibitors, dapagliflozin, TZDs, sulfonylurea class of drugs, or any of the ingredients\n* Patients with genetic problems such as galactose intolerance, Lapp lactose deficiency, or glucose-galactose mal-absorption.\n* Any other person deemed by the investigator to be unsuitable for participation in the study",
+      "criteria": [
+        {
+          "id": "NCT06875193#structured-minimumAge",
+          "trialId": "NCT06875193",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 19,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 19 Years",
+          "sourceId": "NCT06875193#structured-minimumAge",
+          "sourceQuote": "19 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT06888050",
+      "title": "Efficacy and Safety of Henagliflozin Proline and Metformin Hydrochloride Extended-release Tablets (Ⅰ) Versus Metformin Tablets in Patients With New-onset Type 2 Diabetes: a Multicenter, Randomized Controlled Study",
+      "summary": "This multicenter, randomized controlled trial aims to evaluate the efficacy and safety of Henagliflozin-Metformin Sustained-Release Tablets (I) versus Metformin Tablets in newly diagnosed type 2 diabetes mellitus (T2DM). A total of 268 participants will be randomized (1:1) into two groups: the experimental group receiving Henagliflozin-Metformin Sustained-Release Tablets (I) (5mg/500mg, once daily) with lifestyle intervention, and the control group receiving Metformin Tablets (500mg, twice daily) with lifestyle intervention. The primary outcome is the change in glycated hemoglobin (HbA1c) from baseline at 24 weeks. Secondary outcomes include changes in fasting/postprandial blood glucose, body weight, metabolic parameters, diabetes remission rate, and safety assessments. This trial will provide evidence for early combination therapy in newly diagnosed T2DM patients.",
+      "conditions": [
+        "New-onset Type 2 Diabetes"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "PHASE4",
+      "phases": [
+        "PHASE4"
+      ],
+      "locations": [
+        "Zhejiang Provincial People's Hospital, Hangzhou, China"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n* Age between 18 and 75 years old.\n* Diagnosed with type 2 diabetes according to WHO diagnostic criteria, with HbA1c between 7% and 9% at this examination, fasting venous blood glucose ≤ 11.1 mmol/L, and BMI ≥ 18.5 kg/m2; known disease duration ≤ 24 months.\n* Voluntary participation in this study and signing of the informed consent form. If the subject is unable to read the informed consent form (e.g., illiterate subjects), a witness must be present to observe the informed consent process and sign the informed consent form on their behalf.\n* No previous use of hypoglycemic drugs.\n\nExclusion Criteria:\n\n* Type 1 diabetes.\n* Participants who have participated in other clinical trials of diabetes treatment drugs before the start of this study.\n* Those who have experienced diabetic ketoacidosis, diabetic lactic acidosis or hyperosmolar non-ketotic coma within the past six months and required hospitalization.\n* Those who have experienced decompensated heart failure (NYHA class III and IV), unstable angina, stroke or transient ischemic attack, myocardial infarction, severe arrhythmia, undergone cardiac surgery or vascular reconstruction (including coronary artery bypass grafting or percutaneous coronary intervention) within the past six months.\n* Those taking glucocorticoid drugs (excluding topical or inhaled medications).\n* Those with a life expectancy of less than one year due to malignant tumors, active tuberculosis, or acute infections.\n* Those with clinically significant urinary tract or genital infections, or a history of recurrent urinary tract or genital infections.\n* Those with a history of hypertension whose blood pressure has not been effectively controlled despite antihypertensive drug treatment: systolic blood pressure (SBP) \\> 160 mmHg and/or diastolic blood pressure (DBP) \\> 100 mmHg.\n* Those with liver and kidney function indicators meeting the following criteria: alanine aminotransferase (ALT) and/or aspartate aminotransferase (AST) ≥ 3.0×ULN; estimated glomerular filtration rate (eGFR) \\< 45 ml/min/1.73 m² (calculated according to the Chronic Kidney Disease Epidemiology Collaboration \\[CKD-EPI\\] formula).\n* Those allergic to the investigational drug or its components.\n* Pregnant or lactating women and those with the intention to conceive within three months of the last dose.\n* Other patients deemed unsuitable for participation in this clinical trial by the investigator.",
+      "criteria": [
+        {
+          "id": "NCT06888050#structured-minimumAge",
+          "trialId": "NCT06888050",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 18,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 18 Years",
+          "sourceId": "NCT06888050#structured-minimumAge",
+          "sourceQuote": "18 Years"
+        },
+        {
+          "id": "NCT06888050#structured-maximumAge",
+          "trialId": "NCT06888050",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "lte",
+          "value": 75,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "maximumAge: 75 Years",
+          "sourceId": "NCT06888050#structured-maximumAge",
+          "sourceQuote": "75 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT07121504",
+      "title": "Hybrid Closed-Loop for Perioperative Glycemic Control in T2DM With Parenteral Nutrition",
+      "summary": "Glycemic control in surgical patients with type 2 diabetes mellitus (T2DM) receiving parenteral nutrition represents a major clinical challenge. This randomized controlled trial evaluates the comparative effectiveness and safety of hybrid closed-loop (HCL) insulin delivery versus conventional insulin pumps combined with continuous glucose monitoring (CGM) in perioperative T2DM patients requiring short-term parenteral nutrition.",
+      "conditions": [
+        "Type 2 Diabetes"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "NA",
+      "phases": [
+        "NA"
+      ],
+      "locations": [
+        "Department of Metabolism and Endocrinology, Second Xiangya Hospital of Centra South University, Changsha, Hunan 410011, Changsha, China"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n1. Age ≥18 years.\n2. Diagnosis of T2DM requiring surgical procedures (duration ≥2 hours) with anticipated short-term total parenteral nutrition (TPN) during the perioperative period (expected hospitalization \\>72 hours).\n3. Glycemic control criteria (meeting any of the following):\n\n   ①HbA1c ≥7.5% or random plasma glucose ≥13.9 mmol/L\n   * Established T2DM with poor glycemic control (HbA1c ≥7.5%) despite combination therapy (≥2 oral antidiabetic drugs) ③Insulin-treated patients with suboptimal control (HbA1c ≥7.0%) after adequate dose adjustment.\n4. Willing to sign the informed consent form.\n\nExclusion Criteria:\n\n1. Patients with acute diabetic complications, including: diabetic ketoacidosis (DKA), hyperglycemic hyperosmolar state (HHS), etc.\n2. Patients with type 1 diabetes or other specific types of diabetes.\n3. Patients with severe organ dysfunction, defined as:\n\n   * Cardiac function ≥Class III (NYHA classification)\n\n     * ALT/AST \\>3× upper limit of normal (ULN) ③ eGFR ≤30 mL/min/1.73 m²\n\n       * Hemoglobin \\<90 g/L ⑤ WBC count \\<4.0×10⁹/L or platelets \\<90×10⁹/L ⑥ Hemodynamic instability\n4. Patients with endocrine disorders affecting glucose metabolism, such as: hyperthyroidism, hypothyroidism, Cushing's syndrome, etc.\n5. Patients with known hypersensitivity to any drugs or materials used in the study protocol.\n6. Patients who have contraindications to conventional insulin pump therapy.\n7. Patients with dermatological conditions (e.g., skin rash, prurigo) or coagulation disorders.\n8. Patients with impaired consciousness or psychiatric disorders affecting decision-making capacity or communication ability.\n9. Patients who have other conditions deemed unsuitable for trial participation by investigators.\n10. Patients who suffer severe surgical complications.",
+      "criteria": [
+        {
+          "id": "NCT07121504#structured-minimumAge",
+          "trialId": "NCT07121504",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 18,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 18 Years",
+          "sourceId": "NCT07121504#structured-minimumAge",
+          "sourceQuote": "18 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT07350967",
+      "title": "Magnetic Compression Anastomosis Procedure for Partial Jejuno-ileal Diversion: Evaluating the Feasibility of a Novel Endoscopic Magnetic Metabolic Interventional Therapy",
+      "summary": "English, Hindi and Gujarati",
+      "conditions": [
+        "Diabetes Type 2",
+        "Bariatric Surgery"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "NA",
+      "phases": [
+        "NA"
+      ],
+      "locations": [
+        "AB Plus Speciality Hospital, Ahmedabad, India"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n1. Participants are willing and able to give informed consent for participation in the study.\n2. Male or Female, aged ≥ 25 years to ≤ 65 years inclusive at the time of informed consent\n3. BMI 30-50\n\n   * Prior sleeve gastrectomy (\\> 12 months) or other metabolic surgical procedures with T2DM (characterized by HbA1c \\> 6.5%) or weight regain\n   * T2DM without a history of gastrectomy or other metabolic surgical procedures (diagnosis for \\> 6M and \\<10 yrs) taking at least oral antidiabetic medication with fasting glucose \\< 200mg/dl and HbA1c \\>6.5 %\n4. Agrees to abstain from any form of additional bariatric or reconstructive surgery that could influence body weight for a duration of 1 year\n\nExclusion Criteria:\n\n1. Pregnancy or breastfeeding mothers, or individuals planning to become pregnant in next 9-12 months\n2. Vulnerable individuals (mentally disabled, physically disabled, prisoner, etc.)\n3. Current enrolment in another research study or previous participation within 30 days of enrolment\n4. Use of injectable insulin\n5. Uncontrolled T2DM\n6. Uncontrolled hypertension, dyslipidemia, or sleep apnea\n7. Current history of injected Glucagon Like Peptide 1 (GLP1)\n8. Evidence of type 1 diabetes or of pancreatic exhaustion, as indicated by a C peptide fasting level less than 1 or, for type 1 diabetes, based on measurable levels of serum anti-GAD-65 autoantibodies or, at investigator's discretion, based on measurable levels of other T1D-associated autoantibodies\n9. History of highly unusual or challenging gastrointestinal tract anatomy ascertained through earlier endoscopic examination or other diagnostic imaging\n10. Previous intestinal, colonic, or duodenal surgery, excluding bariatric procedures\n11. Prior surgical interventions, trauma, prosthetic implants, diseases, or genetic factors that hinder or contraindicate the procedure, including scarring and abnormal anatomical structures\n12. History of (or known to be at prohibitive risk for) any of the following diseases of the small bowel or closely related conditions: Crohn's disease or other inflammatory bowel disease, celiac disease, resection for cancer, or intra-abdominal adhesive disease including intussusception, perforated appendix and Meckel's diverticulum\n13. Refractory gastroesophageal reflux disease (GERD)\n14. Barrett's esophagus\n15. Any anatomical anomaly that obstructs orogastric access via gastroscope and catheters, as well as manipulation techniques\n16. Presence of an implantable pacemaker or defibrillator\n17. Any comorbidity or current physiological condition of the subject that, in the opinion of the surgeon or anesthesiologist, poses safety concerns rendering the subject medically unfit for the procedure. This encompasses any conditions for which endoscopic or laparoscopic surgery would be contraindicated, as well as any significant congenital or acquired anomalies of the gastrointestinal tract at or distal to the magnet placement site\n\nSubjects will be deemed ineligible to participate if they fulfill any of the following criteria:\n\n1\\. Pregnancy or breastfeeding mothers, or individuals planning to become pregnant in next 9-12 months 2. Vulnerable individuals (mentally disabled, physically disabled, prisoner, etc.) 3. Current enrolment in another research study or previous participation within 30 days of enrolment 4. Use of injectable insulin 5. Uncontrolled T2DM 6. Uncontrolled hypertension, dyslipidemia, or sleep apnea 7. Current history of injected Glucagon Like Peptide 1 (GLP1) 8. Evidence of type 1 diabetes or of pancreatic exhaustion, as indicated by a C peptide fasting level less than 1 or, for type 1 diabetes, based on measurable levels of serum anti-GAD-65 autoantibodies or, at investigator's discretion, based on measurable levels of other T1D-associated autoantibodies 9. History of highly unusual or challenging gastrointestinal tract anatomy ascertained through earlier endoscopic examination or other diagnostic imaging 10. Previous intestinal, colonic, or duodenal surgery, excluding bariatric procedures 11. Prior surgical interventions, trauma, prosthetic implants, diseases, or genetic factors that hinder or contraindicate the procedure, including scarring and abnormal anatomical structures 12. History of (or known to be at prohibitive risk for) any of the following diseases of the small bowel or closely related conditions: Crohn's disease or other inflammatory bowel disease, celiac disease, resection for cancer, or intra-abdominal adhesive disease including intussusception, perforated appendix and Meckel's diverticulum 13. Refractory gastroesophageal reflux disease (GERD) 14. Barrett's esophagus 15. Any anatomical anomaly that obstructs orogastric access via gastroscope and catheters, as well as manipulation techniques 16. Presence of an implantable pacemaker or defibrillator 17. Any comorbidity or current physiological condition of the subject that, in the opinion of the surgeon or anesthesiologist, poses safety concerns rendering the subject medically unfit for the procedure. This encompasses any conditions for which endoscopic or laparoscopic surgery would be contraindicated, as well as any significant congenital or acquired anomalies of the gastrointestinal tract at or distal to the magnet placement site 18. History of small bowel surgery such as small bowel resection 19. Active H. pylori infection (prospective participants with active H. pylori may continue with the screening process if they are treated via medication and re-testing verifies the condition has resolved.) 20. History of chronic or acute pancreatitis 21. Known active hepatitis or active liver disease 22. Symptomatic gallstones or kidney stones or acute cholecystitis 23. History of coagulopathy, upper gastro-intestinal bleeding conditions such as ulcers, gastric varices, strictures, congenital or acquired intestinal telangiectasia 24. Use of anticoagulation therapy (excluding aspirin) which cannot be discontinued for 7 days before and 14 days after the procedure 25. Use of P2Y12 inhibitors (clopidogrel, pasugrel, ticagrelor) which cannot be discontinued for 14 days before and 14 days after the procedure (use of low-dose aspirin allowable) 26. History of serious complications of T2DM including coronary artery disease, hypertension, peripheral vascular disease, diabetic retinopathy, and/or diabetes-related soft tissue infection 27. Taking corticosteroids or drugs known to affect GI motility (e.g. Metoclopramide) 28. Receiving weight loss medications such as Meridia, Xenical, or over-the-counter weight loss medications 29. Persistent anemia, defined as Hgb\\<10 g dL-1 30. Estimated Glomerular Filtration Rate (eGFR) or Modified of Diet in Renal Disease (MDRD) \\<30 ml/min/1.73m2 31. Active systemic infection 32. Chemotherapeutic cancer treatment within past 9 months, history of abdominal radiation, or active malignancy within the past 5 years 33. Active illicit substance abuse or alcoholism 34. Unhealed ulcers, bleeding lesions, tumors, or any other lesions at the target site for magnet deployment 35. Anticipated requirement for MR imaging within the first two months following the procedure 36. Any anatomical anomaly that prevents or contraindicates laparoscopic access and general laparoscopic procedures 37. Underwent a surgical or interventional procedure within 30 days prior to the current procedure 38. Any scheduled surgical or interventional procedure planned within 30 days following the current procedure 39. Any stroke or transient ischemic attack (TIA) within six months prior to obtaining consent 40. Any other serological markers likely to be associated with poor outcomes 41. Inability to adhere to the follow-up schedule and assessments 42. Any circumstance that, according to the investigator's judgment, could hinder the completion of follow-up evaluations up to Day 360 (for instance, a health issue that might elevate the risks linked to study involvement or could obstruct the analysis of study findings, failure to comply with the visit timetable, or inadequate adherence to the treatment protocol)\n\n\\-",
+      "criteria": [
+        {
+          "id": "NCT07350967#structured-minimumAge",
+          "trialId": "NCT07350967",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 25,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 25 Years",
+          "sourceId": "NCT07350967#structured-minimumAge",
+          "sourceQuote": "25 Years"
+        },
+        {
+          "id": "NCT07350967#structured-maximumAge",
+          "trialId": "NCT07350967",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "lte",
+          "value": 65,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "maximumAge: 65 Years",
+          "sourceId": "NCT07350967#structured-maximumAge",
+          "sourceQuote": "65 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT07574138",
+      "title": "Function of Beta Cells in Early-onset Diabetes Mellitus",
+      "summary": "* Research objectives: Evaluate and compare the clinical and paraclinical characteristics, complications, as well as the changes in beta cell function and HbA1C levels between two patient groups over a one-year follow-up period.\n\n  +Research design: This is a prospective cohort study, monitoring patients at 3, 6, 9, and 12 months.\n* Study Population and Sample Size: The study is planned to be conducted on 296 Vietnamese patients (accounting for a 20% dropout rate) who are being examined at the University of Medicine and Pharmacy Hospital in Ho Chi Minh City.\n* Key Evaluation Indicators: The function of beta cells and insulin resistance status are measured through the indices of HOMA-B, HOMA-IR, fasting C-peptide levels, and HbA1C levels.\n* Time and location: The study will be conducted from February 2025 to February 2028 at the Endocrinology Clinic, University Medical Center Ho Chi Minh City.",
+      "conditions": [
+        "Type 2 Diabetes Mellitus (T2DM)",
+        "Beta Cell Function"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": null,
+      "phases": [],
+      "locations": [
+        "University of Medicine and Pharmacy of Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n* The patient is diagnosed with Type 2 Diabetes Mellitus according to the ADA 2024 criteria (Fasting Glucose ≥ 126 mg/dl, or Glucose after 2 hours of an Oral Glucose Tolerance Test ≥ 200 mg/dl, or HbA1C ≥ 6.5%, or with typical symptoms accompanied by any Glucose ≥ 200 mg/dl).\n* The duration of Type 2 Diabetes Mellitus does not exceed 10 years.\n* Classification by age of onset: Early onset group (\\< 40 years) and typical onset group (≥ 40 years).\n* At least 6 months without the need for insulin and no recorded episodes of diabetic ketoacidosis since the time of diagnosis.\n* For the early-onset group: Autoantibodies (Anti-GAD, ICA) are negative and fasting C-peptide levels are \\> 0.6 nmol/L.\n* The patient consents to participate in the study and signs the informed consent document.\n\nExclusion Criteria:\n\n* Pregnant women or patients with acute illnesses at the time of assessment.\n* The patient has been diagnosed with or exhibits characteristics suggestive of Type 1 Diabetes Mellitus (such as a history of ketoacidosis, C-peptide \\< 0.2 nmol/L).\n* Secondary diabetes mellitus due to pancreatic disorders (pancreatitis, pancreatic tumors, pancreatic resection), due to medications (glucocorticoids), or due to other endocrine disorders (Cushing's syndrome, hyperthyroidism, acromegaly).\n* Severe renal failure with an estimated glomerular filtration rate (eGFR) \\< 30 mL/min/1.73 m².\n* Use of medications that affect beta cell function or complications such as prolonged high-dose corticosteroids, immunosuppressive agents, or chemotherapy.\n* Not of Vietnamese ethnicity.\n* Non-compliance with treatment guidelines or failure to attend scheduled follow-up appointments.",
+      "criteria": [],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT07676773",
+      "title": "Evaluate the Effect of Remote Exercise Intervention on Blood Glucose Control and Physical Fitness in T2DM Patients",
+      "summary": "The intervention group received 12 weeks of continuous remote intervention combined with health education. The control group only received 12 weeks of continuous health education, and the content and frequency were the same as those of the management group. Both groups received instruction at the beginning of the intervention. The intervention group was given priority to continuous walking/running combined with aerobic exercise and swimming. Five to seven sessions per week for 45 minutes each session. Acclimatizations were performed at an intensity of 40%-49% reserve oxygen uptake (VO2R) from weeks 1 to 4, and exercise was performed at an intensity of 50%-59% VO2R from weeks 5 to 12. 5 minutes each of preparation and grooming activities (including joint movement and stretching) for each exercise. Combined with incremental load resistance exercise 2-3 times a week, 8 movements, 2-3 groups each time, repeated 8-10 times/group, with a 2-min rest between groups. The heart rate, RPE (12-13, \"fairly easy\" to \"somewhat laborious\") and exercise bracelet were used to monitor the intensity and amount of exercise. The exercise intervention was usually delivered 1-2 h after a meal. The daily medical supervision in the process of management implementation was carried out by trained sports managers through the doctor terminal of \"exercise assistant\" to collect and monitor the data of the study subjects.",
+      "conditions": [
+        "Diabete Type 2",
+        "Cardio Respiratory Fitness"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "NA",
+      "phases": [
+        "NA"
+      ],
+      "locations": [
+        "Sichuan Provinvial People's HSichuan Academy of Medical Sciences & Sichuan Provincial People's Hospital（ SAMS&SPPH，Affiliated Hospital of UESTC）ospital, Chengdu, China"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n(1) Both gender, age from 40 to 69 years old. (2) Meeting the diagnostic criteria for type 2 diabetes in China. (3) HbA1c is within 6.5%-7 .0% and no medication is taken. (4) Newly diagnosed with diabetes or the duration of the disease is no more than 5 years. (5) Possessing general exercise capacity and no obvious diseases in the muscle and osteoarticular systems. (6) The exercise risk is evaluated as medium or low risk through the PAR-Q+ questionnaire. (7) No contraindications to exercise tests. (8) Willing to adopt intensifed lifestyle intervention and complete the entire research process.\n\nExclusion Criteria:\n\n(1) T1DM patients, autoimmune diabetes and special types of diabetes, including hypercortisolism, growth hormone tumor, glucagonoma and some special types of diabetes caused by genetic factors; (2) pregnant or lactating women; (3) regular use of antidiabetic drugs or insulin in the past three months; (4) fasting blood glucose level \\> 16.7 mmol/L; (5) recurrent hypoglycemia; (6) a history of acute diabetic complications, including diabetic ketoacidosis, hyperosmolar hyperglycemia, and lactic acidosis; (7) a history of severe chronic microvascular or macrovascular complications; (8) diseases that may be exacerbated by exercise or impair exercise efciency, such as uncontrolled hypertension, hyperthyroidism, osteoarthritis or hypokalemia; (9) unable to use smart phones or wearable smart devices independently; (10) communication or motor dysfunction; (11) Patients with severe chronic diseases could not participate in the study.",
+      "criteria": [
+        {
+          "id": "NCT07676773#structured-minimumAge",
+          "trialId": "NCT07676773",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 18,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 18 Years",
+          "sourceId": "NCT07676773#structured-minimumAge",
+          "sourceQuote": "18 Years"
+        },
+        {
+          "id": "NCT07676773#structured-maximumAge",
+          "trialId": "NCT07676773",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "lte",
+          "value": 69,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "maximumAge: 69 Years",
+          "sourceId": "NCT07676773#structured-maximumAge",
+          "sourceQuote": "69 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT07767331",
+      "title": "PRODIAP - Patient-reported Outcomes in General Practice Among People With Type 2 Diabetes",
+      "summary": "In Denmark, around 327,000 diabetes consultations take place annually in general practice, but these often fail to fully include patients' experiences, values, and needs. Research, mainly among people with type 1 diabetes, suggests that the use of Patient Reported Outcomes (PROs) can enhance patient engagement and consultation quality. Yet, little is known about the effect of using PROs in type 2 diabetes (T2D) care in general practice. This project, PRODIAP (Patient-reported outcomes in general practice among people with type 2 diabetes) aims to investigate whether the use of a diabetes-specific PRO questionnaire can improve care quality and support more individualised consultations for people with T2D. PRODIAP is tailored to general practice, adapted from hospital PRO tools, and pilot testing showed promising feasibility and acceptability.\n\nThis project applies a mixed-methods design with two sub-studies:\n\n1. A pragmatic, cluster-randomised controlled trial in 30 general practices (N≈2000 patients) evaluating PRODIAP's effect on perceived care quality with patient perceived quality of care (PACIC) as primary outcome.\n2. A qualitative study using observations and interviews to explore how PRODIAP shapes the consultation from both patient and professional perspectives.\n\nThe project group has established a national collaboration with general practitioners, researchers and stakeholders from all five Danish region, supporting the feasibility of this study. Findings are expected to improve diabetes care in general practice and inform management of other chronic conditions. Findings are expected to improve diabetes care in general practice and provide transferable knowledge for other chronic conditions.",
+      "conditions": [
+        "Type 2 Diabetes"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "NA",
+      "phases": [
+        "NA"
+      ],
+      "locations": [
+        "Steno Diabetes Center Aarhus, Aarhus, Denmark"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n* type 2 diabetes\n* able to understand and answer a Danish questionnaire\n\nExclusion Criteria:\n\n* none",
+      "criteria": [
+        {
+          "id": "NCT07767331#structured-minimumAge",
+          "trialId": "NCT07767331",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 18,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 18 Years",
+          "sourceId": "NCT07767331#structured-minimumAge",
+          "sourceQuote": "18 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT07775846",
+      "title": "QUARTET-DKD: Quadruple Therapy for Type 2 Diabetic Nephropathy",
+      "summary": "This study employs a prospective, randomized, double-blind, parallel-controlled design, aiming to enroll adult participants with type 2 diabetic kidney disease (DKD) who meet the eligibility criteria. With an angiotensin receptor blocker (ARB) as the background therapy, all participants will be randomized in a 1:1:1:1 ratio into four treatment groups:\n\nGroup 1 (G1): ARB + empagliflozin + finerenone placebo + mazdutide placebo; Group 2 (G2): ARB + empagliflozin + finerenone + mazdutide placebo; Group 3 (G3): ARB + empagliflozin + mazdutide + finerenone placebo; Group 4 (G4): ARB + empagliflozin + mazdutide + finerenone. The primary comparisons include G2 vs. G1, G3 vs. G1, G4 vs. G2, and G4 vs. G3, designed to evaluate the superiority of triple therapy over dual therapy, and quadruple therapy over triple therapy, in reducing the urine albumin-to-creatinine ratio (UACR).",
+      "conditions": [
+        "Type 2 Diabetic Kidney Disease"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "PHASE4",
+      "phases": [
+        "PHASE4"
+      ],
+      "locations": [
+        "Zhongshan Hospital, Fudan University, Shanghai, China"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n* Age ≥18 years, with a confirmed diagnosis of type 2 diabetes mellitus (T2DM).\n* Receiving a standard dose of an Angiotensin-Converting Enzyme Inhibitor (ACEI) or Angiotensin Receptor Blocker (ARB) therapy for at least 4 consecutive weeks prior to screening, with the dose expected to remain stable throughout the study period.\n* Body Mass Index (BMI) ≥ 24.0 kg/m2.\n* Mean urine albumin-to-creatinine ratio (UACR) ≥ 100 mg/g and \\< 5000 mg/g, calculated from first morning void urine samples collected over 3 consecutive days.\n* Estimated glomerular filtration rate (eGFR) based on the CKD-EPI formula ≥ 30 mL/min/1.73m2.\n* Serum potassium level ≤ 4.8 mmol/L.\n* Glycated hemoglobin (HbA1c) \\< 11%.\n* Voluntarily understood and signed the written Informed Consent Form (ICF).\n\nExclusion Criteria:\n\n* Definite diagnosis of non-diabetic kidney disease (e.g., IgA nephropathy, polycystic kidney disease, lupus nephritis, etc).\n* Personal or family history of medullary thyroid carcinoma (MTC), or a diagnosis of multiple endocrine neoplasia syndrome type 2 (MEN 2).\n* History of severe acute or chronic pancreatitis.\n* History of diabetic ketoacidosis (DKA).\n* Symptomatic hypotension during the screening period, or a resting systolic blood pressure (SBP) \\< 110 mmHg.\n* Refractory hypertension, defined as a resting SBP \\> 170 mmHg despite the concurrent use of three antihypertensive medications.\n* History of severe dehydration, severe diarrhea, or acute volume depletion within 30 days prior to screening.\n* History of acute kidney injury (AKI) within 30 days prior to screening.\n* Use of traditional Chinese medicines with potential proteinuria-lowering effects (e.g., Keluoxin capsules, Huangkui capsules, or Shenyan Kangfu tablets) within 30 days prior to screening.\n* Use of potassium-sparing diuretics (e.g., triamterene or amiloride) or mineralocorticoid receptor antagonists (e.g., spironolactone, eplerenone, or finerenone) within 2 months prior to screening.\n* Use of GLP-1 receptor agonists, GLP-1/GIP dual receptor agonists, or GLP-1/glucagon (GCG) dual receptor agonists within 6 months prior to screening.\n* Current use of strong CYP3A4 inhibitors (e.g., itraconazole or clarithromycin) or CYP3A4 inducers that may significantly interfere with finerenone metabolism.\n* Myocardial infarction, unstable angina, stroke, or hospitalization due to heart failure (NYHA Class III-IV) within 3 months prior to screening.\n* Active urogenital tract infection, or a history of urogenital tract infection associated with the prior use of SGLT2 inhibitors.\n* Women who are pregnant, planning to become pregnant, or lactating.\n* Inability to complete the 6-month follow-up due to general health conditions or geographic relocation.\n* Any other condition that, in the opinion of the investigator, renders the participant unsuitable for participation in the study.",
+      "criteria": [
+        {
+          "id": "NCT07775846#structured-minimumAge",
+          "trialId": "NCT07775846",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 18,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 18 Years",
+          "sourceId": "NCT07775846#structured-minimumAge",
+          "sourceQuote": "18 Years"
+        },
+        {
+          "id": "NCT07775846#structured-maximumAge",
+          "trialId": "NCT07775846",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "lte",
+          "value": 70,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "maximumAge: 70 Years",
+          "sourceId": "NCT07775846#structured-maximumAge",
+          "sourceQuote": "70 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    },
+    {
+      "trialId": "NCT07919236",
+      "title": "Continuous Glucose Monitoring Systems in People With Type 2 Diabetes Not Treated With Insulin",
+      "summary": "The aim of the study is to assess the influence of continuous glucose monitoring (CGM) systems on metabolic control and quality of life in people with type 2 diabetes and overweight/obesity who are not treated with insulin. Additionally, the study aims to assess the association between metabolic control of diabetes and markers of early cardiovascular disease, taking into account the impact of CGM use.",
+      "conditions": [
+        "Type 2 Diabetes"
+      ],
+      "overallStatus": "RECRUITING",
+      "phase": "NA",
+      "phases": [
+        "NA"
+      ],
+      "locations": [
+        "Medical University of Bialystok, Department of Internal Medicine and Metabolic Diseases, Bialystok, Poland"
+      ],
+      "eligibilityText": "Inclusion Criteria:\n\n* Age between 18 and 65 years (both inclusive)\n* Type 2 diabetes diagnosed at least 6 months prior to entering the study\n* Body mass index ≥25 kg/m2\n* Diabetes treated with oral medications and/or GLP-1 receptor agonists and/or tirzepatide\n* No modifications of diabetes treatment in the previous 3 months\n* HbA1c between 7.5% and 10% (both inclusive)\n* Oral and written informed consent for participation\n\nExclusion Criteria:\n\n* Type 1 diabetes, gestational diabetes, other specific types of diabetes\n* HbA1c \\>10.0%\n* Treatment with insulin\n* Previous use of any continuous glucose monitoring system\n* GFR \\<30 ml/min\n* Acute infections, acute diabetes complications and/or unplanned hospitalisations in the previous month\n* Use of steroids or immunosuppressive medications in the previous 3 months\n* Chemotherapy, radiotherapy, immune therapy in the previous 3 months\n* Pregnancy and/or breastfeeding\n* Skin lesions or dermatological conditions preventing proper sensor insertion\n* Cognitive impairment and/or other conditions preventing proper use of continuous glucose monitoring system\n* Lack of consent for the use of continuous glucose monitoring system",
+      "criteria": [
+        {
+          "id": "NCT07919236#structured-minimumAge",
+          "trialId": "NCT07919236",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "gte",
+          "value": 18,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "minimumAge: 18 Years",
+          "sourceId": "NCT07919236#structured-minimumAge",
+          "sourceQuote": "18 Years"
+        },
+        {
+          "id": "NCT07919236#structured-maximumAge",
+          "trialId": "NCT07919236",
+          "kind": "inclusion",
+          "field": "age",
+          "operator": "lte",
+          "value": 65,
+          "unit": "years",
+          "checkability": "auto",
+          "origin": "structured_field",
+          "text": "maximumAge: 65 Years",
+          "sourceId": "NCT07919236#structured-maximumAge",
+          "sourceQuote": "65 Years"
+        }
+      ],
+      "dataVersion": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c"
+    }
+  ],
+  "sources": [
+    {
+      "trialId": "NCT05439226",
+      "sourceId": "NCT05439226#unsplit-1",
+      "text": "Inclusion Criteria:\n\n* Patients diagnosed with type 2 diabetes and NAFLD\n* Age between 18 and 75 years\n* BMI between 18.0 and 35.0 kg/m2\n* Weight stable for at least 3 months prior to the study (gain or loss \\< 4 kg)\n* Stable treatment for at least 3 months with 1-3 oral antidiabetic medications (with or without insulin therapy), or not yet received antidiabetic medication prior to the beginning of the study\n* Able to give written informed consent\n\nExclusion Criteria:\n\n* Self-reported a food allergy\n* Alcohol abuse in the last 3 months (alcohol intake greater than 20 g per day for women; Alcohol intake for men greater than 40 g per day)\n* Other liver diseases such as chronic hepatitis B and C, autoimmune hepatitis, primary biliary cirrhosis, hemochromatosis, nodular regenerative hyperplasia and focal nodular hyperplasia\n* Scheduled to be hospitalized for any surgical treatment during screening\n* Pregnant or planning of pregnancy during the study\n* Inability, physically or mentally, to adhere the procedures required by the study protocol\n* Level 3 hypoglycemic events (at least 3 times) occurring within the 90 days prior to screening\n* Hospitalization or emergency department visit for hyperglycemia, diabetic ketoacidosis, lactic acidosis, hyperosmolar nonketotic coma, or diabetes\n* History of cancer within the past 5 years\n* Acute coronary or cerebrovascular event in the past 90 days, or heart failure\n* Hemorrhagic or ischemic stroke within the last 6 months",
+      "sourceHash": "b20ea2f1dcc23a8a609e5f5a7f26d8f1fa17170156651f402434a2a3c01f380f",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT05439226",
+      "sourceId": "NCT05439226#structured-minimumAge",
+      "text": "18 Years",
+      "sourceHash": "23c8deb0e75604cb701e61045ca12f90b1cbc2cc82e8ce02ff230c9e4268a65b",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT05439226",
+      "sourceId": "NCT05439226#structured-maximumAge",
+      "text": "75 Years",
+      "sourceHash": "7125c2ee1dd7bf7c38124d1be91042c8ec0dd8ba89142ac8e903dc73c9daf879",
+      "location": "protocolSection.eligibilityModule.maximumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT05838287",
+      "sourceId": "NCT05838287#unsplit-1",
+      "text": "Inclusion Criteria:\n\n1. Provision of signed and dated informed consent form\n2. Stated willingness to comply with all study procedures and availability for the duration of the study\n3. Male or female, aged 30-70 years\n4. Body Mass Index (BMI) of 27.5-40kg/m²\n5. HbA1c of 6.5 to 10%\n6. Blood pressure of less than or equal to 145/65mmHg\n7. eGFR greater than 45 ml/min/1.73m²\n8. Subject must have HFpEF (EF \\> 50% by ECHO screening)\n9. NYHA class II-III heart failure\n10. Only T2D patients treated with diet/exercise, metformin, sulfonylurea, metformin/SU, DPP4i or insulin will be studied.\n11. For females of reproductive potential: use of highly effective contraception for at least 1 month prior to screening and agreement to use such a method during study participation and for an additional \\[4 weeks\\] after the end of study participation.\n12. For males of reproductive potential: use of condoms or other methods to ensure effective contraception with partner.\n\nExclusion Criteria:\n\n1. Subjects with history of osteoporosis or proliferative diabetic retinopathy\n2. Subjects with Heart failure due to restrictive or infiltrative cardiomyopathy, active myocarditis, constrictive pericarditis, severe valvular heart disease, etc. will be excluded\n3. Patients with symptomatic coronary artery disease.\n4. Subjects with significant change in diuretic management during the month prior to screening (defined by doubling of diuretic dose, or addition of another HF medication).\n5. Subjects treated with a GLP-1 RA or thiazolidinedione.\n6. Subjects treated with a SGLT2i\n7. Pregnancy or lactation\n8. Known allergic reactions to components of the study interventions.\n9. Any metal plates, parts, screws, shrapnel, pins in body, or cardiac (heart) pacemaker",
+      "sourceHash": "71915b66172f96e2282f5d6c3df9f05d59f5aa041f632e5bac825bfb47b623b5",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT05838287",
+      "sourceId": "NCT05838287#structured-minimumAge",
+      "text": "30 Years",
+      "sourceHash": "d9f629f8631e205bba0e406e41aa6de76b816c9f0114bf451a2941d322b2916b",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT05838287",
+      "sourceId": "NCT05838287#structured-maximumAge",
+      "text": "70 Years",
+      "sourceHash": "04e1c4ee14b0b35aaa371186524f98cc9c2a347bf72ca6c58090101c99565e87",
+      "location": "protocolSection.eligibilityModule.maximumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT06118931",
+      "sourceId": "NCT06118931#unsplit-1",
+      "text": "Inclusion Criteria:\n\n* Aged 40 years or older\n* Body mass index \\<50 kg/m2\n* Have access to an Apple or Android cellphone with Bluetooth.\n* Have type 2 diabetes or be at risk for type 2 diabetes (defined as self-report of pre-diabetes, a recent (within 12 months) measure of HbA1c between 5.7 and 6.4%, waist circumference (WC) that is BMI specific; for women: BMI \\>= 18.5-24.9, WC \\>= 80cm; BMI \\>= 25-29.9, WC \\>= 90cm; BMI \\>= 30-34.9, WC \\>= 105cm; BMI \\>= 35+, WC \\>= 115cm; for men: BMI \\>= 18.5-24.9, WC \\>= 90cm; BMI \\>= 25-29.9, WC \\>= 100cm; BMI \\>= 30-34.9, WC \\>= 110cm; BMI \\>= 35+, WC \\>= 125cm.\n\nExclusion Criteria:\n\n* Individuals with type 2 diabetes will be excluded if: (1) currently on \\>2 monotherapies for diabetes, (2) have had diabetes therapy medication or dosage changes \\<3 months, (3) self-reported hemoglobin A1c \\>9.0%, (4) taking exogenous insulin, or (5) taking sulfonylureas\n* The following exclusion criteria applies to all potential participants:\n\n  1. History of or referral for bariatric surgery\n  2. Weight loss \\>3% in the last 3 months\n  3. Taking antiobesity (weight loss) medications\n  4. Body weight \\>390lbs\n  5. Diagnosed with severe cognitive disorder that precludes them from giving consent\n  6. Inability or unwillingness to change their eating window to follow those prescribed in the study\n  7. Currently consistently eating during \\<11.5 hour period .\n  8. Physician-diagnosed eating disorder\n  9. Having a pacemaker or receiving dialysis.\n  10. Not having access to a Lifelabs location.",
+      "sourceHash": "74fe396de4f1d9c379f0c907341f1862b8a0ef3a232c87a55ef6bf004eca6e64",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT06118931",
+      "sourceId": "NCT06118931#structured-minimumAge",
+      "text": "40 Years",
+      "sourceHash": "ae32c07fe71050d7fb5f3d7a5a20200cd646c589351e407ebbb1b2220c5d72d6",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT06251323",
+      "sourceId": "NCT06251323#unsplit-1",
+      "text": "Inclusion Criteria:\n\n* Two largest clinic sites in multi-clinic FQHCs operating in or near Massachusetts, Ohio, California, Puerto Rico\n* We will prioritize FQHCs performing in the lower half of the distribution for A1c control, as these FQHCs have greater room for improvement.\n\nExclusion Criteria:\n\n* FQHCs that have a patient population comprised of more than 80% children\n* FQHCs that have a patient population multiplied by the FQHC's diabetes prevalence in the lowest 10% of all the clinics\n* FQHCs that have fewer than 5,000 or more than 50,000 patients.",
+      "sourceHash": "18197e6f4742fd3b2c239de93e35874be14e6ae7fc56c587eac68557646d2186",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT06251323",
+      "sourceId": "NCT06251323#structured-minimumAge",
+      "text": "18 Years",
+      "sourceHash": "23c8deb0e75604cb701e61045ca12f90b1cbc2cc82e8ce02ff230c9e4268a65b",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT06271382",
+      "sourceId": "NCT06271382#unsplit-1",
+      "text": "Inclusion Criteria:\n\n* Being diagnosed with type 2 diabetes\n* Be 18 years or older\n* Ability to speak Turkish\n* Ability to establish verbal communication\n* Volunteering to participate in the research\n\nExclusion Criteria:\n\n* Presence of any psychiatric disease diagnosed by a physician\n* Presence of diabetic ulcers on both feet and legs\n* Presence of any amputation in the foot or leg\n* Having myalgia in the foot,\n* Foot fracture\n* Edema in the feet",
+      "sourceHash": "33fdd64f322ab1bdb3492f2db5e20357625146738cca8d93a38da14ed79857fd",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT06271382",
+      "sourceId": "NCT06271382#structured-minimumAge",
+      "text": "18 Years",
+      "sourceHash": "23c8deb0e75604cb701e61045ca12f90b1cbc2cc82e8ce02ff230c9e4268a65b",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT06296485",
+      "sourceId": "NCT06296485#unsplit-1",
+      "text": "Inclusion Criteria:\n\n* Age 75 years and older\n* Diagnosis of Type 2 Diabetes\n* Current treatment with insulin\n* Increased hypoglycemia risk (prior year hypoglycemia by self-report or utilization)\n* Able to communicate in English\n* Able to access email and the Internet\n\nExclusion Criteria:\n\n* On renal dialysis\n* Dementia\n* Pacemaker or Automatic Implantable Cardioverter Defibrillator\n* Using insulin pump\n* Severe Mental Illness\n* Severe Visual Impairment\n* In Hospice\n* Current or recent CGM use",
+      "sourceHash": "d51da8abeb74df2361eb0ece9442d5780c729d6f70f76a2ded4ca002af09a87b",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT06296485",
+      "sourceId": "NCT06296485#structured-minimumAge",
+      "text": "75 Years",
+      "sourceHash": "7125c2ee1dd7bf7c38124d1be91042c8ec0dd8ba89142ac8e903dc73c9daf879",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT06449833",
+      "sourceId": "NCT06449833#unsplit-1",
+      "text": "Inclusion Criteria:\n\n1. Patients diagnosed with type 2 diabetes within 5 years (According to the diagnostic criteria of WHO Diabetes Classification 2019)\n2. Patients who are aware of the purpose of the trail, willing to participate in the trial and sign informed consent forms, and comply with all requirements (including those during follow-up and evaluation investigations)\n3. Well-controlled blood glucose through diet and exercise intervention, or stable treatment with 1 or 2 types of hypoglycemic drugs (metformin, sulfonylurea, glinide, α-glycosidase inhibitor ) for at least 8 weeks with a half or full recommended maximum tolerated dose in instructions.\n4. HbA1c: 7.0%-8.5%\n5. Patients diagnosed with non-alcoholic fatty liver disease (According to the diagnostic criteria of Guidelines for Diagnosis and Treatment of Non-alcoholic Fatty Liver Disease 2010)\n\nExclusion Criteria:\n\n1. Patients with type 1 diabetes, gestational diabetes or other special types of diabetes;\n2. Patients with any acute, chronic complication or risk that may cause greater adverse effects than benefits through the trial; or receiving other treatment currently that may affect subjects' compliance or the objectivity of the end point of this trial; (1)Patients with serious acute complications of diabetes in the past 6 months (Eg. diabetic ketoacidosis, hyperosmotic hyperglycemia coma); (2)Patients with unstable proliferative retinopathy or maculopathy,severe diabetic neuropathy, intermittent claudication or diabetic foot in the past 6 months; (3)Patients with serious liver dysfunction and chronic kidney disease or disease of other systems (Eg. Acute and chronic pancreatitis, liver cirrhosis, nephrotic syndrome ect. ); and those who do not meet the requirements after being evaluated by professionals; (4)Have a history of myocardial infarction, unstable angina pectoris, stroke or transient ischemic attack, or underwent coronary angioplasty, percutaneous coronary stenting or coronary artery bypass grafting 6 months before the screening; or screening for congestive heart failure (New York Heart Association NYHA grade III and IV), unstable or acute congestive heart failure, or persistent arrhythmias believed to be life-threatening within the first 6 months of the trail; (5)Have a history of hemorrhagic stroke or ischemic stroke in the past 6 months, and was evaluated by the researchers as not suitable to participate in this clinical trial; (6)Have a history of hypertension and was not effectively controlled before screening: systolic blood pressure (SBP) ≥ 160mmHg and / or diastolic blood pressure (DBP) ≥ 100mmHg;\n3. Have a history of other endocrine system diseases which affect glucose and lipid metabolism or have an effect on the body weight, such as: multiple endocrine adenomatosis, acromegaly, Cushing syndrome, hyperthyroidism;\n4. Have a history of malignant tumour within 5 years before screening, except for local basal cell carcinoma of the skin after treatment；\n5. Have a history of severe infection, trauma or major surgery within 3 months;\n6. Have a history of drug abuse with 5 years, including repeated use of dependence-producing drug unrelated to medical purposes, including addictive and habitual drugs leading to physical and psychic dependence;\n7. Have a history of participating any intervention drug or instrumental clinical trial 3 months before screening;\n8. Have a history of severe anemia or need regular blood transfusion treatment;\n9. Have a history of any medication or treatment below:\n\n(1)Using drugs that may cause weight change 90 days before screening, including diuretics, weight-loss drug etc.; (2)Using drugs that may affect blood glucose for \\>1 week within 12 weeks, such as oral/intravenous glucocorticoid, growth hormone, estrogen/progesterone, high-dose diuretics, antipsychotic drugs, etc., but low-dose diuretics for antihypertensive purposes (hydrochlorothiazide \\< 25mg/d, indapamide \\< 1.5 mg/d) are not included in this restriction; (3)Had bariatric sugery or planning to have bariatric surgery; 10.The laboratory results of patients meet the following standards:\n\n1. AlanineAminotransferase(ALT)and/oraspartateaminotransferase(AST) higher than 5 times of the upper limit of the normal value.\n2. Glomerular Filtration Rate (eGFR) estimated by CKD-EPI formula \\< 40mL/ (min·1.73m2); 11.Patients are currently pregnant, breastfeeding or planning a pregnancy; 12.Have a history of infectious diseases such as hepatitis B (HBs-Ag), hepatitis C (HCV-Ab), pulmonary tuberculosis or sexually transmitted active diseases such as HIV and syphilis; 13.Have a history of using anti-NASH drugs (vitamin E, ursodeoxycholic acid, s-Adenosylmethionine, betaine, silymarin, gemdibrozil, anti-TNF therapy, probiotics, ect.) within 3 months before random grouping; 14.Having structural and functional genitourinary abnormalities prone to cause genitourinary infection; 15.Patients with abnormal hematologic system or any diseases that may cause hemolysis or unstable erythrocyte; 16.Have a history of using immunomodulators, such as biological agents, cyclophosphamide, cyclosporine, etc.; 17.Patients with MRI incompatible metal or magnetic implant, device or materials.",
+      "sourceHash": "b30270099acce04fbe14217a45ae03f238baebcf1f96a82ef51d6fa4a9c94ead",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT06449833",
+      "sourceId": "NCT06449833#structured-minimumAge",
+      "text": "18 Years",
+      "sourceHash": "23c8deb0e75604cb701e61045ca12f90b1cbc2cc82e8ce02ff230c9e4268a65b",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT06449833",
+      "sourceId": "NCT06449833#structured-maximumAge",
+      "text": "75 Years",
+      "sourceHash": "7125c2ee1dd7bf7c38124d1be91042c8ec0dd8ba89142ac8e903dc73c9daf879",
+      "location": "protocolSection.eligibilityModule.maximumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT06852950",
+      "sourceId": "NCT06852950#unsplit-1",
+      "text": "Inclusion Criteria:\n\n* Non-pregnant adults, ages greater than or equal to 18 years, admitted to VUMC\n* Able to give informed consent\n* Hyperglycemia requiring insulin therapy including subcutaneous insulin injection or continuous subcutaneous insulin infusion (patient's own insulin pump) during hospitalization and at the time of discharge\n* POC glucose or venous glucose levels in the 24 hours prior to participation need to be 70-350 mg/dL\n* Need glucose readings greater than or equal to one time per day\n* Mental status and dexterity adequate to use Libre 3 Plus or Dexcom G7 sensors with Libre 3 or Dexcom G7 application on patient's smartphone\n\nExclusion Criteria:\n\n* Currently using Libre 3 Plus or Dexcom G7 CGMS during hospitalization or have used Libre 3 Plus or Dexcom G7 CGMS in the past 3 months\n* Does not have smartphone compatible with Libre 3 App or Dexcom G7 App\n* Received chemotherapy during current hospitalization\n* Planning on major surgery within 10-15 days\n* Hemodialysis or peritoneal dialysis\n* Requiring vasopressors, intubation, sedation, or admission to an intensive care unit\n* Vitamin C use of more than 500 milligrams per day\n* Hydroxyurea use\n* Acetaminophen use of more than 4 grams per day or 1 gram every 6 hours\n* Significant pitting edema (3+ or greater) i.e. cirrhosis with ascites, congestive heart failure with edema, nephrotic syndrome, or signs of poor perfusion\n* Presentation in diabetic ketoacidosis or hyperosmotic nonketotic state\n* Skin allergy to adhesives",
+      "sourceHash": "5ebed65cc9ed65d54c9e8cc1d4d674d828d436590e8f1c7d9c012c219de89788",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT06852950",
+      "sourceId": "NCT06852950#structured-minimumAge",
+      "text": "18 Years",
+      "sourceHash": "23c8deb0e75604cb701e61045ca12f90b1cbc2cc82e8ce02ff230c9e4268a65b",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT06862739",
+      "sourceId": "NCT06862739#unsplit-1",
+      "text": "Inclusion criteria\n\n1. Patients of any gender\n2. Patients aged between 18-80 years\n3. Patients having HbA1c 8 % or above\n4. Patients diagnosed with type II diabetes (more than at least 06 months)\n5. Patients already on at least 02 or more anti-diabetic agents\n6. Patients not allergic to empagliflozin, linagliptin, or metformin\n\nExclusion criteria\n\n1. Patients with age less than 18\n2. Patients with Type-I diabetes\n3. Patients having diabetes for less than 06 months\n4. Patients on GLP-1 and GIP\n5. Patients who are pregnant or lactating females\n6. Patients with decompensated chronic liver disease (DCLD)\n7. Patients with eGFR less than 30 ml\n8. Patients with end-stage heart failure (NYHA Class 4)\n9. Patients who are allergic to empagliflozin, linagliptin, or metformin\n10. Patients who are not willing to consent\n11. Patients who are unable to give medical history",
+      "sourceHash": "a54ea5f9fb7f11c947d26ec1343bede09fdb03847b543108aa5153b569c1ab63",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT06862739",
+      "sourceId": "NCT06862739#structured-minimumAge",
+      "text": "18 Years",
+      "sourceHash": "23c8deb0e75604cb701e61045ca12f90b1cbc2cc82e8ce02ff230c9e4268a65b",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT06862739",
+      "sourceId": "NCT06862739#structured-maximumAge",
+      "text": "80 Years",
+      "sourceHash": "89a069775eec8a4a19bf0a2a262c9b798ce8009fa75f3924c9c08c0bfa2ee41a",
+      "location": "protocolSection.eligibilityModule.maximumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT06875193",
+      "sourceId": "NCT06875193#unsplit-1",
+      "text": "Inclusion Criteria:\n\n* Patients with type 2 diabetes who are 19 years of age or older at the date of written consent\n* Subjects who Receiving a stable dose of metformin and a DPP-4 inhibitor for at least the last 8 weeks at the time of screening\n* HbA1c ≤ 7.0% ≤ HbA1c \\< 10% at time of screening\n* BMI ≤ 18.5 kg/m2 ≤ 40 kg/m2 at time of screening\n* Subjects fully explained and understood the purpose and methods of this study and voluntarily gave written informed consent\n\nExclusion Criteria:\n\n* Patients with type 1 diabetes\n* Have a BMI \\> 40 kg/m2\n* Subjects who have moderate (Stage 3b) or severe kidney disease or an estimated glomerular filtration rate (eGFR, using the CKD-EPI formula) \\< 45 mL/min/1.73 m2\n* Patients with end stage renal disease or patients on dialysis\n* Patients with uncontrolled heart failure (NYHA class III - IV)\n* Patients with history of uncontrolled arrhythmia, myocardial infarction, unstable angina, coronary artery bypass graft surgery, cerebrovascular disease within 24 weeks prior to the screening visit\n* Patients with acute or chronic metabolic acidosis, including lactic acidosis, diabetic ketoacidosis (DKA) with or without coma, and patients with a history of ketoacidosis\n* Patients with diabetic coma or precoma\n* Patients with a history of severe hypoglycemia while taking metformin and DPP-4 inhibitors.\n* Patients with hematuria\n* Patients who receiving treatment for thyroid dysfunction at the time of screening\n* Malnourished, starving, or debilitated subjects\n* Patients with pituitary insufficiency or adrenal insufficiency\n* Patients with clinically significant hepatic disease with AST or ALT greater than 3 times the upper limit of normal\n* Patients with severe infectious diseases, perioperative, or clinically significant trauma\n* Have a history of substance abuse\n* Patients receiving insulin or sulfonylurea, thiazolidinedione, SGLT2 inhibitor, GLP-1 receptor agonist within 8 weeks prior to the screening visit\n* Patients who have received more than 2 consecutive weeks of corticosteroids within 8 weeks at the time of screening or who require treatment requiring repeated use of corticosteroids\n* Patients with a history of malignancy within the last 5 years\n* Participation in any other clinical trial within 12 weeks of screening in which an investigational drug or investigational medical device was administered or applied\n* Pregnant and breastfeeding women\n* Hypersensitivity to any of the drugs and components, including metformin, DPP-4 inhibitors, dapagliflozin, TZDs, sulfonylurea class of drugs, or any of the ingredients\n* Patients with genetic problems such as galactose intolerance, Lapp lactose deficiency, or glucose-galactose mal-absorption.\n* Any other person deemed by the investigator to be unsuitable for participation in the study",
+      "sourceHash": "e0deb0effbf913b1a3f82ecf6612d5f04d49a926df7f995953553522590dfa57",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT06875193",
+      "sourceId": "NCT06875193#structured-minimumAge",
+      "text": "19 Years",
+      "sourceHash": "84afc2fe125b56657c779a8c3fe1b2c96b4689f0c740869bd54680cbf61c3c78",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT06888050",
+      "sourceId": "NCT06888050#unsplit-1",
+      "text": "Inclusion Criteria:\n\n* Age between 18 and 75 years old.\n* Diagnosed with type 2 diabetes according to WHO diagnostic criteria, with HbA1c between 7% and 9% at this examination, fasting venous blood glucose ≤ 11.1 mmol/L, and BMI ≥ 18.5 kg/m2; known disease duration ≤ 24 months.\n* Voluntary participation in this study and signing of the informed consent form. If the subject is unable to read the informed consent form (e.g., illiterate subjects), a witness must be present to observe the informed consent process and sign the informed consent form on their behalf.\n* No previous use of hypoglycemic drugs.\n\nExclusion Criteria:\n\n* Type 1 diabetes.\n* Participants who have participated in other clinical trials of diabetes treatment drugs before the start of this study.\n* Those who have experienced diabetic ketoacidosis, diabetic lactic acidosis or hyperosmolar non-ketotic coma within the past six months and required hospitalization.\n* Those who have experienced decompensated heart failure (NYHA class III and IV), unstable angina, stroke or transient ischemic attack, myocardial infarction, severe arrhythmia, undergone cardiac surgery or vascular reconstruction (including coronary artery bypass grafting or percutaneous coronary intervention) within the past six months.\n* Those taking glucocorticoid drugs (excluding topical or inhaled medications).\n* Those with a life expectancy of less than one year due to malignant tumors, active tuberculosis, or acute infections.\n* Those with clinically significant urinary tract or genital infections, or a history of recurrent urinary tract or genital infections.\n* Those with a history of hypertension whose blood pressure has not been effectively controlled despite antihypertensive drug treatment: systolic blood pressure (SBP) \\> 160 mmHg and/or diastolic blood pressure (DBP) \\> 100 mmHg.\n* Those with liver and kidney function indicators meeting the following criteria: alanine aminotransferase (ALT) and/or aspartate aminotransferase (AST) ≥ 3.0×ULN; estimated glomerular filtration rate (eGFR) \\< 45 ml/min/1.73 m² (calculated according to the Chronic Kidney Disease Epidemiology Collaboration \\[CKD-EPI\\] formula).\n* Those allergic to the investigational drug or its components.\n* Pregnant or lactating women and those with the intention to conceive within three months of the last dose.\n* Other patients deemed unsuitable for participation in this clinical trial by the investigator.",
+      "sourceHash": "b6af303214b59172b0c2b7a4550734f50b60a7dcc677625b05224368896e4c6e",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT06888050",
+      "sourceId": "NCT06888050#structured-minimumAge",
+      "text": "18 Years",
+      "sourceHash": "23c8deb0e75604cb701e61045ca12f90b1cbc2cc82e8ce02ff230c9e4268a65b",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT06888050",
+      "sourceId": "NCT06888050#structured-maximumAge",
+      "text": "75 Years",
+      "sourceHash": "7125c2ee1dd7bf7c38124d1be91042c8ec0dd8ba89142ac8e903dc73c9daf879",
+      "location": "protocolSection.eligibilityModule.maximumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT07121504",
+      "sourceId": "NCT07121504#unsplit-1",
+      "text": "Inclusion Criteria:\n\n1. Age ≥18 years.\n2. Diagnosis of T2DM requiring surgical procedures (duration ≥2 hours) with anticipated short-term total parenteral nutrition (TPN) during the perioperative period (expected hospitalization \\>72 hours).\n3. Glycemic control criteria (meeting any of the following):\n\n   ①HbA1c ≥7.5% or random plasma glucose ≥13.9 mmol/L\n   * Established T2DM with poor glycemic control (HbA1c ≥7.5%) despite combination therapy (≥2 oral antidiabetic drugs) ③Insulin-treated patients with suboptimal control (HbA1c ≥7.0%) after adequate dose adjustment.\n4. Willing to sign the informed consent form.\n\nExclusion Criteria:\n\n1. Patients with acute diabetic complications, including: diabetic ketoacidosis (DKA), hyperglycemic hyperosmolar state (HHS), etc.\n2. Patients with type 1 diabetes or other specific types of diabetes.\n3. Patients with severe organ dysfunction, defined as:\n\n   * Cardiac function ≥Class III (NYHA classification)\n\n     * ALT/AST \\>3× upper limit of normal (ULN) ③ eGFR ≤30 mL/min/1.73 m²\n\n       * Hemoglobin \\<90 g/L ⑤ WBC count \\<4.0×10⁹/L or platelets \\<90×10⁹/L ⑥ Hemodynamic instability\n4. Patients with endocrine disorders affecting glucose metabolism, such as: hyperthyroidism, hypothyroidism, Cushing's syndrome, etc.\n5. Patients with known hypersensitivity to any drugs or materials used in the study protocol.\n6. Patients who have contraindications to conventional insulin pump therapy.\n7. Patients with dermatological conditions (e.g., skin rash, prurigo) or coagulation disorders.\n8. Patients with impaired consciousness or psychiatric disorders affecting decision-making capacity or communication ability.\n9. Patients who have other conditions deemed unsuitable for trial participation by investigators.\n10. Patients who suffer severe surgical complications.",
+      "sourceHash": "fdaeb961e73bc78f27b20b6d9812d046aefae65f5f9d123c31de375c2ef102b5",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT07121504",
+      "sourceId": "NCT07121504#structured-minimumAge",
+      "text": "18 Years",
+      "sourceHash": "23c8deb0e75604cb701e61045ca12f90b1cbc2cc82e8ce02ff230c9e4268a65b",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT07350967",
+      "sourceId": "NCT07350967#unsplit-1",
+      "text": "Inclusion Criteria:\n\n1. Participants are willing and able to give informed consent for participation in the study.\n2. Male or Female, aged ≥ 25 years to ≤ 65 years inclusive at the time of informed consent\n3. BMI 30-50\n\n   * Prior sleeve gastrectomy (\\> 12 months) or other metabolic surgical procedures with T2DM (characterized by HbA1c \\> 6.5%) or weight regain\n   * T2DM without a history of gastrectomy or other metabolic surgical procedures (diagnosis for \\> 6M and \\<10 yrs) taking at least oral antidiabetic medication with fasting glucose \\< 200mg/dl and HbA1c \\>6.5 %\n4. Agrees to abstain from any form of additional bariatric or reconstructive surgery that could influence body weight for a duration of 1 year\n\nExclusion Criteria:\n\n1. Pregnancy or breastfeeding mothers, or individuals planning to become pregnant in next 9-12 months\n2. Vulnerable individuals (mentally disabled, physically disabled, prisoner, etc.)\n3. Current enrolment in another research study or previous participation within 30 days of enrolment\n4. Use of injectable insulin\n5. Uncontrolled T2DM\n6. Uncontrolled hypertension, dyslipidemia, or sleep apnea\n7. Current history of injected Glucagon Like Peptide 1 (GLP1)\n8. Evidence of type 1 diabetes or of pancreatic exhaustion, as indicated by a C peptide fasting level less than 1 or, for type 1 diabetes, based on measurable levels of serum anti-GAD-65 autoantibodies or, at investigator's discretion, based on measurable levels of other T1D-associated autoantibodies\n9. History of highly unusual or challenging gastrointestinal tract anatomy ascertained through earlier endoscopic examination or other diagnostic imaging\n10. Previous intestinal, colonic, or duodenal surgery, excluding bariatric procedures\n11. Prior surgical interventions, trauma, prosthetic implants, diseases, or genetic factors that hinder or contraindicate the procedure, including scarring and abnormal anatomical structures\n12. History of (or known to be at prohibitive risk for) any of the following diseases of the small bowel or closely related conditions: Crohn's disease or other inflammatory bowel disease, celiac disease, resection for cancer, or intra-abdominal adhesive disease including intussusception, perforated appendix and Meckel's diverticulum\n13. Refractory gastroesophageal reflux disease (GERD)\n14. Barrett's esophagus\n15. Any anatomical anomaly that obstructs orogastric access via gastroscope and catheters, as well as manipulation techniques\n16. Presence of an implantable pacemaker or defibrillator\n17. Any comorbidity or current physiological condition of the subject that, in the opinion of the surgeon or anesthesiologist, poses safety concerns rendering the subject medically unfit for the procedure. This encompasses any conditions for which endoscopic or laparoscopic surgery would be contraindicated, as well as any significant congenital or acquired anomalies of the gastrointestinal tract at or distal to the magnet placement site\n\nSubjects will be deemed ineligible to participate if they fulfill any of the following criteria:\n\n1\\. Pregnancy or breastfeeding mothers, or individuals planning to become pregnant in next 9-12 months 2. Vulnerable individuals (mentally disabled, physically disabled, prisoner, etc.) 3. Current enrolment in another research study or previous participation within 30 days of enrolment 4. Use of injectable insulin 5. Uncontrolled T2DM 6. Uncontrolled hypertension, dyslipidemia, or sleep apnea 7. Current history of injected Glucagon Like Peptide 1 (GLP1) 8. Evidence of type 1 diabetes or of pancreatic exhaustion, as indicated by a C peptide fasting level less than 1 or, for type 1 diabetes, based on measurable levels of serum anti-GAD-65 autoantibodies or, at investigator's discretion, based on measurable levels of other T1D-associated autoantibodies 9. History of highly unusual or challenging gastrointestinal tract anatomy ascertained through earlier endoscopic examination or other diagnostic imaging 10. Previous intestinal, colonic, or duodenal surgery, excluding bariatric procedures 11. Prior surgical interventions, trauma, prosthetic implants, diseases, or genetic factors that hinder or contraindicate the procedure, including scarring and abnormal anatomical structures 12. History of (or known to be at prohibitive risk for) any of the following diseases of the small bowel or closely related conditions: Crohn's disease or other inflammatory bowel disease, celiac disease, resection for cancer, or intra-abdominal adhesive disease including intussusception, perforated appendix and Meckel's diverticulum 13. Refractory gastroesophageal reflux disease (GERD) 14. Barrett's esophagus 15. Any anatomical anomaly that obstructs orogastric access via gastroscope and catheters, as well as manipulation techniques 16. Presence of an implantable pacemaker or defibrillator 17. Any comorbidity or current physiological condition of the subject that, in the opinion of the surgeon or anesthesiologist, poses safety concerns rendering the subject medically unfit for the procedure. This encompasses any conditions for which endoscopic or laparoscopic surgery would be contraindicated, as well as any significant congenital or acquired anomalies of the gastrointestinal tract at or distal to the magnet placement site 18. History of small bowel surgery such as small bowel resection 19. Active H. pylori infection (prospective participants with active H. pylori may continue with the screening process if they are treated via medication and re-testing verifies the condition has resolved.) 20. History of chronic or acute pancreatitis 21. Known active hepatitis or active liver disease 22. Symptomatic gallstones or kidney stones or acute cholecystitis 23. History of coagulopathy, upper gastro-intestinal bleeding conditions such as ulcers, gastric varices, strictures, congenital or acquired intestinal telangiectasia 24. Use of anticoagulation therapy (excluding aspirin) which cannot be discontinued for 7 days before and 14 days after the procedure 25. Use of P2Y12 inhibitors (clopidogrel, pasugrel, ticagrelor) which cannot be discontinued for 14 days before and 14 days after the procedure (use of low-dose aspirin allowable) 26. History of serious complications of T2DM including coronary artery disease, hypertension, peripheral vascular disease, diabetic retinopathy, and/or diabetes-related soft tissue infection 27. Taking corticosteroids or drugs known to affect GI motility (e.g. Metoclopramide) 28. Receiving weight loss medications such as Meridia, Xenical, or over-the-counter weight loss medications 29. Persistent anemia, defined as Hgb\\<10 g dL-1 30. Estimated Glomerular Filtration Rate (eGFR) or Modified of Diet in Renal Disease (MDRD) \\<30 ml/min/1.73m2 31. Active systemic infection 32. Chemotherapeutic cancer treatment within past 9 months, history of abdominal radiation, or active malignancy within the past 5 years 33. Active illicit substance abuse or alcoholism 34. Unhealed ulcers, bleeding lesions, tumors, or any other lesions at the target site for magnet deployment 35. Anticipated requirement for MR imaging within the first two months following the procedure 36. Any anatomical anomaly that prevents or contraindicates laparoscopic access and general laparoscopic procedures 37. Underwent a surgical or interventional procedure within 30 days prior to the current procedure 38. Any scheduled surgical or interventional procedure planned within 30 days following the current procedure 39. Any stroke or transient ischemic attack (TIA) within six months prior to obtaining consent 40. Any other serological markers likely to be associated with poor outcomes 41. Inability to adhere to the follow-up schedule and assessments 42. Any circumstance that, according to the investigator's judgment, could hinder the completion of follow-up evaluations up to Day 360 (for instance, a health issue that might elevate the risks linked to study involvement or could obstruct the analysis of study findings, failure to comply with the visit timetable, or inadequate adherence to the treatment protocol)\n\n\\-",
+      "sourceHash": "33fcc5f7431a9b619a4785cfdaffc90f6fc34efc2d6389dadfa28d8d8944dcc1",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT07350967",
+      "sourceId": "NCT07350967#structured-minimumAge",
+      "text": "25 Years",
+      "sourceHash": "2576b67f8faaecef41115455efed0f4225822e82afecea77899e9fdf6d2b59a0",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT07350967",
+      "sourceId": "NCT07350967#structured-maximumAge",
+      "text": "65 Years",
+      "sourceHash": "0af10bb56c273dad39f3aa905706a46036a9f86b60c3fd6b23a914951c2b0c82",
+      "location": "protocolSection.eligibilityModule.maximumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT07574138",
+      "sourceId": "NCT07574138#unsplit-1",
+      "text": "Inclusion Criteria:\n\n* The patient is diagnosed with Type 2 Diabetes Mellitus according to the ADA 2024 criteria (Fasting Glucose ≥ 126 mg/dl, or Glucose after 2 hours of an Oral Glucose Tolerance Test ≥ 200 mg/dl, or HbA1C ≥ 6.5%, or with typical symptoms accompanied by any Glucose ≥ 200 mg/dl).\n* The duration of Type 2 Diabetes Mellitus does not exceed 10 years.\n* Classification by age of onset: Early onset group (\\< 40 years) and typical onset group (≥ 40 years).\n* At least 6 months without the need for insulin and no recorded episodes of diabetic ketoacidosis since the time of diagnosis.\n* For the early-onset group: Autoantibodies (Anti-GAD, ICA) are negative and fasting C-peptide levels are \\> 0.6 nmol/L.\n* The patient consents to participate in the study and signs the informed consent document.\n\nExclusion Criteria:\n\n* Pregnant women or patients with acute illnesses at the time of assessment.\n* The patient has been diagnosed with or exhibits characteristics suggestive of Type 1 Diabetes Mellitus (such as a history of ketoacidosis, C-peptide \\< 0.2 nmol/L).\n* Secondary diabetes mellitus due to pancreatic disorders (pancreatitis, pancreatic tumors, pancreatic resection), due to medications (glucocorticoids), or due to other endocrine disorders (Cushing's syndrome, hyperthyroidism, acromegaly).\n* Severe renal failure with an estimated glomerular filtration rate (eGFR) \\< 30 mL/min/1.73 m².\n* Use of medications that affect beta cell function or complications such as prolonged high-dose corticosteroids, immunosuppressive agents, or chemotherapy.\n* Not of Vietnamese ethnicity.\n* Non-compliance with treatment guidelines or failure to attend scheduled follow-up appointments.",
+      "sourceHash": "f299aafdac5f6e2afe02c997f99a0ce817f168dd2f31483c92133e5ce722527f",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT07676773",
+      "sourceId": "NCT07676773#unsplit-1",
+      "text": "Inclusion Criteria:\n\n(1) Both gender, age from 40 to 69 years old. (2) Meeting the diagnostic criteria for type 2 diabetes in China. (3) HbA1c is within 6.5%-7 .0% and no medication is taken. (4) Newly diagnosed with diabetes or the duration of the disease is no more than 5 years. (5) Possessing general exercise capacity and no obvious diseases in the muscle and osteoarticular systems. (6) The exercise risk is evaluated as medium or low risk through the PAR-Q+ questionnaire. (7) No contraindications to exercise tests. (8) Willing to adopt intensifed lifestyle intervention and complete the entire research process.\n\nExclusion Criteria:\n\n(1) T1DM patients, autoimmune diabetes and special types of diabetes, including hypercortisolism, growth hormone tumor, glucagonoma and some special types of diabetes caused by genetic factors; (2) pregnant or lactating women; (3) regular use of antidiabetic drugs or insulin in the past three months; (4) fasting blood glucose level \\> 16.7 mmol/L; (5) recurrent hypoglycemia; (6) a history of acute diabetic complications, including diabetic ketoacidosis, hyperosmolar hyperglycemia, and lactic acidosis; (7) a history of severe chronic microvascular or macrovascular complications; (8) diseases that may be exacerbated by exercise or impair exercise efciency, such as uncontrolled hypertension, hyperthyroidism, osteoarthritis or hypokalemia; (9) unable to use smart phones or wearable smart devices independently; (10) communication or motor dysfunction; (11) Patients with severe chronic diseases could not participate in the study.",
+      "sourceHash": "4fca95991985ae7cb600f69836ecec589c271893e826236e034811f30b23a063",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT07676773",
+      "sourceId": "NCT07676773#structured-minimumAge",
+      "text": "18 Years",
+      "sourceHash": "23c8deb0e75604cb701e61045ca12f90b1cbc2cc82e8ce02ff230c9e4268a65b",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT07676773",
+      "sourceId": "NCT07676773#structured-maximumAge",
+      "text": "69 Years",
+      "sourceHash": "dfd6d381949c3379f0900354fa4ec19d7f7cb0cd3a151a478742644680c29934",
+      "location": "protocolSection.eligibilityModule.maximumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT07767331",
+      "sourceId": "NCT07767331#unsplit-1",
+      "text": "Inclusion Criteria:\n\n* type 2 diabetes\n* able to understand and answer a Danish questionnaire\n\nExclusion Criteria:\n\n* none",
+      "sourceHash": "997460b5a91235e4693b11982c4aa765c2c7c0d54dc9d26abadd2c1872cdf29e",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT07767331",
+      "sourceId": "NCT07767331#structured-minimumAge",
+      "text": "18 Years",
+      "sourceHash": "23c8deb0e75604cb701e61045ca12f90b1cbc2cc82e8ce02ff230c9e4268a65b",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT07775846",
+      "sourceId": "NCT07775846#unsplit-1",
+      "text": "Inclusion Criteria:\n\n* Age ≥18 years, with a confirmed diagnosis of type 2 diabetes mellitus (T2DM).\n* Receiving a standard dose of an Angiotensin-Converting Enzyme Inhibitor (ACEI) or Angiotensin Receptor Blocker (ARB) therapy for at least 4 consecutive weeks prior to screening, with the dose expected to remain stable throughout the study period.\n* Body Mass Index (BMI) ≥ 24.0 kg/m2.\n* Mean urine albumin-to-creatinine ratio (UACR) ≥ 100 mg/g and \\< 5000 mg/g, calculated from first morning void urine samples collected over 3 consecutive days.\n* Estimated glomerular filtration rate (eGFR) based on the CKD-EPI formula ≥ 30 mL/min/1.73m2.\n* Serum potassium level ≤ 4.8 mmol/L.\n* Glycated hemoglobin (HbA1c) \\< 11%.\n* Voluntarily understood and signed the written Informed Consent Form (ICF).\n\nExclusion Criteria:\n\n* Definite diagnosis of non-diabetic kidney disease (e.g., IgA nephropathy, polycystic kidney disease, lupus nephritis, etc).\n* Personal or family history of medullary thyroid carcinoma (MTC), or a diagnosis of multiple endocrine neoplasia syndrome type 2 (MEN 2).\n* History of severe acute or chronic pancreatitis.\n* History of diabetic ketoacidosis (DKA).\n* Symptomatic hypotension during the screening period, or a resting systolic blood pressure (SBP) \\< 110 mmHg.\n* Refractory hypertension, defined as a resting SBP \\> 170 mmHg despite the concurrent use of three antihypertensive medications.\n* History of severe dehydration, severe diarrhea, or acute volume depletion within 30 days prior to screening.\n* History of acute kidney injury (AKI) within 30 days prior to screening.\n* Use of traditional Chinese medicines with potential proteinuria-lowering effects (e.g., Keluoxin capsules, Huangkui capsules, or Shenyan Kangfu tablets) within 30 days prior to screening.\n* Use of potassium-sparing diuretics (e.g., triamterene or amiloride) or mineralocorticoid receptor antagonists (e.g., spironolactone, eplerenone, or finerenone) within 2 months prior to screening.\n* Use of GLP-1 receptor agonists, GLP-1/GIP dual receptor agonists, or GLP-1/glucagon (GCG) dual receptor agonists within 6 months prior to screening.\n* Current use of strong CYP3A4 inhibitors (e.g., itraconazole or clarithromycin) or CYP3A4 inducers that may significantly interfere with finerenone metabolism.\n* Myocardial infarction, unstable angina, stroke, or hospitalization due to heart failure (NYHA Class III-IV) within 3 months prior to screening.\n* Active urogenital tract infection, or a history of urogenital tract infection associated with the prior use of SGLT2 inhibitors.\n* Women who are pregnant, planning to become pregnant, or lactating.\n* Inability to complete the 6-month follow-up due to general health conditions or geographic relocation.\n* Any other condition that, in the opinion of the investigator, renders the participant unsuitable for participation in the study.",
+      "sourceHash": "031deda25dcc386faef5554e9fc53788131123a5f3bbda4913ae7b6be4eb398a",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT07775846",
+      "sourceId": "NCT07775846#structured-minimumAge",
+      "text": "18 Years",
+      "sourceHash": "23c8deb0e75604cb701e61045ca12f90b1cbc2cc82e8ce02ff230c9e4268a65b",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT07775846",
+      "sourceId": "NCT07775846#structured-maximumAge",
+      "text": "70 Years",
+      "sourceHash": "04e1c4ee14b0b35aaa371186524f98cc9c2a347bf72ca6c58090101c99565e87",
+      "location": "protocolSection.eligibilityModule.maximumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT07919236",
+      "sourceId": "NCT07919236#unsplit-1",
+      "text": "Inclusion Criteria:\n\n* Age between 18 and 65 years (both inclusive)\n* Type 2 diabetes diagnosed at least 6 months prior to entering the study\n* Body mass index ≥25 kg/m2\n* Diabetes treated with oral medications and/or GLP-1 receptor agonists and/or tirzepatide\n* No modifications of diabetes treatment in the previous 3 months\n* HbA1c between 7.5% and 10% (both inclusive)\n* Oral and written informed consent for participation\n\nExclusion Criteria:\n\n* Type 1 diabetes, gestational diabetes, other specific types of diabetes\n* HbA1c \\>10.0%\n* Treatment with insulin\n* Previous use of any continuous glucose monitoring system\n* GFR \\<30 ml/min\n* Acute infections, acute diabetes complications and/or unplanned hospitalisations in the previous month\n* Use of steroids or immunosuppressive medications in the previous 3 months\n* Chemotherapy, radiotherapy, immune therapy in the previous 3 months\n* Pregnancy and/or breastfeeding\n* Skin lesions or dermatological conditions preventing proper sensor insertion\n* Cognitive impairment and/or other conditions preventing proper use of continuous glucose monitoring system\n* Lack of consent for the use of continuous glucose monitoring system",
+      "sourceHash": "13299251b7a65b048adb3aa055ed4f1565ea6f233921b0d946d4d2370848fca6",
+      "location": "protocolSection.eligibilityModule.eligibilityCriteria",
+      "kind": "unsplit"
+    },
+    {
+      "trialId": "NCT07919236",
+      "sourceId": "NCT07919236#structured-minimumAge",
+      "text": "18 Years",
+      "sourceHash": "23c8deb0e75604cb701e61045ca12f90b1cbc2cc82e8ce02ff230c9e4268a65b",
+      "location": "protocolSection.eligibilityModule.minimumAge",
+      "kind": "inclusion"
+    },
+    {
+      "trialId": "NCT07919236",
+      "sourceId": "NCT07919236#structured-maximumAge",
+      "text": "65 Years",
+      "sourceHash": "0af10bb56c273dad39f3aa905706a46036a9f86b60c3fd6b23a914951c2b0c82",
+      "location": "protocolSection.eligibilityModule.maximumAge",
+      "kind": "inclusion"
+    }
+  ],
+  "report": {
+    "total": 18,
+    "accepted": [
+      "NCT05439226",
+      "NCT05838287",
+      "NCT06118931",
+      "NCT06251323",
+      "NCT06271382",
+      "NCT06296485",
+      "NCT06449833",
+      "NCT06852950",
+      "NCT06862739",
+      "NCT06875193",
+      "NCT06888050",
+      "NCT07121504",
+      "NCT07350967",
+      "NCT07574138",
+      "NCT07676773",
+      "NCT07767331",
+      "NCT07775846",
+      "NCT07919236"
+    ],
+    "problems": [],
+    "needsManualSplit": [
+      "NCT05439226",
+      "NCT05838287",
+      "NCT06118931",
+      "NCT06251323",
+      "NCT06271382",
+      "NCT06296485",
+      "NCT06449833",
+      "NCT06852950",
+      "NCT06862739",
+      "NCT06875193",
+      "NCT06888050",
+      "NCT07121504",
+      "NCT07350967",
+      "NCT07574138",
+      "NCT07676773",
+      "NCT07767331",
+      "NCT07775846",
+      "NCT07919236"
+    ],
+    "unknownMetadata": [
+      "derivedSection",
+      "documentSection",
+      "hasResults",
+      "protocolSection.armsInterventionsModule",
+      "protocolSection.conditionsModule.keywords",
+      "protocolSection.contactsLocationsModule.centralContacts",
+      "protocolSection.contactsLocationsModule.locations[].contacts",
+      "protocolSection.contactsLocationsModule.locations[].geoPoint",
+      "protocolSection.contactsLocationsModule.locations[].state",
+      "protocolSection.contactsLocationsModule.locations[].status",
+      "protocolSection.contactsLocationsModule.locations[].zip",
+      "protocolSection.contactsLocationsModule.overallOfficials",
+      "protocolSection.descriptionModule.detailedDescription",
+      "protocolSection.designModule.bioSpec",
+      "protocolSection.designModule.designInfo",
+      "protocolSection.designModule.enrollmentInfo",
+      "protocolSection.designModule.patientRegistry",
+      "protocolSection.designModule.studyType",
+      "protocolSection.eligibilityModule.genderBased",
+      "protocolSection.eligibilityModule.healthyVolunteers",
+      "protocolSection.eligibilityModule.samplingMethod",
+      "protocolSection.eligibilityModule.stdAges",
+      "protocolSection.eligibilityModule.studyPopulation",
+      "protocolSection.identificationModule.acronym",
+      "protocolSection.identificationModule.officialTitle",
+      "protocolSection.identificationModule.orgStudyIdInfo",
+      "protocolSection.identificationModule.organization",
+      "protocolSection.identificationModule.secondaryIdInfos",
+      "protocolSection.ipdSharingStatementModule",
+      "protocolSection.outcomesModule",
+      "protocolSection.oversightModule",
+      "protocolSection.referencesModule",
+      "protocolSection.sponsorCollaboratorsModule",
+      "protocolSection.statusModule.completionDateStruct",
+      "protocolSection.statusModule.expandedAccessInfo",
+      "protocolSection.statusModule.lastUpdatePostDateStruct",
+      "protocolSection.statusModule.lastUpdateSubmitDate",
+      "protocolSection.statusModule.primaryCompletionDateStruct",
+      "protocolSection.statusModule.startDateStruct",
+      "protocolSection.statusModule.statusVerifiedDate",
+      "protocolSection.statusModule.studyFirstPostDateStruct",
+      "protocolSection.statusModule.studyFirstSubmitDate",
+      "protocolSection.statusModule.studyFirstSubmitQcDate"
+    ],
+    "hasNextPage": false
+  }
+}
