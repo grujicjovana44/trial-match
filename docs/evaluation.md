@@ -48,6 +48,16 @@ Priprema je dala 300 doslovno citiranih odlomaka za 18 dodatnih studija; svih 30
 
 Novi korpus je izolovan u `data/review_candidates/studies_20_2026-11-16/`; `DATA_DIR` i DEMO podrazumevani tok ostaju nepromenjeni. Nove studije ne mogu u matcher dok se ne obavi ljudski pregled i postojeći `compile:rules` approval postupak.
 
+### Provera uvezenog skupa — 2026-11-16
+
+Svih 20 sirovih fajlova je provereno prema SHA-256 vrednostima u manifestu; direktni ClinicalTrials.gov API v2 odgovori za svih 20 zvaničnih URL-jeva podudaraju se po NCT ID-ju, statusu, `statusVerifiedDate` i `lastUpdatePostDateStruct.date`. Svi raw zapisi sadrže eksplicitnu T2D vezu u naslovu, uslovima, sažetku ili eligibility tekstu. Široki search endpoint je vratio prvih 100 rezultata, među kojima nije bilo ovih 20 ID-jeva; taj upit nije paginiran, pa provera ne tvrdi da je prva stranica kompletna niti da sama potvrđuje izbor studija. Svaka studija je proverena zasebnim zvaničnim endpoint-om iz manifesta.
+
+`pnpm data:prepare` prihvatio je 18/18 novih API zapisa bez grešaka redova. `pnpm data:split` i `pnpm rules:draft`, pokrenuti nad postojećim importom, reprodukovali su svih 300 tekstualnih kriterijuma i identičan split fajl; svih 300 citata je doslovni podniz izvornog eligibility teksta, a nijedan zapis nije zahtevao `needs_manual_split`. Svi ostaju `manual_review`/`pending_review`; 26 strukturisanih pol/starost kriterijuma ostaju deterministički proverljiva bez ljudskog odobrenja.
+
+Integracioni test u `apps/server/src/retrieval/corpus.test.ts` potvrđuje da eksplicitni koreni `data/rule_sets/studies_2_approved_20261115_1539/` i `data/review_candidates/studies_20_2026-11-16/import/` daju tačno 20 jedinstvenih studija i 76 dokumenata: 20 studijskih i 56 passage dokumenata. Loader prijavljuje i preskače dva nepodržana JSON metadataka (`manifest.json` i `review-report.json`) u odobrenom direktorijumu. Podrazumevani loader i dalje vraća tri sintetička fixture-a i dve postojeće odobrene studije; 300 izdvojenih tekstualnih kriterijuma nije u passage dokumentima. Ovo je validacija učitavanja i šema, ne RAG indeks ili kvalitet retrieval-a.
+
+Ciljani offline testovi: 8 fajlova, 53 testa su prošla (`prepare-trials`, `split-trials`, `create-rule-draft`, `compile-rules`, shared schemas, corpus/indexing i matcher kriterijumi). `pnpm typecheck`, `pnpm lint` i `pnpm build` su prošli; Vite build je prijavio upozorenje da je najveći minifikovani chunk 500.22 kB, ali je build završen uspešno. `README.md` već opisuje tačne korene, pending status i ograničenje RAG passage sadržaja, pa nije menjan. Nisu pokrenuti puni `pnpm test`, `pnpm smoke`, RAG indeksiranje, embeddings/OpenAI/Gemini pozivi niti je menjana `data/index/rag.sqlite`.
+
 ## RAG retrieval evaluacija
 
 `eval/rag/retrieval-v1.json` i `baseline-v1.json` ostaju nepromenjeni. JG je adjudikovao sva četiri slučaja iz `retrieval-v2.json`, uključujući relevantnost BMI odlomka RAG-001. Globalni `annotationStatus` ostaje `pending_human_review` jer su planned patterns samo opisni i nemaju konkretne slučajeve/oznake. Relevance rule beleži unapred definisani kriterijum nezavisan od retrieval izlaza. V1 i v2 su povezani sa korpusom `rag-corpus-v0-dev` od pet studija, pa rezultate treba tumačiti u okviru ovog malog skupa, ne kao opšti dokaz kvaliteta.
