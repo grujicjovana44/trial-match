@@ -9,6 +9,9 @@ import {
   okResponse,
   rejectedResponse,
 } from "../helpers/responses.js";
+import { createApp } from "../../../server/src/api/app.js";
+import { parseConfig } from "../../../server/src/config/index.js";
+import { TrialSchema } from "../../../../packages/shared/src/index.js";
 
 afterEach(() => {
   cleanup();
@@ -45,6 +48,163 @@ describe("ishod ok", () => {
     expect(document.body.textContent).not.toMatch(
       /\b(?:ok|candidate|needs_clarification)\b/,
     );
+  });
+
+  it("prikazuje MOCK API rezultate za sva četiri operatora i njihove granice", async () => {
+    const trialId = "T-OPERATOR-BOUNDARY";
+    const operatorCases = [
+      { kind: "inclusion", operator: "lt", threshold: 10 },
+      { kind: "inclusion", operator: "lte", threshold: 10 },
+      { kind: "inclusion", operator: "gt", threshold: 30 },
+      { kind: "inclusion", operator: "gte", threshold: 30 },
+      { kind: "exclusion", operator: "lt", threshold: 10 },
+      { kind: "exclusion", operator: "lte", threshold: 10 },
+      { kind: "exclusion", operator: "gt", threshold: 30 },
+      { kind: "exclusion", operator: "gte", threshold: 30 },
+    ] as const;
+    const criteria = operatorCases.map((item, index) => {
+      const operatorText = {
+        lt: "<",
+        lte: "<=",
+        gt: ">",
+        gte: ">=",
+      }[item.operator];
+      const text = `Age ${operatorText} ${item.threshold} years.`;
+      return {
+        id: `${trialId}#${item.kind === "inclusion" ? "inc" : "exc"}-${index + 1}`,
+        trialId,
+        kind: item.kind,
+        field: "age",
+        operator: item.operator,
+        value: item.threshold,
+        unit: "years",
+        checkability: "auto",
+        origin: "compiled_reviewed",
+        text,
+        sourceId: `${trialId}#unsplit-1`,
+        sourceQuote: text,
+      };
+    });
+    const trial = TrialSchema.parse({
+      trialId,
+      title: "Synthetic operator-boundary fixture",
+      conditions: ["dijabetes tip 2"],
+      overallStatus: "SINTETIČKI PRIMER",
+      phase: "Nije primenljivo",
+      locations: [],
+      eligibilityText: criteria
+        .map((criterion) => criterion.sourceQuote)
+        .join("\n"),
+      dataVersion: "synthetic-operator-boundaries-v1",
+      criteria,
+    });
+    const app = createApp({
+      config: parseConfig({ NODE_ENV: "test", DEMO_MODE: "true" }),
+      serviceOptions: {
+        trials: [trial],
+        manifest: {
+          name: "Synthetic operator boundary test",
+          version: "synthetic-operator-boundaries-v1",
+          date: null,
+          origin: "Privremeni podaci definisani isključivo u testu.",
+          synthetic: true,
+          license: "Nije primenljivo na sintetičke testne podatke.",
+          transformations: "Privremeni podaci za proveru matcher-a i UI-ja.",
+          limitations: ["Nije stvarna studija ni medicinski kriterijum."],
+        },
+      },
+    });
+    const fetchMock = vi.fn(
+      async (_input: RequestInfo | URL, init?: RequestInit) => {
+        const response = await app.inject({
+          method: "POST",
+          url: "/api/runs",
+          payload: JSON.parse(String(init?.body)),
+        });
+        return jsonResponse(response.json(), response.statusCode);
+      },
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    try {
+      render(<App />);
+      fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+        target: {
+          value: "Muškarac, 10 godina, dijabetes tip 2.",
+        },
+      });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Proveri kriterijume" }),
+      );
+      await screen.findByRole("heading", {
+        name: "Isključene studije i razlozi",
+      });
+
+      const expectedAtTen = [
+        "not_met",
+        "met",
+        "not_met",
+        "not_met",
+        "met",
+        "not_met",
+        "met",
+        "met",
+      ];
+      const rows = document.querySelectorAll(".trial-card .criterion");
+      expect(rows).toHaveLength(operatorCases.length);
+      for (const [index, item] of operatorCases.entries()) {
+        const row = rows[index] as HTMLElement;
+        const symbol = {
+          lt: "<",
+          lte: "<=",
+          gt: ">",
+          gte: ">=",
+        }[item.operator];
+        expect(row.querySelector(".criterion-text")?.textContent).toContain(
+          `${symbol} ${item.threshold}`,
+        );
+        expect(row.querySelector(".criterion-status")?.textContent).toContain(
+          expectedAtTen[index] === "met" ? "Ispunjen" : "Nije ispunjen",
+        );
+        expect(row.querySelector(".criterion-evidence")?.textContent).toContain(
+          "10 years",
+        );
+        expect(row.querySelector("blockquote")?.textContent).toBe(
+          criteria[index]!.sourceQuote,
+        );
+      }
+
+      for (const age of [9, 10, 11, 29, 30, 31]) {
+        const response = await app.inject({
+          method: "POST",
+          url: "/api/runs",
+          payload: {
+            profileText: `Muškarac, ${age} godina, dijabetes tip 2.`,
+          },
+        });
+        expect(response.statusCode, response.body).toBe(200);
+        const body = response.json();
+        const result = [...body.results, ...body.excludedTrials].find(
+          (item: { trialId: string }) => item.trialId === trialId,
+        );
+        expect(result).toBeDefined();
+        for (const [index, item] of operatorCases.entries()) {
+          const matches =
+            item.operator === "lt"
+              ? age < item.threshold
+              : item.operator === "lte"
+                ? age <= item.threshold
+                : item.operator === "gt"
+                  ? age > item.threshold
+                  : age >= item.threshold;
+          const isMet = item.kind === "inclusion" ? matches : !matches;
+          expect(result.criteria[index].status).toBe(isMet ? "met" : "not_met");
+        }
+      }
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    } finally {
+      await app.close();
+    }
   });
 
   it("označava rezultat hipotetičke izmene i prazni obrazac posle uspeha", async () => {
@@ -184,11 +344,12 @@ describe("ishodi bez studija", () => {
         "Prema unetim podacima profil ne ispunjava kriterijume nijedne studije iz dostupnog skupa. TrialMatch ne predlaže studije van tog skupa i ne nagađa.",
       ),
     ).toBeTruthy();
-    expect(
-      screen.getByText("Razlozi po studiji trenutno nisu deo odgovora."),
-    ).toBeTruthy();
+    expect(screen.getByText("Isključene studije i razlozi")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Studija 1" })).toBeTruthy();
+    expect(screen.getByText("Uslov 2")).toBeTruthy();
+    expect(screen.getByText("Citat 2 za T-1")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Šta ako?" })).toBeTruthy();
-    expect(document.querySelectorAll("article")).toHaveLength(0);
+    expect(document.querySelectorAll("article")).toHaveLength(1);
   });
 
   it("ne prikazuje profil ni hipotezu kada informacija nije u izvorima", async () => {

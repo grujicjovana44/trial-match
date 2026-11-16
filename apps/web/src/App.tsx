@@ -36,8 +36,17 @@ export function App() {
 
   async function send(request: LastRequest) {
     if (isBusy(state)) return;
+    request = {
+      ...request,
+      idempotencyKey: request.idempotencyKey ?? crypto.randomUUID(),
+    };
     dispatch({ type: "submit", request });
-    const outcome = await postJson(request.path, request.body, request.kind);
+    const outcome = await postJson(
+      request.path,
+      request.body,
+      request.kind,
+      request.idempotencyKey,
+    );
     if (outcome.ok) {
       dispatch({ type: "succeeded", response: outcome.response });
     } else {
@@ -78,7 +87,7 @@ export function App() {
           <p>{copy.intro.lead}</p>
         </section>
 
-        <SafetyNotice demoMode={state.meta?.demoMode === true} />
+        <SafetyNotice dataSynthetic={state.meta?.dataSynthetic === true} />
 
         <ProfileForm
           text={profileText}

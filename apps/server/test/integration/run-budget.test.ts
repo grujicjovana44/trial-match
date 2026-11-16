@@ -15,6 +15,7 @@ describe("budžeti API izvršavanja", () => {
     const app = createApp({
       config: parseConfig({
         NODE_ENV: "test",
+        DEMO_MODE: "true",
         MAX_MODEL_CALLS_PER_RUN: "1",
       }),
     });
@@ -48,6 +49,7 @@ describe("budžeti API izvršavanja", () => {
     const app = createApp({
       config: parseConfig({
         NODE_ENV: "test",
+        DEMO_MODE: "true",
         RUN_TIMEOUT_MS: "60000",
       }),
       serviceOptions: { now: () => now },

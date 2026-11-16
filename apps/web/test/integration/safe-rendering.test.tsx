@@ -88,10 +88,10 @@ describe("bezbedan prikaz teksta", () => {
   });
 
   it("renders an unknown server message as literal text", async () => {
-    const response = runErrorResponse("new_unknown_category", true, {
+    const response = runErrorResponse("citation_validation_failed", true, {
       meta: metaOf(),
       error: {
-        category: "new_unknown_category",
+        category: "citation_validation_failed",
         message: payload,
         retryable: true,
       },

@@ -128,3 +128,23 @@ B-02 i B-04–B-11 su razrešeni odlukama u ovom dokumentu ili projektnom brief-
 - Interfejs zove `${VITE_API_BASE_URL}/api/...`; prazna vrednost znači istu adresu, a primer podešavanja je u `apps/web/.env.example`.
 
 Tim je odobrio biblioteku `motion` 14.6.0, prema potvrdi vlasnika Uloge A od 2026-11-10 (REQ-T1; obrazloženje i pregled uticaja u research.md, R-16).
+
+## Priprema funkcionalnosti 003 — potvrđeno 2026-11-12
+
+Ova sekcija beleži odluke za planiranje; nije dokaz implementacije.
+
+- **Provider za prvi živi test**: korisnik je izabrao Gemini 3.5 Flash Lite za testiranje; zvanični model-ID je `gemini-3.5-flash-lite`. Budući produkcioni izbor OpenAI je mogućnost, ne izbor za ovu fazu. Izabrati serverski REST adapter preko postojećeg Node fetch-a; razmotreni SDK nije potreban za ograničen strukturisani tekstualni tok i ne uvodi novu zavisnost. Dokumentacija je pregledana uz korisničku dozvolu: [model](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite), [strukturisani izlaz](https://ai.google.dev/gemini-api/docs/structured-output), [REST](https://ai.google.dev/api/generate-content). Pregled dokumentacije nije živi poziv ni potvrda naloga/cena/retencije podataka.
+- **Režim**: stvarni režim je podrazumevan; `DEMO_MODE=true` bira mock. Postojeći predviđeni mock testovi/CI ostaju eksplicitno mock. Nedostajući ili nevažeći ključ u stvarnom režimu daje jasnu konfiguracionu grešku i nikada mock fallback. Ključ se unosi lokalno samo na serveru.
+- **Retry u UI-ju**: zadržati ugovor 002: ponoviti poslednju putanju i telo; `invalid_transition` ili `run_not_found` vode na „Počni iznova“. `failed` ostaje terminalan. Deduplikacija i zaštita od konkurentnih zahteva ne smeju da uvedu novi workflow status niti reset budžeta.
+- **compile:rules**: isključivo lokalna validacija i uvoz ljudski pripremljenih pravila uz odobrenje; nema modelskog generisanja pravila, provider pristupa ili API troška.
+- **Odgovornosti koje je korisnik potvrdio**: Jovana je napravila osnovu i sve pre Aleksinog dela; Aleksa je izvršio oblast A u 002; Jelena je pregledala šta je urađeno do sada. Ovo je istorijski doprinos, ne dodela budućeg vodećeg člana/reviewera za B/C/D ili završno A povezivanje. `docs/team.md` zadržava TODO za buduće vlasništvo.
+
+Alternativni OpenAI provider za produkciju, Gemini SDK, modelom generisani compile pravila i nastavak iz terminalnog `failed` stanja nisu deo potvrđene 003 odluke.
+
+### Offline nacrt za ručni split CTG kriterijuma
+
+Za rad sa ručno dostavljenim snimkom, komanda `data:split` koristi postojeći CTG v2 importer umesto zasebnog parsera. Nacrt ima sopstveni format sa `pending_review`, a kriterijumi nose samo doslovan tekst, izvor i status `manual_review`; matcher polja i approval se ne generišu. Naslov Inclusion/Exclusion i oznaka stavke moraju biti eksplicitni. Nejasan tekst ostaje u celini u `eligibilityText` i u izvornom zapisu, uz razlog `needs_manual_split`.
+
+Odabir `first` prati validirane zapise u redosledu ulaza; `random` koristi obavezni seed za ponovljiv izbor. Izbor se vrši među studijama koje je postojeći importer prihvatio, dok se greške svih raw redova prijavljuju u izveštaju. Duplikati odbijaju generisanje jer bi NCT ID i kriterijumi bili dvosmisleni. Ove odluke zadržavaju izvorne greške vidljivim bez mešanja problematičnog reda sa uspešno validiranim studijama.
+
+Razmotrena alternativa je da se proširi produkcioni `TrialSchema` i postojeći kriterijum odmah označi kao odobrenog porekla. Umesto toga draft koristi uski `raw_extracted` oblik sa sopstvenim `pending_review` stanjem; to izbegava semantičko mešanje sirovog izvoda, ručno pregledanog pravila i paketa za matcher. Cena je da čovek posle pregleda pravi zaseban tipizirani rule-draft za postojeći approval/compiler tok.

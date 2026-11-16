@@ -24,7 +24,7 @@ export const copy = {
     label: "Važno medicinsko upozorenje",
     strong: "Važno:",
     body: "TrialMatch ne postavlja dijagnozu, ne preporučuje lečenje i ne odlučuje o uključivanju u studiju. Jezički model čita pravila i objašnjava rezultat. Odluku donosi deterministički kod. Konačnu odluku uvek donosi lekar. Unosite isključivo sintetičke (izmišljene) profile; ne unosite stvarne podatke pacijenata.",
-    demo: "U demo režimu i studije su sintetički primeri.",
+    demo: "Studije su sintetički primeri.",
   },
 
   form: {
@@ -71,7 +71,8 @@ export const copy = {
     headingRejected: "Zahtev nije podržan",
     noMatchBody:
       "Prema unetim podacima profil ne ispunjava kriterijume nijedne studije iz dostupnog skupa. TrialMatch ne predlaže studije van tog skupa i ne nagađa.",
-    noMatchDetail: "Razlozi po studiji trenutno nisu deo odgovora.",
+    noMatchDetail:
+      "Ispod su prikazane studije koje su isključene i kriterijumi koji to potkrepljuju.",
     notInSourcesBody:
       "Odgovor na ovo pitanje ne nalazi se u dostupnim izvorima studija. TrialMatch ne odgovara iz opšteg znanja.",
     rejectedBody:
