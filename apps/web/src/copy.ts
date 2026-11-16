@@ -64,6 +64,8 @@ export const copy = {
   result: {
     eyebrow: "Rezultat provere",
     eyebrowHypothesis: "Rezultat hipotetičke izmene",
+    excludedLabel: "Isključene studije",
+    excludedHeading: "Isključene studije i razlozi",
     headingOk: "Preliminarna provera završena",
     headingClarification: "Potrebna je dopuna",
     headingNoMatch: "Nijedna studija iz skupa ne odgovara profilu",
@@ -126,6 +128,29 @@ export const copy = {
     noCriteria: "Kriterijumi ove studije nisu dostupni u odgovoru.",
     recruitment: "Status regrutacije:",
     phase: "Faza:",
+    // Vrednosti registra (plan.md, odeljak 6). Tačan skup potvrđuje Uloga C (REQ-C2);
+    // vrednost koje nema u tabeli prikazuje se doslovno.
+    recruitmentValues: {
+      RECRUITING: "regrutuje učesnike",
+      NOT_YET_RECRUITING: "još ne regrutuje",
+      ACTIVE_NOT_RECRUITING: "aktivna, ne regrutuje",
+      ENROLLING_BY_INVITATION: "uključivanje po pozivu",
+      COMPLETED: "završena",
+      SUSPENDED: "privremeno zaustavljena",
+      TERMINATED: "prekinuta",
+      WITHDRAWN: "povučena",
+      UNKNOWN: "status nije poznat",
+    } as Record<string, string>,
+    phaseValues: {
+      EARLY_PHASE1: "rana faza 1",
+      PHASE1: "faza 1",
+      "PHASE1/PHASE2": "faza 1/2",
+      PHASE2: "faza 2",
+      "PHASE2/PHASE3": "faza 2/3",
+      PHASE3: "faza 3",
+      PHASE4: "faza 4",
+      NA: "nije primenljivo",
+    } as Record<string, string>,
     verdict: {
       candidate: "Kandidat za dalju proveru",
       pending: "Čeka dopunu podataka",
@@ -169,6 +194,8 @@ export const copy = {
   meta: {
     dataVersion: (version: string) => `Skup podataka: ${version}`,
     snapshot: (date: string) => `Datum snimka: ${date}`,
+    syntheticData: "Sintetički skup",
+    realData: "Snimak studija",
     demo: "DEMO režim — bez poziva stvarnom modelu",
     live: (modelId: string) => `Stvarni model: ${modelId}`,
     liveNoId: "Stvarni model",

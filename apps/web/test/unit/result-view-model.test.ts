@@ -8,6 +8,9 @@ import {
   formatNumber,
   formatObservedValue,
   formatSnapshotDate,
+  formatUnit,
+  phaseLabel,
+  recruitmentStatusLabel,
   modeBadge,
   missingProfileFields,
   profileAmbiguities,
@@ -190,5 +193,40 @@ describe("registar, režim i datum snimka", () => {
     expect(formatSnapshotDate("2026-11-07")).toBe("7. novembar 2026.");
     expect(formatSnapshotDate("juče")).toBeNull();
     expect(formatSnapshotDate("2026-02-29")).toBeNull();
+  });
+});
+
+describe("oznake registra i jedinice (T220, T221)", () => {
+  it("prevodi poznate vrednosti, a nepoznate vraća doslovno", () => {
+    expect(recruitmentStatusLabel("NOT_YET_RECRUITING")).toEqual({
+      text: "još ne regrutuje",
+      known: true,
+    });
+    expect(phaseLabel("PHASE1/PHASE2")).toEqual({
+      text: "faza 1/2",
+      known: true,
+    });
+    expect(phaseLabel("NA")).toEqual({ text: "nije primenljivo", known: true });
+    expect(phaseLabel("PHASE1, PHASE9")).toEqual({
+      text: "PHASE1, PHASE9",
+      known: false,
+    });
+    expect(recruitmentStatusLabel(" Nepoznat ")).toEqual({
+      text: "Nepoznat",
+      known: false,
+    });
+  });
+
+  it("prazna ili nedostajuća vrednost nema oznaku", () => {
+    expect(recruitmentStatusLabel(null)).toBeNull();
+    expect(recruitmentStatusLabel(undefined)).toBeNull();
+    expect(phaseLabel("")).toBeNull();
+  });
+
+  it("jedinicu „%“ spaja bez razmaka, ostale sa razmakom", () => {
+    expect(formatUnit("%")).toBe("%");
+    expect(formatUnit("kg")).toBe(" kg");
+    expect(formatUnit(null)).toBe("");
+    expect(formatUnit("  ")).toBe("");
   });
 });

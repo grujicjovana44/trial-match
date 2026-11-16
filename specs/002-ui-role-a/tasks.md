@@ -31,6 +31,7 @@ description: "Zadaci za funkcionalnost 002: korisnički tok i interfejs TrialMat
   - **Izmena**: nijedna u aplikacionom kodu. Pokrenuti redom `node --version`, `pnpm --version`, `pnpm install --frozen-lockfile`, `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build`, `pnpm format:check` i zapisati tačan ishod svake.
   - **Gotovo kada**: sve komande prolaze. Ako i posle pokušaja pripreme `node --version` nije `v24.22.1`, `pnpm --version` nije `12.16.1` ili bilo koja komanda padne, **stati i prijaviti tačnu grešku**; ne popravljati ništa van `apps/web/`.
   - **AC/EV**: — | **Zavisi od**: —
+  - **Ishod (2026-11-16, grana `feature/002-voice-input`, `e522120`, Windows)**: sistemski Node je preko winget-a (`OpenJS.NodeJS.LTS`) nadograđen sa `v24.14.0` na `v24.22.1`, pa `node --version` daje `v24.22.1` i bez `setup-toolchain.ps1`; `pnpm --version` daje `12.16.1`. `pnpm install --frozen-lockfile` prolazi (lockfile ažuran), `typecheck` prolazi, `lint` prolazi, `test` prolazi (46 datoteka, 184 testa), `build` prolazi. `format:check` pada iz istog razloga kao kod T248 i T252 (CRLF u Windows radnoj kopiji i `.github/workflows/ci.yml`; na `main`-u je `ci.yml` ispravljen, ali tamo pada 14 datoteka Uloga B, C i D, nijedna u `apps/web/`). Zadatak ostaje otvoren samo zbog `format:check`.
 
 - [X] T202 [P] Napraviti `apps/web/src/copy.ts` sa svim tekstovima
   - **Datoteke**: `apps/web/src/copy.ts` (novo), `apps/web/test/unit/copy.test.ts` (novo).
@@ -182,21 +183,23 @@ description: "Zadaci za funkcionalnost 002: korisnički tok i interfejs TrialMat
   - **Gotovo kada**: novi testovi, `run-flow.test.tsx` i `accessibility.test.tsx` prolaze.
   - **AC/EV**: AC-01, AC-08; EV-01, EV-02 (mock analozi) | **Zavisi od**: T214, T216, T217, T218
 
-- [ ] T220 [US1] [BLOCKED: Role B] Prikazati jedinicu i oznaku „izračunao kod“ u `apps/web/src/components/CriterionRow.tsx`
+- [X] T220 [US1] [BLOCKED: Role B] Prikazati jedinicu i oznaku „izračunao kod“ u `apps/web/src/components/CriterionRow.tsx`
   - **Čeka**: REQ-B7. Uloga B dodaje u `CriterionResultSchema` jedinicu uočene vrednosti i poreklo (predlog: `observedUnit: string | null`, `observedOrigin: "profile" | "derived"`). Ne počinjati dok polja ne postoje u `packages/shared/src/index.ts`; tada koristiti nazive koje je Uloga B stvarno uvela.
   - **Datoteke**: `apps/web/src/components/CriterionRow.tsx`, `apps/web/src/styles.css`, `apps/web/test/integration/trial-list.test.tsx`, `apps/web/test/helpers/responses.ts`.
   - **Izmena**: iza vrednosti dodati jedinicu u istom `span.mono` (jedinica „%“ bez razmaka, ostale sa razmakom); kada je poreklo `derived`, iza vrednosti dodati `<span className="chip-origin">{copy.criterion.computed}</span>`. Kada je vrednost `null`, jedinica i oznaka se ne prikazuju.
   - **Test**: red sa vrednošću 62.11, jedinicom i poreklom `derived` prikazuje „62,11 mL/min/1.73 m²“ i „izračunao kod“; red iz profila nema oznaku.
   - **Gotovo kada**: test prolazi; [docs/ac-coverage.md] red AC-02 dopunjen.
   - **AC/EV**: AC-01, AC-02 | **Zavisi od**: T215, REQ-B7
+  - **Ishod (2026-11-16, grana `feature/002-voice-input` posle spajanja `main`-a (`4c22035`), Node 24.22.1, pnpm 12.16.1, Windows)**: Uloga B je isporučila `observedUnit` i `observedOrigin` (`profile|derived|unknown`). Prikaz u Fazi 2 je na `main`-u uradio drugi član tima drugačije od ovog zadatka (oznake „Izvedena vrednost“, „Iz profila“, „Nepoznato“ na svakom redu, jedinica i kada vrednosti nema, tekst van `copy.ts`); usklađen je sa ovim zadatkom: jedinica ide u isti `span.mono` („%“ bez razmaka) preko `formatUnit`, oznaka `copy.criterion.computed` („izračunao kod“) samo za `derived`, a bez vrednosti nema ni jedinice ni oznake. Testovi u `integration/trial-list.test.tsx` (62,11 mL/min/1.73 m² + „izračunao kod“; „8,1%“ iz profila bez oznake; bez vrednosti bez jedinice) i `unit/result-view-model.test.ts` prolaze.
 
-- [ ] T221 [US1] [BLOCKED: Role B] [BLOCKED: Role C] Prikazati status regrutacije i fazu u `apps/web/src/components/TrialCard.tsx`
+- [X] T221 [US1] [BLOCKED: Role B] [BLOCKED: Role C] Prikazati status regrutacije i fazu u `apps/web/src/components/TrialCard.tsx`
   - **Čeka**: REQ-B6 (polja u `TrialResultSchema`; predlog `overallStatus`, `phase`) i REQ-C2 (stvarni snimak sa tim podacima i potvrđen skup vrednosti).
   - **Datoteke**: `apps/web/src/components/TrialCard.tsx`, `apps/web/src/result-view-model.ts`, `apps/web/src/copy.ts`, `apps/web/src/styles.css`, `apps/web/test/unit/result-view-model.test.ts`, `apps/web/test/integration/trial-list.test.tsx`.
   - **Izmena**: dodati u `copy.ts` tabelu vrednosti registra iz [plan.md](plan.md), odeljak 6 (druga tabela); dodati `recruitmentStatusLabel(value)` i `phaseLabel(value)` (nepoznata vrednost se vraća doslovno); u `TrialCard` ispod naslova, kada polje postoji i nije prazno: `<p className="trial-facts">{copy.trial.recruitment} {oznaka} · {copy.trial.phase} {oznaka}</p>`; kada polja nema, red se ne prikazuje.
   - **Test**: poznata vrednost daje srpski tekst; nepoznata se prikazuje doslovno; bez polja nema reda.
   - **Gotovo kada**: testovi prolaze.
   - **AC/EV**: AC-01 | **Zavisi od**: T216, REQ-B6, REQ-C2
+  - **Ishod (2026-11-16, grana `feature/002-voice-input` posle spajanja `main`-a (`4c22035`), Node 24.22.1, pnpm 12.16.1, Windows)**: Uloga B je isporučila `overallStatus` i `phase` u `TrialResultSchema` (server spaja više faza zarezom). Prikaz sa `main`-a (sirova vrednost, „Nije naveden“ / „Nije navedena“ kada polja nema, tekst van `copy.ts`) usklađen je sa FR-025 i FR-032: tabele `copy.trial.recruitmentValues` i `copy.trial.phaseValues` iz plan.md (odeljak 6), `recruitmentStatusLabel` i `phaseLabel` u `result-view-model.ts` (više faza se prevodi pojedinačno; nepoznata vrednost doslovno u `.mono`), red `.trial-facts` samo sa poljima koja postoje, bez reda kada nema nijednog. Testovi u `integration/trial-list.test.tsx` i `unit/result-view-model.test.ts` prolaze. REQ-C2 (tačan skup vrednosti na stvarnom snimku) i dalje nije potvrđen; sintetički fixture-i nose „SINTETIČKI PRIMER“ / „Nije primenljivo“, koji se prikazuju doslovno.
 
 **Kontrolna tačka**: stanje 4 se može proveriti ručno u demo režimu.
 
@@ -298,13 +301,14 @@ description: "Zadaci za funkcionalnost 002: korisnički tok i interfejs TrialMat
   - **Gotovo kada**: test prolazi; pretraga `apps/web/src` i `apps/web/index.html` ne nalazi „synthetic-trials-v1“, „7. novembar“ ni „Ovaj demo“.
   - **AC/EV**: AC-01, AC-05, AC-10 | **Zavisi od**: T230
 
-- [ ] T232 [US4] [BLOCKED: Role B] Prikazati datum snimka u `apps/web/src/components/ResultMeta.tsx`
+- [X] T232 [US4] [BLOCKED: Role B] Prikazati datum snimka u `apps/web/src/components/ResultMeta.tsx`
   - **Čeka**: REQ-B1. Uloga B dodaje datum snimka u `MetaSchema` (predlog: `dataSnapshotDate`, `YYYY-MM-DD` ili `null`). Koristiti naziv koji je Uloga B stvarno uvela.
   - **Datoteke**: `apps/web/src/components/ResultMeta.tsx`, `apps/web/test/integration/mode-meta.test.tsx`, `apps/web/test/helpers/responses.ts`.
   - **Izmena**: iza verzije skupa, kada polje postoji i `formatSnapshotDate` ne vrati `null`: `<span>{copy.meta.snapshot(datum)}</span>`.
   - **Test**: `"2026-11-07"` → „Datum snimka: 7. novembar 2026.“; `null` → reda nema.
   - **Gotovo kada**: test prolazi.
   - **AC/EV**: AC-01 | **Zavisi od**: T231, REQ-B1
+  - **Ishod (2026-11-16, grana `feature/002-voice-input` posle spajanja `main`-a (`4c22035`), Node 24.22.1, pnpm 12.16.1, Windows)**: Uloga B je isporučila `meta.dataSnapshotDate`. Prikaz sa `main`-a („Datum nije dostupan“ kada datuma nema, datum bez oznake) usklađen je: `copy.meta.snapshot(datum)` iza verzije skupa samo kada `formatSnapshotDate` vrati vrednost. Oznaka sintetičkog skupa prešla je u `copy.meta.syntheticData` / `copy.meta.realData` (isti tekst kao na `main`-u). Test u `integration/mode-meta.test.tsx` („Datum snimka: 7. novembar 2026.“; `null` bez reda) prolazi.
 
 ---
 
@@ -502,11 +506,10 @@ description: "Zadaci za funkcionalnost 002: korisnički tok i interfejs TrialMat
 
 ### Blokirani zadaci
 
+T220, T221 i T232 više nisu blokirani: REQ-B1, REQ-B6 i REQ-B7 isporučeni su u Fazi 2 (2026-11-16).
+
 | Zadatak | Blokira | Šta se čeka |
 |---|---|---|
-| T220 | Uloga B | REQ-B7: jedinica i poreklo uočene vrednosti po kriterijumu |
-| T221 | Uloga B, Uloga C | REQ-B6: status i faza u rezultatu po studiji; REQ-C2: stvarni snimak sa tim podacima |
-| T232 | Uloga B | REQ-B1: datum snimka u `meta` |
 | T242 | Uloga B | REQ-B8, REQ-B9: javna isporuka |
 | T244 | Uloga B, Uloga C | REQ-B5: stvarni režim na serveru; REQ-C1: stvarni model |
 
@@ -533,10 +536,10 @@ Zahtevi koji ne blokiraju nijedan zadatak, ali menjaju ponašanje kada stignu: R
 |---|---|---|---|
 | 1 Priprema | T201–T204 | 4 | 0 |
 | 2 Osnova | T205–T214 | 10 | 0 |
-| 3 Priča 1 | T215–T221 | 7 | 2 |
+| 3 Priča 1 | T215–T221 | 7 | 0 |
 | 4 Priča 2 | T222–T225 | 4 | 0 |
 | 5 Priča 3 | T226–T229 | 4 | 0 |
-| 6 Priča 4 | T230–T232 | 3 | 1 |
+| 6 Priča 4 | T230–T232 | 3 | 0 |
 | 7 Priča 6 | T233–T234 | 2 | 0 |
 | 8 Priča 5 | T235–T238 | 4 | 0 |
 | 9 Priča 7 | T239–T240 | 2 | 0 |
@@ -544,4 +547,4 @@ Zahtevi koji ne blokiraju nijedan zadatak, ali menjaju ponašanje kada stignu: R
 | 11 Priča 8 | T243–T244 | 2 | 1 |
 | 12 Dorada | T245–T249 | 5 | 0 |
 | 13 Priča 9 | T250–T253 | 4 | 0 |
-| **Ukupno** | T201–T253 | **53** | **5** |
+| **Ukupno** | T201–T253 | **53** | **2** |

@@ -4,11 +4,15 @@ import {
   criterionStatusNote,
   criterionStatusShort,
   formatObservedValue,
+  formatUnit,
 } from "../result-view-model.js";
 import { copy } from "../copy.js";
 
 export function CriterionRow({ criterion }: { criterion: CriterionResult }) {
   const value = formatObservedValue(criterion.observedValue);
+  // Bez vrednosti nema ni jedinice ni oznake porekla (T220).
+  const unit = value.missing ? "" : formatUnit(criterion.observedUnit);
+  const computed = !value.missing && criterion.observedOrigin === "derived";
   return (
     <li className={`criterion criterion-${criterion.status}`}>
       <div className="criterion-main">
@@ -28,14 +32,14 @@ export function CriterionRow({ criterion }: { criterion: CriterionResult }) {
           {copy.criterion.value}{" "}
           <span className={value.missing ? "value-missing" : "mono"}>
             {value.text}
-            {criterion.observedUnit ? ` ${criterion.observedUnit}` : ""}
-          </span>{" "}
-          ·{" "}
-          {criterion.observedOrigin === "derived"
-            ? "Izvedena vrednost"
-            : criterion.observedOrigin === "profile"
-              ? "Iz profila"
-              : "Nepoznato"}{" "}
+            {unit}
+          </span>
+          {computed && (
+            <>
+              {" "}
+              <span className="chip-origin">{copy.criterion.computed}</span>
+            </>
+          )}{" "}
           · {copy.criterion.source}{" "}
           <span className="mono">{criterion.sourceId}</span>
         </p>
