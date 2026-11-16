@@ -1,11 +1,16 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { createApp } from "../../src/api/app.js";
+import { parseConfig } from "../../src/config/index.js";
+import { TrialMatchService } from "../../src/service/trialmatch.js";
 
 const profileText =
   "Muškarac, 62 godine, dijabetes tip 2, HbA1c 8,1%, kreatinin 1,3 mg/dL, visina 178 cm, težina 92 kg, na metforminu.";
 
 describe("API tok DEMO provere", () => {
-  const app = createApp();
+  const service = new TrialMatchService({
+    config: parseConfig({ NODE_ENV: "test", DEMO_MODE: "true" }),
+  });
+  const app = createApp({ service });
   afterAll(async () => app.close());
 
   it("nastavlja isti runId posle pitanja i obrađuje hipotezu", async () => {
@@ -18,6 +23,18 @@ describe("API tok DEMO provere", () => {
     const initial = first.json();
     expect(initial.status).toBe("needs_clarification");
     expect(initial.meta.modelCalls).toBe(1);
+    expect(initial.meta.toolCalls).toBe(4);
+    const toolCalls = () =>
+      service.sessions
+        .get(initial.runId)!
+        .events.filter((event) => event.step === "tool")
+        .map((event) => event.tool);
+    expect(toolCalls()).toEqual([
+      "compute_egfr",
+      "compute_bmi",
+      "evaluate_criteria",
+      "select_next_question",
+    ]);
     expect(initial.question.field).toBe("insulin_last_3_months");
 
     const answered = await app.inject({
@@ -29,7 +46,28 @@ describe("API tok DEMO provere", () => {
     expect(answered.json().runId).toBe(initial.runId);
     expect(answered.json().status).toBe("ok");
     expect(answered.json().meta.modelCalls).toBe(1);
-    expect(answered.json().meta.toolCalls).toBe(2);
+    expect(answered.json().meta.toolCalls).toBe(6);
+    expect(toolCalls()).toEqual([
+      "compute_egfr",
+      "compute_bmi",
+      "evaluate_criteria",
+      "select_next_question",
+      "evaluate_criteria",
+      "select_next_question",
+    ]);
+    expect(answered.json().explanation).toBe(
+      "Ovo je preliminarna provera kriterijuma. Nepoznati i ručno proveravani uslovi zahtevaju procenu lekara.",
+    );
+    expect(answered.json().results.length).toBeGreaterThan(0);
+    expect(
+      answered
+        .json()
+        .results.flatMap(
+          (trial: { criteria: { citation: { quote: string } }[] }) =>
+            trial.criteria.map((criterion) => criterion.citation.quote),
+        )
+        .every((quote: string) => quote.length > 0),
+    ).toBe(true);
 
     const changed = await app.inject({
       method: "POST",
@@ -41,7 +79,17 @@ describe("API tok DEMO provere", () => {
     expect(changed.json().profile.insulin_last_3_months).toBe(false);
     expect(changed.json().profile.hba1c.value).toBe(9);
     expect(changed.json().meta.modelCalls).toBe(2);
-    expect(changed.json().meta.toolCalls).toBe(3);
+    expect(changed.json().meta.toolCalls).toBe(8);
+    expect(toolCalls()).toEqual([
+      "compute_egfr",
+      "compute_bmi",
+      "evaluate_criteria",
+      "select_next_question",
+      "evaluate_criteria",
+      "select_next_question",
+      "evaluate_criteria",
+      "select_next_question",
+    ]);
     expect(
       changed
         .json()
@@ -82,4 +130,177 @@ describe("API tok DEMO provere", () => {
       reason: "not_in_sources",
     });
   });
+});
+
+it("odbija inicijalizaciju korpusa sa nepotvrđenom licencom", async () => {
+  const service = new TrialMatchService({
+    config: parseConfig({ NODE_ENV: "test", DEMO_MODE: "true" }),
+    manifest: {
+      name: "test-corpus",
+      version: "unconfirmed-license-test",
+      date: "2026-11-15",
+      origin: "test fixture",
+      synthetic: false,
+      license: "NEPOTVRĐENO",
+      transformations: "test fixture",
+      limitations: [],
+      downloadedCount: 0,
+      includedCount: 0,
+    },
+    trials: [],
+  });
+
+  await expect(service.initialize()).rejects.toThrow(
+    "Licenca korpusa nije potvrđena za upotrebu.",
+  );
+});
+
+it("003: manifest, isključenja i ćirilični limit čuvaju ugovor", async () => {
+  const app = createApp();
+  try {
+    const result = await app.inject({
+      method: "POST",
+      url: "/api/runs",
+      payload: {
+        profileText:
+          "Muškarac, 90 godina, HbA1c 4%, kreatinin 1 mg/dL, bez insulina.",
+      },
+    });
+    expect(result.json().meta).toMatchObject({
+      dataSynthetic: true,
+      dataSnapshotDate: "2026-11-07",
+    });
+    expect(result.json().results).toEqual([]);
+    expect(result.json().excludedTrials.length).toBeGreaterThan(0);
+    const unicode = await app.inject({
+      method: "POST",
+      url: "/api/runs",
+      payload: { profileText: "ж".repeat(4000) },
+    });
+    expect(unicode.statusCode).toBe(200);
+  } finally {
+    await app.close();
+  }
+});
+
+it("učitava dve stvarne studije iz DATA_DIR i vraća rezultate bez greške citata", async () => {
+  const app = createApp({
+    config: parseConfig({
+      NODE_ENV: "test",
+      DEMO_MODE: "true",
+      DATA_DIR: "data/rule_sets/studies_2_approved_20261115_1539",
+    }),
+  });
+  try {
+    const result = await app.inject({
+      method: "POST",
+      url: "/api/runs",
+      payload: {
+        profileText:
+          "Žena, 30 godina, HbA1c 8%, kreatinin 1 mg/dL, visina 160 cm, težina 90 kg, bez insulina.",
+      },
+    });
+    const response = result.json();
+
+    expect(result.statusCode).toBe(200);
+    expect(response.status).not.toBe("error");
+    expect(response.meta).toMatchObject({
+      dataSynthetic: false,
+      dataVersion: "rules-0b88455b00ae",
+      demoMode: true,
+    });
+    expect(
+      response.results
+        .map((trial: { trialId: string }) => trial.trialId)
+        .sort(),
+    ).toEqual(["NCT07409714", "NCT07924436"]);
+
+    const boundaryCases = [
+      {
+        hba1c: "9,99",
+        creatinine: "2,3049",
+        weight: "102,3744",
+        statuses: ["met", "met", "not_met"],
+        egfr: 29.99,
+      },
+      {
+        hba1c: "10",
+        creatinine: "2,3043",
+        weight: "102,4",
+        statuses: ["not_met", "not_met", "met"],
+        egfr: 30,
+      },
+      {
+        hba1c: "10,01",
+        creatinine: "2,3036",
+        weight: "102,4256",
+        statuses: ["not_met", "not_met", "met"],
+        egfr: 30.01,
+      },
+    ] as const;
+
+    for (const boundary of boundaryCases) {
+      const evaluated = await app.inject({
+        method: "POST",
+        url: "/api/runs",
+        payload: {
+          profileText: `Žena, 22 godine, HbA1c ${boundary.hba1c}%, kreatinin ${boundary.creatinine} mg/dL, visina 160 cm, težina ${boundary.weight} kg, bez insulina.`,
+        },
+      });
+      expect(evaluated.statusCode, evaluated.body).toBe(200);
+      const evaluatedResponse = evaluated.json();
+      const study = evaluatedResponse.results.find(
+        (trial: { trialId: string }) => trial.trialId === "NCT07409714",
+      );
+      expect(study).toBeDefined();
+      const statuses = [
+        "NCT07409714#inc-4",
+        "NCT07409714#inc-7",
+        "NCT07409714#exc-4",
+      ].map(
+        (criterionId) =>
+          study.criteria.find(
+            (criterion: { id: string }) => criterion.id === criterionId,
+          )?.status,
+      );
+      expect(statuses).toEqual(boundary.statuses);
+      expect(
+        study.criteria.find(
+          (criterion: { id: string }) => criterion.id === "NCT07409714#exc-4",
+        )?.observedValue,
+      ).toBe(boundary.egfr);
+    }
+  } finally {
+    await app.close();
+  }
+});
+
+it("003: isti ključ deli aktivan start i odbija promenjeno telo", async () => {
+  const app = createApp();
+  try {
+    const request = {
+      method: "POST" as const,
+      url: "/api/runs",
+      headers: { "Idempotency-Key": "11111111-1111-4111-8111-111111111111" },
+      payload: { profileText },
+    };
+    const [a, b] = await Promise.all([
+      app.inject(request),
+      app.inject(request),
+    ]);
+    expect(a.statusCode).toBe(200);
+    expect(b.json()).toEqual(a.json());
+    expect(
+      (await app.inject({ ...request, payload: { profileText: "Drugi unos" } }))
+        .statusCode,
+    ).toBe(400);
+    const path = `/api/runs/${a.json().runId}/answer`;
+    const answers = await Promise.all([
+      app.inject({ method: "POST", url: path, payload: { answer: "ne" } }),
+      app.inject({ method: "POST", url: path, payload: { answer: "da" } }),
+    ]);
+    expect(answers.map((r) => r.statusCode).sort()).toEqual([200, 400]);
+  } finally {
+    await app.close();
+  }
 });

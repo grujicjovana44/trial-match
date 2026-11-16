@@ -31,6 +31,7 @@ describe("korisnički tok", () => {
       },
       derived: [],
       results: [],
+      excludedTrials: [],
       explanation: "Nedostaje podatak.",
       question: {
         field: "insulin_last_3_months",
@@ -42,8 +43,13 @@ describe("korisnički tok", () => {
       error: null,
       meta: {
         modelId: "mock",
+        providerId: "mock",
+        modelAttempts: 1,
+        dataSnapshotDate: null,
+        dataOrigin: "Sintetički primeri",
+        dataSynthetic: true,
         promptVersion: "demo.v1",
-        schemaVersion: "1.0.0",
+        schemaVersion: "2.0.0",
         dataVersion: "synthetic-trials-v1",
         durationMs: 1,
         modelCalls: 1,
@@ -71,12 +77,16 @@ describe("korisnički tok", () => {
           trialId: "T-A",
           title: "Sintetička studija T-A",
           verdict: "candidate",
+          overallStatus: null,
+          phase: null,
           criteria: [
             {
               id: "T-A#inc-1",
               text: "Uzrast od 18 do 75 godina.",
               status: "met",
               observedValue: 62,
+              observedUnit: "years",
+              observedOrigin: "profile",
               sourceId: "T-A#inc-1",
               citation: {
                 sourceId: "T-A#inc-1",

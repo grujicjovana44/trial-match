@@ -22,14 +22,20 @@ describe("zajedničke runtime šeme", () => {
         profile: {},
         derived: [],
         results: [],
+        excludedTrials: [],
         question: null,
         reason: null,
         error: null,
         explanation: "Rezultat.",
         meta: {
           modelId: "mock",
+          providerId: "mock",
+          modelAttempts: 0,
+          dataSnapshotDate: null,
+          dataOrigin: "fixture",
+          dataSynthetic: true,
           promptVersion: "v1",
-          schemaVersion: "1",
+          schemaVersion: "2",
           dataVersion: "fixture-v1",
           durationMs: 0,
           modelCalls: 0,
@@ -40,4 +46,24 @@ describe("zajedničke runtime šeme", () => {
       }).success,
     ).toBe(false);
   });
+});
+
+it("003: zahteva metapodatke, poreklo i isključenja na izlaznoj granici", async () => {
+  const { okResponse } =
+    await import("../../../apps/web/test/helpers/responses.js");
+  const valid = okResponse();
+  expect(RunResponseSchema.safeParse(valid).success).toBe(true);
+  const { excludedTrials: _excluded, ...missing } = valid;
+  void _excluded;
+  expect(RunResponseSchema.safeParse(missing).success).toBe(false);
+  expect(
+    RunResponseSchema.safeParse({ ...valid, excludedTrials: valid.results })
+      .success,
+  ).toBe(false);
+  expect(
+    RunResponseSchema.safeParse({
+      ...valid,
+      meta: { ...valid.meta, dataSnapshotDate: "2026-02-30" },
+    }).success,
+  ).toBe(false);
 });

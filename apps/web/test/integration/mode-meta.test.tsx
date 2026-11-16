@@ -47,7 +47,7 @@ describe("režim i metapodaci", () => {
     await screen.findByText("DEMO REŽIM");
     expect(
       screen.getByLabelText("Važno medicinsko upozorenje").textContent,
-    ).toContain("U demo režimu i studije su sintetički primeri.");
+    ).toContain("Studije su sintetički primeri.");
     expect(screen.getByText("Skup podataka: synthetic-trials-v1")).toBeTruthy();
     expect(
       screen.getByText("DEMO režim — bez poziva stvarnom modelu"),
@@ -67,6 +67,37 @@ describe("režim i metapodaci", () => {
     );
     expect(document.body.textContent).not.toContain("sintetičke studije");
     expect(screen.getByText("Stvarni model: model-x")).toBeTruthy();
+  });
+
+  it("does not describe real study data as synthetic in DEMO mode", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        jsonResponse(
+          okResponse({
+            meta: metaOf({
+              dataSynthetic: false,
+              dataOrigin: "ClinicalTrials.gov",
+              dataVersion: "approved-studies-v1",
+              demoMode: true,
+            }),
+          }),
+        ),
+      ),
+    );
+    render(<App />);
+
+    submitProfile();
+    await screen.findByText("DEMO REŽIM");
+
+    expect(
+      screen.getByLabelText("Važno medicinsko upozorenje").textContent,
+    ).not.toContain("Studije su sintetički primeri.");
+    expect(screen.getByText("Snimak studija")).toBeTruthy();
+    expect(
+      screen.getByText("DEMO režim — bez poziva stvarnom modelu"),
+    ).toBeTruthy();
+    expect(screen.getByText("ClinicalTrials.gov")).toBeTruthy();
   });
 
   it("omits an empty model id, updates meta after errors, and clears mode on restart", async () => {

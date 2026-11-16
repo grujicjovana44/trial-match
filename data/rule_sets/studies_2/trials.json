@@ -1,0 +1,353 @@
+[
+  {
+    "trialId": "NCT07924436",
+    "title": "Whole-Body Vibration Training in Women With Obesity With and Without Type 2 Diabetes",
+    "conditions": [
+      "Obesity",
+      "Diabetes Mellitus, Type 2"
+    ],
+    "overallStatus": "RECRUITING",
+    "phase": "NA",
+    "phases": [
+      "NA"
+    ],
+    "locations": [
+      "Pamukkale University, Faculty of Physiotherapy and Rehabilitation, Denizli, Turkey (Türkiye)"
+    ],
+    "eligibilityText": "Inclusion Criteria:\n\n* Female.\n* Aged 18 to 65 years.\n* Body mass index (BMI) ≥30 kg/m².\n* Willing to participate and provide informed consent.\n* For Group 1: Presence of type 2 diabetes mellitus.\n* For Group 2: Absence of type 2 diabetes mellitus.\n\nExclusion Criteria:\n\n* Cardiopulmonary, orthopedic, or neurological conditions that prevent participation in physical activity.\n* Congenital musculoskeletal deformities.\n* Cognitive impairment that prevents effective communication.\n* Presence of osteoporosis or osteopenia.",
+    "criteria": [
+      {
+        "id": "NCT07924436#inc-1",
+        "trialId": "NCT07924436",
+        "kind": "inclusion",
+        "field": "sex",
+        "operator": "eq",
+        "value": "female",
+        "checkability": "auto",
+        "origin": "structured_field",
+        "text": "* Female.",
+        "sourceId": "NCT07924436#unsplit-1",
+        "sourceQuote": "* Female."
+      },
+      {
+        "id": "NCT07924436#inc-2",
+        "trialId": "NCT07924436",
+        "kind": "inclusion",
+        "field": "age",
+        "operator": "between",
+        "value": [
+          18,
+          65
+        ],
+        "unit": "years",
+        "checkability": "auto",
+        "origin": "structured_field",
+        "text": "* Aged 18 to 65 years.",
+        "sourceId": "NCT07924436#unsplit-1",
+        "sourceQuote": "* Aged 18 to 65 years."
+      },
+      {
+        "id": "NCT07924436#inc-3",
+        "trialId": "NCT07924436",
+        "kind": "inclusion",
+        "field": "bmi",
+        "operator": "gte",
+        "value": 30,
+        "unit": "kg/m²",
+        "checkability": "auto",
+        "origin": "structured_field",
+        "text": "* Body mass index (BMI) ≥30 kg/m².",
+        "sourceId": "NCT07924436#unsplit-1",
+        "sourceQuote": "* Body mass index (BMI) ≥30 kg/m²."
+      },
+      {
+        "id": "NCT07924436#exc-1",
+        "trialId": "NCT07924436",
+        "kind": "exclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Cardiopulmonary, orthopedic, or neurological conditions that prevent participation in physical activity.",
+        "sourceId": "NCT07924436#unsplit-1",
+        "sourceQuote": "* Cardiopulmonary, orthopedic, or neurological conditions that prevent participation in physical activity.",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07924436#exc-2",
+        "trialId": "NCT07924436",
+        "kind": "exclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Congenital musculoskeletal deformities.",
+        "sourceId": "NCT07924436#unsplit-1",
+        "sourceQuote": "* Congenital musculoskeletal deformities.",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07924436#exc-3",
+        "trialId": "NCT07924436",
+        "kind": "exclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Cognitive impairment that prevents effective communication.",
+        "sourceId": "NCT07924436#unsplit-1",
+        "sourceQuote": "* Cognitive impairment that prevents effective communication.",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07924436#exc-4",
+        "trialId": "NCT07924436",
+        "kind": "exclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Presence of osteoporosis or osteopenia.",
+        "sourceId": "NCT07924436#unsplit-1",
+        "sourceQuote": "* Presence of osteoporosis or osteopenia.",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      }
+    ],
+    "dataVersion": "b21a43307517a503397775fc16ba61298471c6778fc2b3879e596bec4de50a02"
+  },
+  {
+    "trialId": "NCT07409714",
+    "title": "SMART 2D: Study of Montelukast's Effects on Renal and Cardiovascular Health in Adolescents and Young Adults With Type 2 Diabetes",
+    "conditions": [
+      "Type 2 Diabetes"
+    ],
+    "overallStatus": "RECRUITING",
+    "phase": "EARLY_PHASE1",
+    "phases": [
+      "EARLY_PHASE1"
+    ],
+    "locations": [
+      "University of Colorado, Aurora, United States"
+    ],
+    "eligibilityText": "Inclusion Criteria:\n\n* Age 14-24 years\n* Tanner stage \\>2\n* Diabetes onset \\<18 years of age and \\<10 years duration prior to study start\n* HgbA1c \\<10%\n* Blood pressure \\<130/80 mm Hg prior to randomization\n* Stable anti-hypertensive regimen for at least one month prior to randomization\n* BMI \\< 40 kg/m2\n* If on SGLT2 inhibitor, ACEi/ARB or GLP-1RA, stable dose for 4 weeks\n* Patient or guardian able to provide consent\n\nExclusion Criteria:\n\n* T1D\n* Episode of diabetic ketoacidosis or hyperosmolar hyperglycemia within 60 days\n* Uncontrolled hypertension\n* eGFR \\<30 ml/min/1.73m2\n* Macroalbuminuria with urine albumin to creatinine ratio \\>300 mg/g\n* Current participation in another research study\n* Pregnancy or planning to become pregnant or currently breastfeeding\n* Allergy to aspirin\n* Severe hepatic impairment (Child-Pugh Class C)\n* History of major psychiatric disorder\n* Use of inhaled or systemic corticosteroids or long-acting beta agonists\n* Iodine or shellfish allergy",
+    "criteria": [
+      {
+        "id": "NCT07409714#inc-1",
+        "trialId": "NCT07409714",
+        "kind": "inclusion",
+        "field": "age",
+        "operator": "between",
+        "value": [
+          14,
+          24
+        ],
+        "unit": "years",
+        "checkability": "auto",
+        "origin": "structured_field",
+        "text": "* Age 14-24 years",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* Age 14-24 years"
+      },
+      {
+        "id": "NCT07409714#inc-2",
+        "trialId": "NCT07409714",
+        "kind": "inclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Tanner stage \\>2",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* Tanner stage \\>2",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07409714#inc-3",
+        "trialId": "NCT07409714",
+        "kind": "inclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Diabetes onset \\<18 years of age and \\<10 years duration prior to study start",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* Diabetes onset \\<18 years of age and \\<10 years duration prior to study start",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07409714#inc-4",
+        "trialId": "NCT07409714",
+        "kind": "inclusion",
+        "field": "hba1c",
+        "operator": "lte",
+        "value": 10,
+        "unit": "%",
+        "checkability": "auto",
+        "origin": "structured_field",
+        "text": "* HgbA1c \\<10%",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* HgbA1c \\<10%"
+      },
+      {
+        "id": "NCT07409714#inc-5",
+        "trialId": "NCT07409714",
+        "kind": "inclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Blood pressure \\<130/80 mm Hg prior to randomization",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* Blood pressure \\<130/80 mm Hg prior to randomization",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07409714#inc-6",
+        "trialId": "NCT07409714",
+        "kind": "inclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Stable anti-hypertensive regimen for at least one month prior to randomization",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* Stable anti-hypertensive regimen for at least one month prior to randomization",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07409714#inc-7",
+        "trialId": "NCT07409714",
+        "kind": "inclusion",
+        "field": "bmi",
+        "operator": "lte",
+        "value": 40,
+        "unit": "kg/m²",
+        "checkability": "auto",
+        "origin": "structured_field",
+        "text": "* BMI \\< 40 kg/m2",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* BMI \\< 40 kg/m2"
+      },
+      {
+        "id": "NCT07409714#inc-8",
+        "trialId": "NCT07409714",
+        "kind": "inclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* If on SGLT2 inhibitor, ACEi/ARB or GLP-1RA, stable dose for 4 weeks",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* If on SGLT2 inhibitor, ACEi/ARB or GLP-1RA, stable dose for 4 weeks",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07409714#exc-2",
+        "trialId": "NCT07409714",
+        "kind": "exclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Episode of diabetic ketoacidosis or hyperosmolar hyperglycemia within 60 days",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* Episode of diabetic ketoacidosis or hyperosmolar hyperglycemia within 60 days",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07409714#exc-3",
+        "trialId": "NCT07409714",
+        "kind": "exclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Uncontrolled hypertension",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* Uncontrolled hypertension",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07409714#exc-4",
+        "trialId": "NCT07409714",
+        "kind": "exclusion",
+        "field": "egfr",
+        "operator": "lte",
+        "value": 30,
+        "unit": "mL/min/1.73 m²",
+        "checkability": "auto",
+        "origin": "structured_field",
+        "text": "* eGFR \\<30 ml/min/1.73m2",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* eGFR \\<30 ml/min/1.73m2"
+      },
+      {
+        "id": "NCT07409714#exc-5",
+        "trialId": "NCT07409714",
+        "kind": "exclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Macroalbuminuria with urine albumin to creatinine ratio \\>300 mg/g",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* Macroalbuminuria with urine albumin to creatinine ratio \\>300 mg/g",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07409714#exc-6",
+        "trialId": "NCT07409714",
+        "kind": "exclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Current participation in another research study",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* Current participation in another research study",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07409714#exc-7",
+        "trialId": "NCT07409714",
+        "kind": "exclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Pregnancy or planning to become pregnant or currently breastfeeding",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* Pregnancy or planning to become pregnant or currently breastfeeding",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07409714#exc-8",
+        "trialId": "NCT07409714",
+        "kind": "exclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Allergy to aspirin",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* Allergy to aspirin",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07409714#exc-9",
+        "trialId": "NCT07409714",
+        "kind": "exclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Severe hepatic impairment (Child-Pugh Class C)",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* Severe hepatic impairment (Child-Pugh Class C)",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07409714#exc-10",
+        "trialId": "NCT07409714",
+        "kind": "exclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* History of major psychiatric disorder",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* History of major psychiatric disorder",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07409714#exc-11",
+        "trialId": "NCT07409714",
+        "kind": "exclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Use of inhaled or systemic corticosteroids or long-acting beta agonists",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* Use of inhaled or systemic corticosteroids or long-acting beta agonists",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      },
+      {
+        "id": "NCT07409714#exc-12",
+        "trialId": "NCT07409714",
+        "kind": "exclusion",
+        "checkability": "manual_review",
+        "origin": "compiled_reviewed",
+        "text": "* Iodine or shellfish allergy",
+        "sourceId": "NCT07409714#unsplit-1",
+        "sourceQuote": "* Iodine or shellfish allergy",
+        "reason": "Automatski izdvojeno iz originalnog teksta; obavezna je ljudska provera."
+      }
+    ],
+    "dataVersion": "53a809b3b6e104ed0010e698d3dff85756f4ae8bcf95a6bfcd1fb888ce2e20f4"
+  }
+]

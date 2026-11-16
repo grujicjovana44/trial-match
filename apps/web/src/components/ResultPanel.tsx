@@ -123,6 +123,14 @@ export function ResultPanel({
           ))}
         </div>
       )}
+      {result.excludedTrials.length > 0 && (
+        <section aria-label="Isključene studije">
+          <h3>Isključene studije i razlozi</h3>
+          {result.excludedTrials.map((trial, index) => (
+            <TrialCard key={trial.trialId} trial={trial} index={index} />
+          ))}
+        </section>
+      )}
       {result.status === "needs_clarification" && result.question && (
         <ClarificationForm
           key={resultSeq}

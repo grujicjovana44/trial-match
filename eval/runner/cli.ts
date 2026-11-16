@@ -1,8 +1,8 @@
+import { runLive } from "./live-runner.js";
 import { randomUUID } from "node:crypto";
-import { readFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
-import { ProfileSchema, TrialSchema } from "../../packages/shared/src/index.js";
+import { ProfileSchema } from "../../packages/shared/src/index.js";
 import { createApp } from "../../apps/server/src/api/app.js";
 import { parseConfig } from "../../apps/server/src/config/index.js";
 import { evaluateCriteria } from "../../apps/server/src/matcher/evaluate-criteria.js";
@@ -27,10 +27,14 @@ function assert(condition: boolean, message: string): void {
   if (!condition) throw new Error(message);
 }
 
-async function runOfflineCase(caseId: string): Promise<string> {
+export async function runOfflineCase(caseId: string): Promise<string> {
   if (caseId === "EV-11") {
     const app = createApp({
-      config: parseConfig({ NODE_ENV: "test", MAX_INPUT_CHARS: "4000" }),
+      config: parseConfig({
+        NODE_ENV: "test",
+        DEMO_MODE: "true",
+        MAX_INPUT_CHARS: "4000",
+      }),
     });
     try {
       const tooLong = await app.inject({
@@ -129,25 +133,25 @@ async function runOfflineCase(caseId: string): Promise<string> {
     return "Izvršen je početni pokušaj i najviše dva mrežna retry pokušaja.";
   }
   if (caseId === "EV-16") {
-    const rawTrials: unknown = JSON.parse(
-      await readFile(resolve("data/fixtures/trials.json"), "utf8"),
-    );
-    const trials = TrialSchema.array().parse(rawTrials);
-    const invalidProfile = ProfileSchema.parse({
-      age: 62,
-      sex: "male",
-      creatinine: { value: 1.3, unit: "unknown" },
+    const tools = new ToolExecutor(10, 2000, evaluateCriteria, {
+      compute_egfr: () => {
+        throw new RangeError("Injected eGFR fault.");
+      },
     });
-    const tools = new ToolExecutor(10, 2000, evaluateCriteria);
     await expectRejected(
-      tools.execute("evaluate_criteria", { profile: invalidProfile, trials }),
-      RangeError,
+      tools.execute("compute_egfr", {
+        age: 62,
+        sex: "male",
+        creatinine: { value: 1.3, unit: "mg/dL" },
+      }),
+      ToolExecutionError,
+      "tool_error",
     );
     assert(
       tools.callCount === 1,
       "Fault provera nije ograničena na jedan poziv alata.",
     );
-    return "Greška u determinističkoj proceni nije proizvela rezultat kriterijuma.";
+    return "Injected eGFR tool failure was controlled and did not produce a criterion result.";
   }
   throw new Error(`Nije definisan offline izvršilac za ${caseId}.`);
 }
@@ -172,6 +176,10 @@ async function expectRejected<T extends Error>(
 }
 
 async function main(): Promise<void> {
+  if (process.argv.includes("--live")) {
+    await runLive(process.argv.slice(process.argv.indexOf("--live") + 1));
+    return;
+  }
   const cases = await loadCases();
   const outcomes: CaseOutcome[] = [];
   for (const item of cases) {
@@ -203,9 +211,15 @@ async function main(): Promise<void> {
       });
     }
   }
-  const commit = execFileSync("git", ["rev-parse", "HEAD"], {
-    encoding: "utf8",
-  }).trim();
+  const commit = (() => {
+    try {
+      return execFileSync("git", ["rev-parse", "HEAD"], {
+        encoding: "utf8",
+      }).trim();
+    } catch {
+      return "unavailable";
+    }
+  })();
   const label = `offline-${new Date().toISOString().replaceAll(":", "-")}-${randomUUID().slice(0, 8)}`;
   const outputDir = resolve("eval/results", label);
   const summary = {

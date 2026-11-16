@@ -19,6 +19,7 @@ export async function postJson(
   path: string,
   body: Record<string, string>,
   requestKind: RequestKind,
+  idempotencyKey: string = crypto.randomUUID(),
 ): Promise<ApiOutcome> {
   const raw: unknown = import.meta.env.VITE_API_BASE_URL;
   const base = typeof raw === "string" ? raw.replace(/\/$/, "") : "";
@@ -35,7 +36,10 @@ export async function postJson(
     try {
       response = await fetch(base + path, {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: {
+          "content-type": "application/json",
+          "Idempotency-Key": idempotencyKey,
+        },
         body: JSON.stringify(body),
         signal: controller.signal,
       });

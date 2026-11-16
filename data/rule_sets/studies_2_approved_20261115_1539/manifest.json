@@ -1,0 +1,20 @@
+{
+  "name": "lokalni-pregledani-korpus",
+  "version": "rules-0b88455b00ae",
+  "date": "2026-11-15",
+  "origin": "Official ClinicalTrials.gov API records retrieved individually: https://clinicaltrials.gov/api/v2/studies/NCT07409714 (2026-11-15T13:13:45.077Z; SHA-256 f033adbfdfcfc903f673bf5877188e26feb5bad443b1d46951a050772e0ab1eb) and https://clinicaltrials.gov/api/v2/studies/NCT07924436 (2026-11-15T13:13:45.648Z; SHA-256 57b0e57689aedb93bf754553964d777cd598dfd20217250a5cc0927166335e2d).",
+  "synthetic": false,
+  "license": "ClinicalTrials.gov Terms and Conditions: https://clinicaltrials.gov/terms-conditions (source attribution required; third-party rights may apply; no separate license is asserted).",
+  "transformations": "Original API JSON retained in data/raw; normalized locally with the existing data:prepare importer; eligibility text preserved.; lokalni compile:rules; bez generisanja modelom",
+  "limitations": [
+    "Contains only the two individually requested NCT records; not a complete registry query result.",
+    "Some record content may be subject to third-party rights.",
+    "Eligibility criteria require human review; no review approval is implied.",
+    "Nepregledana pravila ne ulaze u matcher."
+  ],
+  "downloadDate": "2026-11-15T13:13:45.803Z",
+  "downloadedCount": 2,
+  "includedCount": 2,
+  "sourceHash": "35cec96cc81d96bf31298e5929a17af333f36dbf3a991ffc22eba9ee91ee8ca3",
+  "rulesVersion": "1"
+}
