@@ -1,9 +1,9 @@
-import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { z } from "zod";
 import { ProfileSchema, TrialSchema } from "../../packages/shared/src/index.js";
 import { verifyCitation } from "../../apps/server/src/citations/verify.js";
+import { hashRagSourceContent } from "../../apps/server/src/retrieval/corpus.js";
 import { retrieveTrials } from "../../apps/server/src/retrieval/retrieve.js";
 
 const CorpusSnapshotSchema = z
@@ -176,19 +176,27 @@ export function isMetricEligibleCase(testCase: {
   return testCase.kind === "ranking" && testCase.labelStatus === "confirmed";
 }
 
-function passageIdsInContext(
+export function passageIdsInContext(
   contextText: string,
   trialIds: Set<string>,
   trials: z.infer<typeof TrialSchema>[],
 ): string[] {
+  const criteriaBySourceId = new Map(
+    trials
+      .filter((trial) => trialIds.has(trial.trialId))
+      .flatMap((trial) =>
+        trial.criteria.map(
+          (criterion) => [criterion.sourceId, criterion] as const,
+        ),
+      ),
+  );
   const retrieved: string[] = [];
-  for (const trial of trials) {
-    if (!trialIds.has(trial.trialId)) continue;
-    for (const criterion of trial.criteria) {
-      const snippet = `${criterion.sourceId}: ${criterion.sourceQuote}`;
-      if (contextText.includes(snippet) && !retrieved.includes(criterion.id))
-        retrieved.push(criterion.id);
-    }
+  for (const line of contextText.split("\n")) {
+    const separator = line.indexOf(": ");
+    if (separator < 0) continue;
+    const criterion = criteriaBySourceId.get(line.slice(0, separator));
+    if (criterion && !retrieved.includes(criterion.id))
+      retrieved.push(criterion.id);
   }
   return retrieved;
 }
@@ -211,7 +219,7 @@ export async function buildMiniSearchBaseline(): Promise<void> {
   const trials = [];
   for (const source of dataset.corpus) {
     const bytes = await readFile(resolve(root, source.path));
-    const actualHash = createHash("sha256").update(bytes).digest("hex");
+    const actualHash = hashRagSourceContent(bytes);
     if (actualHash !== source.sha256)
       throw new Error(
         `Korpus se razlikuje od zamrznutog snimka: ${source.path}`,
@@ -223,6 +231,11 @@ export async function buildMiniSearchBaseline(): Promise<void> {
   }
   const allTrials = TrialSchema.array().parse(trials);
   const metricCutoffs = rankingCutoffs(allTrials.length);
+  const passageCount = allTrials.reduce(
+    (count, trial) => count + trial.criteria.length,
+    0,
+  );
+  const passageMetricCutoffs = rankingCutoffs(passageCount);
   const trialIds = allTrials.map((trial) => trial.trialId);
   if (new Set(trialIds).size !== trialIds.length)
     throw new Error("ID studije se ponavlja između izvora korpusa.");
@@ -328,13 +341,13 @@ export async function buildMiniSearchBaseline(): Promise<void> {
         !metricsEligible || testCase.relevantPassageIds.length === 0
           ? null
           : Object.fromEntries(
-              metricCutoffs.map((k) => [
+              passageMetricCutoffs.map((k) => [
                 `at${k}`,
                 rankingMetrics(
                   retrievedPassageIds,
                   testCase.relevantPassageIds,
                   k,
-                  allTrials.length,
+                  passageCount,
                 ),
               ]),
             ),
@@ -399,6 +412,7 @@ export async function buildMiniSearchBaseline(): Promise<void> {
       reason:
         "Metrike rangiranja računaju se samo za ranking slučajeve sa potvrđenim oznakama.",
       cutoffs: metricCutoffs,
+      passageCutoffs: passageMetricCutoffs,
     },
     checks: {
       allContextsWithinLimit: caseResults.every(

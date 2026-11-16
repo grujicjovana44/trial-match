@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
+import fixtureData from "../../data/fixtures/trials.json" with { type: "json" };
+import { TrialSchema } from "../../packages/shared/src/index.js";
 import retrievalDatasetV2 from "../rag/retrieval-v2.json" with { type: "json" };
 import {
   isMetricEligibleCase,
+  passageIdsInContext,
   rankingCutoffs,
   rankingMetrics,
   RetrievalDatasetSchema,
@@ -33,6 +36,32 @@ describe("RAG retrieval ranking metrics", () => {
     expect(
       rankingMetrics(["relevant", "other", "irrelevant"], ["relevant"], 3, 5),
     ).toBeNull();
+  });
+
+  it("računa cutoffs odlomaka prema veličini korpusa odlomaka, ne studija", () => {
+    expect(rankingCutoffs(15)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    const ranked = ["irrelevant-1", "irrelevant-2", "relevant-1", "relevant-2"];
+    expect(
+      rankingMetrics(ranked, ["relevant-1", "relevant-2"], 2, 15)?.ndcg,
+    ).toBe(0);
+    expect(
+      rankingMetrics(ranked, ["relevant-1", "relevant-2"], 3, 15)?.ndcg,
+    ).toBeGreaterThan(0);
+  });
+
+  it("čuva stvarni redosled odlomaka u kontekstu", () => {
+    const trial = TrialSchema.array().parse(fixtureData)[0]!;
+    const [first, second] = trial.criteria;
+    if (!first || !second)
+      throw new Error("Fixture studija zahteva najmanje dva kriterijuma.");
+
+    expect(
+      passageIdsInContext(
+        `${second.sourceId}: ${second.sourceQuote}\n${first.sourceId}: ${first.sourceQuote}`,
+        new Set([trial.trialId]),
+        [trial],
+      ),
+    ).toEqual([second.id, first.id]);
   });
 });
 
