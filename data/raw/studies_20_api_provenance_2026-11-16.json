@@ -1,0 +1,228 @@
+{
+  "format": "trialmatch-source-provenance-v1",
+  "dataset": "20 real T2D-related ClinicalTrials.gov studies: 2 existing approved records and 18 pending-review additions",
+  "retrievedDate": "2026-11-16",
+  "selection": {
+    "searchUrl": "https://clinicaltrials.gov/api/v2/studies?query.cond=type%202%20diabetes&filter.overallStatus=RECRUITING,NOT_YET_RECRUITING&pageSize=100&format=json",
+    "recordRetrieval": "Official ClinicalTrials.gov API v2 individual study endpoints; status rechecked in each full record.",
+    "statusFilter": [
+      "RECRUITING",
+      "NOT_YET_RECRUITING"
+    ]
+  },
+  "records": [
+    {
+      "nctId": "NCT05439226",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05439226",
+      "retrievedDate": "2026-11-16",
+      "sha256": "5d9bb71bcbb97b844a4f7ee569e3288ae1cb4a8d205e554717da01c827fbfe62",
+      "recordFile": "data/raw/study_NCT05439226_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2025-07",
+      "lastUpdatePostDate": "2025-07-25"
+    },
+    {
+      "nctId": "NCT05838287",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05838287",
+      "retrievedDate": "2026-11-16",
+      "sha256": "83be5fdcad5347df472dcfc9403f05c0350459ee2d60c8d35193e1f2fe3bc1ec",
+      "recordFile": "data/raw/study_NCT05838287_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2026-09",
+      "lastUpdatePostDate": "2026-09-22"
+    },
+    {
+      "nctId": "NCT06118931",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06118931",
+      "retrievedDate": "2026-11-16",
+      "sha256": "cc726d91c5180756c9ff8d9229eda0028ea27a4876172e0a6bbb6e3fae0b66d3",
+      "recordFile": "data/raw/study_NCT06118931_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2025-09",
+      "lastUpdatePostDate": "2026-06-30"
+    },
+    {
+      "nctId": "NCT06251323",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06251323",
+      "retrievedDate": "2026-11-16",
+      "sha256": "e7fd8e9c435e05b0427337a715d202828b821e54ad6367d5c13f428cd0c94eb6",
+      "recordFile": "data/raw/study_NCT06251323_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2026-04",
+      "lastUpdatePostDate": "2026-05-01"
+    },
+    {
+      "nctId": "NCT06271382",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06271382",
+      "retrievedDate": "2026-11-16",
+      "sha256": "32fcbe82087e36df53a197c39b3db1773ebf83f114d1e52698170d981f15ce51",
+      "recordFile": "data/raw/study_NCT06271382_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2025-02",
+      "lastUpdatePostDate": "2025-02-27"
+    },
+    {
+      "nctId": "NCT06296485",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06296485",
+      "retrievedDate": "2026-11-16",
+      "sha256": "0933792dbc49cfd1ca915ad2f3306734ff1830ff8eed3d2124972c5bc11014ef",
+      "recordFile": "data/raw/study_NCT06296485_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2026-02",
+      "lastUpdatePostDate": "2026-08-04"
+    },
+    {
+      "nctId": "NCT06449833",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06449833",
+      "retrievedDate": "2026-11-16",
+      "sha256": "ea993849292f3b98618b96cbaa39a9239942aa0f184e2f1f16979bd736538194",
+      "recordFile": "data/raw/study_NCT06449833_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2024-02",
+      "lastUpdatePostDate": "2024-06-10"
+    },
+    {
+      "nctId": "NCT06852950",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06852950",
+      "retrievedDate": "2026-11-16",
+      "sha256": "ff9777a735fbf17115e6c2ff0bf6c648aec7bf7f8c3ab8ecf37fed56acba860c",
+      "recordFile": "data/raw/study_NCT06852950_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2026-03",
+      "lastUpdatePostDate": "2026-03-05"
+    },
+    {
+      "nctId": "NCT06862739",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06862739",
+      "retrievedDate": "2026-11-16",
+      "sha256": "b7293180ad1f7823a4edb1ab3cbd3841f53301e99b2975b8375ded153114a21d",
+      "recordFile": "data/raw/study_NCT06862739_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2026-04",
+      "lastUpdatePostDate": "2026-04-17"
+    },
+    {
+      "nctId": "NCT06875193",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06875193",
+      "retrievedDate": "2026-11-16",
+      "sha256": "5a5a1e0bff418938ad872b649849c8f3adb1ece6fb310492dc690d9e202b20ba",
+      "recordFile": "data/raw/study_NCT06875193_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2025-03",
+      "lastUpdatePostDate": "2025-03-17"
+    },
+    {
+      "nctId": "NCT06888050",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06888050",
+      "retrievedDate": "2026-11-16",
+      "sha256": "eaa24bc85c0ede1f7562af876b54ce6d40e76a626e4294b044ce8d6912b6f699",
+      "recordFile": "data/raw/study_NCT06888050_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2025-03",
+      "lastUpdatePostDate": "2025-09-12"
+    },
+    {
+      "nctId": "NCT07121504",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT07121504",
+      "retrievedDate": "2026-11-16",
+      "sha256": "e61f7793cfb96404a29f359699af5861db627d8027732770521e0ef5b54a005d",
+      "recordFile": "data/raw/study_NCT07121504_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2025-08",
+      "lastUpdatePostDate": "2025-08-13"
+    },
+    {
+      "nctId": "NCT07350967",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT07350967",
+      "retrievedDate": "2026-11-16",
+      "sha256": "d2e29c1c4d76d1cf1bc1604e3df1c92ee1e478f02748e0d1719b4def0b567437",
+      "recordFile": "data/raw/study_NCT07350967_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2026-01",
+      "lastUpdatePostDate": "2026-01-20"
+    },
+    {
+      "nctId": "NCT07409714",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT07409714",
+      "retrievedAt": "2026-11-15T13:13:45.077Z",
+      "sha256": "f033adbfdfcfc903f673bf5877188e26feb5bad443b1d46951a050772e0ab1eb",
+      "retrievedDate": "2026-11-15",
+      "recordFile": "data/raw/study_NCT07409714_2026-11-15.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2026-10",
+      "lastUpdatePostDate": "2026-10-06"
+    },
+    {
+      "nctId": "NCT07574138",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT07574138",
+      "retrievedDate": "2026-11-16",
+      "sha256": "a29d8aee541726c7b218048052ffe1f2dd846f6f9f7bb0308a4a44ce46046f75",
+      "recordFile": "data/raw/study_NCT07574138_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2026-04",
+      "lastUpdatePostDate": "2026-05-07"
+    },
+    {
+      "nctId": "NCT07676773",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT07676773",
+      "retrievedDate": "2026-11-16",
+      "sha256": "8cc8c5c36be7498e1b81ad05cb93e98335acda495d02455d599ee55e5066ce37",
+      "recordFile": "data/raw/study_NCT07676773_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2026-06",
+      "lastUpdatePostDate": "2026-06-30"
+    },
+    {
+      "nctId": "NCT07767331",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT07767331",
+      "retrievedDate": "2026-11-16",
+      "sha256": "fd8e58789afcb261f9840d5a308e29e36a3aec57a31df2c3b7534271fee66b08",
+      "recordFile": "data/raw/study_NCT07767331_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2025-12",
+      "lastUpdatePostDate": "2026-08-17"
+    },
+    {
+      "nctId": "NCT07775846",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT07775846",
+      "retrievedDate": "2026-11-16",
+      "sha256": "0d3cf133afcd8b75fa4dc98251b9434b804f760d20bf9b0172fb89e3a6e95a24",
+      "recordFile": "data/raw/study_NCT07775846_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2026-07",
+      "lastUpdatePostDate": "2026-11-10"
+    },
+    {
+      "nctId": "NCT07919236",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT07919236",
+      "retrievedDate": "2026-11-16",
+      "sha256": "750e31b7ac657281977b3e6a135f570df1fb05844c331bb934626e960fa71705",
+      "recordFile": "data/raw/study_NCT07919236_2026-11-16.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2026-10",
+      "lastUpdatePostDate": "2026-11-05"
+    },
+    {
+      "nctId": "NCT07924436",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT07924436",
+      "retrievedAt": "2026-11-15T13:13:45.648Z",
+      "sha256": "57b0e57689aedb93bf754553964d777cd598dfd20217250a5cc0927166335e2d",
+      "retrievedDate": "2026-11-15",
+      "recordFile": "data/raw/study_NCT07924436_2026-11-15.json",
+      "overallStatus": "RECRUITING",
+      "statusVerifiedDate": "2026-11",
+      "lastUpdatePostDate": "2026-11-09"
+    }
+  ],
+  "terms": {
+    "url": "https://clinicaltrials.gov/terms-conditions",
+    "retrievedAt": "2026-11-15T13:13:45.803Z",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "applicability": "ClinicalTrials.gov Terms and Conditions apply to use of the newly retrieved records. Attribute ClinicalTrials.gov as the source; some record content may be subject to third-party rights. No specific license is asserted here."
+  },
+  "limitations": [
+    "The 18 new records were individually retrieved on 2026-11-16; the two existing approved records and their source files were not changed.",
+    "ClinicalTrials.gov attribution is retained; third-party rights may apply; no separate license is asserted.",
+    "The 18 new studies are pending human criterion review and are not an approved matcher dataset."
+  ]
+}
