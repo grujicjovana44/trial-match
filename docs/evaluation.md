@@ -38,6 +38,16 @@ Cene trenutno nisu obračunljive, pa guard odbija cenu kao broj i traži maxCost
 
 gold:criteria radi zasebno nad ljudskim očekivanjima i predikcijama, proverava dataset verziju i izračunava TP/FP/FN; prazni imenitelji su null. Bez ljudskih anotacija se ne objavljuje metrika.
 
+## Pripremljeni skup 20 T2D studija — nije evaluacioni rezultat
+
+Osamnaest novih studija je preuzeto sa zvaničnog ClinicalTrials.gov API v2 i pripremljeno lokalnim `data:prepare`, `data:split` i `rules:draft` tokovima. Dve postojeće odobrene studije i njihovi paketi nisu menjani. Poreklo svih 20 zapisa, uključujući URL, datum preuzimanja, status, datume verifikacije/ažuriranja i hash, nalazi se u [manifestu porekla](../data/raw/studies_20_api_provenance_2026-11-16.json).
+
+Priprema je dala 300 doslovno citiranih odlomaka za 18 dodatnih studija; svih 300 je `manual_review`/`pending_review`. Importer je izdvojio još 26 strukturisanih pol/starost polja kao deterministički proverljiva; to nije ljudska provera niti odobrenje. `data:split` nije prijavio nepodeljene studije, ali to ne zamenjuje medicinsku proveru. NCT06251323 je studija primene na nivou klinika, NCT06852950 ima mešovitu T1D/T2D populaciju, a NCT06118931 uključuje i osobe u riziku; njihova pogodnost za individualno uparivanje ostaje za ljudski pregled.
+
+`loadRagCorpus` je validaciono učitao 20 jedinstvenih zapisa iz odobrenog paketa i pending importa. `buildRagDocuments` proizveo je 76 dokumenata, uključujući 56 passage dokumenata, ali 300 novih odlomaka iz `data:split` nisu u tim dokumentima: postojeći builder ne čita `eligibilityText` ili import `sources`. Nije pokrenut RAG indeks, retrieval evaluacija, embeddings poziv niti LLM API poziv. Ovi podaci zato nisu RAG quality rezultat i ne menjaju istorijske evaluacione artefakte.
+
+Novi korpus je izolovan u `data/review_candidates/studies_20_2026-11-16/`; `DATA_DIR` i DEMO podrazumevani tok ostaju nepromenjeni. Nove studije ne mogu u matcher dok se ne obavi ljudski pregled i postojeći `compile:rules` approval postupak.
+
 ## RAG retrieval evaluacija
 
 `eval/rag/retrieval-v1.json` i `baseline-v1.json` ostaju nepromenjeni. JG je adjudikovao sva četiri slučaja iz `retrieval-v2.json`, uključujući relevantnost BMI odlomka RAG-001. Globalni `annotationStatus` ostaje `pending_human_review` jer su planned patterns samo opisni i nemaju konkretne slučajeve/oznake. Relevance rule beleži unapred definisani kriterijum nezavisan od retrieval izlaza. V1 i v2 su povezani sa korpusom `rag-corpus-v0-dev` od pet studija, pa rezultate treba tumačiti u okviru ovog malog skupa, ne kao opšti dokaz kvaliteta.
