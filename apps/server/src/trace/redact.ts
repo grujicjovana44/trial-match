@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const TraceEventSchema = z
   .object({
-    step: z.enum(["model", "tool", "grounding"]),
+    step: z.enum(["model", "tool", "grounding", "retrieval"]),
     attempt: z.number().int().positive().optional(),
     tool: z
       .enum([
@@ -22,6 +22,18 @@ const TraceEventSchema = z
       .regex(/^[a-f0-9]{64}$/)
       .optional(),
     sourceIds: z.array(z.string()).optional(),
+    untranslatedTerms: z.array(z.string().max(100)).optional(),
+    retrievalMode: z
+      .enum(["hybrid", "lexical_fallback", "lexical_only"])
+      .optional(),
+    fallbackReason: z
+      .string()
+      .regex(
+        /^embedding_(?:timeout|invalid|network_error|error|http_[1-5]\d{2})$/u,
+      )
+      .optional(),
+    vectorHitCount: z.number().int().nonnegative().optional(),
+    selectedTrialIds: z.array(z.string().max(100)).optional(),
   })
   .strict();
 

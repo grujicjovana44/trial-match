@@ -1,0 +1,77 @@
+{
+  "datasetId": "rag-retrieval-v1",
+  "corpusSnapshotId": "rag-corpus-v1",
+  "annotationStatus": "pending_human_review",
+  "annotationMethod": "assistant-authored draft based on direct source inspection; requires human adjudication",
+  "corpus": [
+    {
+      "path": "data/fixtures/trials.json",
+      "version": "synthetic-trials-v1",
+      "sha256": "f368d13bff16dc5ad69636513281ed18ea8601978a83d6c3c000dd4b0cde4950"
+    },
+    {
+      "path": "data/rule_sets/studies_2_approved_20261115_1539/trials.json",
+      "version": "rules-0b88455b00ae",
+      "sha256": "4b39b15a92b3ce20591c70ed54bb60e81a453c10b2c3a5dd2052b00ec3c8a2e5"
+    }
+  ],
+  "cases": [
+    {
+      "caseId": "RAG-001",
+      "language": "sr",
+      "profile": {
+        "age": 52,
+        "sex": "female",
+        "stated_diagnoses": ["gojaznost", "dijabetes tip 2"]
+      },
+      "relevantTrialIds": ["NCT07924436"],
+      "relevantPassageIds": [
+        "NCT07924436#inc-1",
+        "NCT07924436#inc-3",
+        "NCT07924436#inc-5"
+      ],
+      "rationale": "Srpski strukturisani profil odgovara engleskom naslovu/uslovima studije i njenim polnim, BMI i kohortnim odlomcima."
+    },
+    {
+      "caseId": "RAG-002",
+      "language": "en",
+      "profile": {
+        "age": 20,
+        "stated_diagnoses": ["type 2 diabetes", "renal health"]
+      },
+      "relevantTrialIds": ["NCT07409714"],
+      "relevantPassageIds": [
+        "NCT07409714#inc-1",
+        "NCT07409714#inc-3",
+        "NCT07409714#exc-4"
+      ],
+      "rationale": "Profil eksplicitno traži mladalačku dijabetes studiju sa bubrežnim kontekstom; tačni relevantni odlomci pokrivaju uzrast, dijabetes i eGFR."
+    },
+    {
+      "caseId": "RAG-003",
+      "language": "sr",
+      "profile": {
+        "stated_diagnoses": ["dijabetes tip 2"]
+      },
+      "relevantTrialIds": ["NCT07409714", "NCT07924436", "T-A", "T-B", "T-C"],
+      "relevantPassageIds": [
+        "NCT07409714#inc-3",
+        "NCT07924436#inc-5",
+        "T-A#inc-2",
+        "T-B#inc-2",
+        "T-C#inc-3"
+      ],
+      "rationale": "Upit je širok i svi lokalni zapisi su za dijabetes tipa 2; oznake ne predstavljaju procenu podobnosti."
+    },
+    {
+      "caseId": "RAG-004",
+      "language": "none",
+      "profile": {
+        "age": 62
+      },
+      "relevantTrialIds": ["NCT07409714", "NCT07924436", "T-A", "T-B", "T-C"],
+      "relevantPassageIds": [],
+      "rationale": "Bez dijagnoze/koncepta ne ocenjujemo tekstualnu relevantnost; očekivano ponašanje je uključiti sve dostupne studije do limita u stabilnom redosledu."
+    }
+  ]
+}

@@ -32,7 +32,7 @@ Ovaj dokument beleži odluke i otvorene tačke za plan implementacije. Oslanja s
 
 ### 4. Determinističke vrednosti i kliničke reference
 
-**Odluka**: Normalizacija jedinica, eGFR, BMI i kriterijumski matcher ostaju deterministički. Korisnik je dostavio i potvrdio bibliografske izvore, formule i kontrolne vrednosti u `docs/project-brief.md`; B-03 je razrešen.
+**Odluka**: Normalizacija jedinica, eGFR, BMI i kriterijumski matcher ostaju deterministički. Korisnik je dostavio bibliografske izvore, formule i kontrolne vrednosti u `docs/project-brief.md`; formalna provera B-03 prema originalnim publikacijama ostaje otvorena do evidencije izvora, datuma i odgovorne osobe.
 
 **Obrazloženje**: Brief izričito zabranjuje medicinsko odlučivanje modela i konstante bez proverljivog izvora.
 

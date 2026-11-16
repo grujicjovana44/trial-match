@@ -16,3 +16,5 @@ eval/results/**
 !eval/results/.gitkeep
 eval/traces/**
 !eval/traces/.gitkeep
+data/index/
+docs/project-brief.md

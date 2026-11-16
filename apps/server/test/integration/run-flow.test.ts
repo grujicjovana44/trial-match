@@ -2,6 +2,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { createApp } from "../../src/api/app.js";
 import { parseConfig } from "../../src/config/index.js";
 import { TrialMatchService } from "../../src/service/trialmatch.js";
+import { retrieveTrials } from "../../src/retrieval/retrieve.js";
 
 const profileText =
   "Muškarac, 62 godine, dijabetes tip 2, HbA1c 8,1%, kreatinin 1,3 mg/dL, visina 178 cm, težina 92 kg, na metforminu.";
@@ -130,6 +131,46 @@ describe("API tok DEMO provere", () => {
       reason: "not_in_sources",
     });
   });
+});
+
+it("beleži retrieval mode i razlog fallback-a u tragu zahteva", async () => {
+  const service = new TrialMatchService({
+    config: parseConfig({ NODE_ENV: "test", DEMO_MODE: "true" }),
+    retriever: {
+      async retrieve(profile, trials, options) {
+        const result = retrieveTrials(profile, trials, options);
+        return {
+          ...result,
+          retrievalTrace: {
+            ...result.retrievalTrace!,
+            retrievalMode: "lexical_fallback",
+            fallbackReason: "embedding_http_401",
+            vectorHitCount: 0,
+          },
+        };
+      },
+    },
+  });
+  const app = createApp({ service });
+  try {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/runs",
+      payload: { profileText: "Dijabetes tip 2" },
+    });
+    expect(response.statusCode).toBe(200);
+    const event = service.sessions
+      .get(response.json().runId)!
+      .events.find((item) => item.step === "retrieval");
+    expect(event).toMatchObject({
+      retrievalMode: "lexical_fallback",
+      fallbackReason: "embedding_http_401",
+      vectorHitCount: 0,
+      selectedTrialIds: expect.any(Array),
+    });
+  } finally {
+    await app.close();
+  }
 });
 
 it("odbija inicijalizaciju korpusa sa nepotvrđenom licencom", async () => {

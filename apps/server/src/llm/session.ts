@@ -20,6 +20,11 @@ export type ExecutionEvent = {
   promptVersion?: string;
   promptHash?: string;
   sourceIds?: string[];
+  untranslatedTerms?: string[];
+  retrievalMode?: "hybrid" | "lexical_fallback" | "lexical_only";
+  fallbackReason?: string;
+  vectorHitCount?: number;
+  selectedTrialIds?: string[];
 };
 export class ModelSession {
   calls = 0;

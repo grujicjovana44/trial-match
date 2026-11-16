@@ -47,6 +47,9 @@ const RawStudySchema = z.object({
       nctId: z.string().regex(/^NCT\d{8}$/i),
       briefTitle: z.string().min(1),
     }),
+    descriptionModule: z
+      .object({ briefSummary: z.string().min(1).optional() })
+      .optional(),
     statusModule: z.object({ overallStatus: z.string().min(1) }).optional(),
     conditionsModule: z.object({ conditions: z.array(z.string()) }).optional(),
     designModule: z
@@ -77,6 +80,7 @@ const knownRawKeys: Record<string, ReadonlySet<string>> = {
   "": new Set(["protocolSection"]),
   protocolSection: new Set([
     "identificationModule",
+    "descriptionModule",
     "statusModule",
     "conditionsModule",
     "designModule",
@@ -84,6 +88,7 @@ const knownRawKeys: Record<string, ReadonlySet<string>> = {
     "contactsLocationsModule",
   ]),
   "protocolSection.identificationModule": new Set(["nctId", "briefTitle"]),
+  "protocolSection.descriptionModule": new Set(["briefSummary"]),
   "protocolSection.statusModule": new Set(["overallStatus"]),
   "protocolSection.conditionsModule": new Set(["conditions"]),
   "protocolSection.designModule": new Set(["phases"]),
@@ -205,6 +210,9 @@ export function prepareRaw(raw: unknown) {
       TrialSchema.parse({
         trialId: id,
         title: p.identificationModule.briefTitle,
+        ...(p.descriptionModule?.briefSummary
+          ? { summary: p.descriptionModule.briefSummary }
+          : {}),
         conditions: p.conditionsModule?.conditions ?? [],
         overallStatus: p.statusModule?.overallStatus ?? null,
         phase: phases.join(", ") || null,

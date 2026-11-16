@@ -10,7 +10,7 @@ Planira se veb aplikacija koja prima samo sintetički profil, prikazuje poređen
 
 ## Tehnički kontekst
 
-Odgovor na pitanje i hipotetička promena profila imaju odvojene rute; hipoteza menja samo izričito navedena polja i ponavlja procenu pod istim `runId`. Izvorno pitanje koje se ne može potkrepiti dostupnim podacima vraća `insufficient_evidence/not_in_sources`, bez odgovora iz opšteg znanja. B-03 je razrešen korisnički dostavljenim i potvrđenim izvorima, formulama i kontrolnim vrednostima; granice profila su tehnički sanity check, a ne medicinski referentni opsezi.
+Odgovor na pitanje i hipotetička promena profila imaju odvojene rute; hipoteza menja samo izričito navedena polja i ponavlja procenu pod istim `runId`. Izvorno pitanje koje se ne može potkrepiti dostupnim podacima vraća `insufficient_evidence/not_in_sources`, bez odgovora iz opšteg znanja. B-03 ostaje otvoren do formalne evidencije provere prema originalnim publikacijama; granice profila su tehnički sanity check, a ne medicinski referentni opsezi.
 
 **Jezik/verzija**: TypeScript strict; Node.js `24.22.1` LTS i pnpm `12.16.1`. Tačne verzije paketa su pinovane u `package.json`, a frozen lockfile provera je uspešno završena offline. Lokalni Node runtime treba uskladiti pre build/test-a.
 
@@ -46,7 +46,7 @@ Odgovor na pitanje i hipotetička promena profila imaju odvojene rute; hipoteza 
 - Svaki zahtev ostaje povezan sa stabilnim AC ID-jem; specifikacija se ne menja ovim planom.
 - Bez dodatnih opcionih funkcija i bez proširenja AC-11 u osnovnu verziju.
 
-**Ponovna provera posle dizajna — dizajn i lockfile usklađeni; runtime dostupnost preostaje.** Interfejsi omogućavaju zamenu adaptera ili retriever-a bez prenosa odlučivanja na model. B-03 je razrešen, a lockfile prolazi offline frozen proveru. Pre build/test izvršavanja treba obezbediti lokalni Node.js `24.22.1` umesto trenutno dostupnog `24.20.0`; nema potrebe da se lockfile ponovo generiše ako se manifest ne promeni. Izbor živog modela i uslovi korišćenja stvarnog snimka pripadaju Fazi 2.
+**Ponovna provera posle dizajna — dizajn i lockfile usklađeni; runtime dostupnost preostaje.** Interfejsi omogućavaju zamenu adaptera ili retriever-a bez prenosa odlučivanja na model. B-03 ostaje otvoren dok odgovorna osoba ne zabeleži izvor, datum i ime; lockfile prolazi offline frozen proveru. Pre build/test izvršavanja treba obezbediti lokalni Node.js `24.22.1` umesto trenutno dostupnog `24.20.0`; nema potrebe da se lockfile ponovo generiše ako se manifest ne promeni. Izbor živog modela i uslovi korišćenja stvarnog snimka pripadaju Fazi 2.
 
 ## Struktura projekta
 

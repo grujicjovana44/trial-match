@@ -12,7 +12,7 @@ description: "Zadaci za Fazu 1 funkcionalnosti TrialMatch"
 
 **Redosled**: Zadaci su grupisani po oblastima A–D iz podele tima, a unutar svake oblasti poređani po ID-ju. Globalni redosled ID-jeva prati zavisnosti Faze 1 iz odeljka 18; stvarni redosled rada određuju zavisnosti navedene uz zadatke.
 
-**Početno okruženje**: B-03 je razrešen; formule, konverzije, izvori i kontrolne vrednosti nalaze se u [docs/project-brief.md](../../docs/project-brief.md). B-01 verzije/lockfile su određeni i offline proverljivi; pre build/test izvršavanja uskladiti lokalni Node sa `24.22.1` (lokalni Node.js `24.22.1` je potvrđen). Commit nije deo ovog task-generation/analysis koraka.
+**Početno okruženje**: B-03 formalno ostaje otvoren do evidencije provere prema originalnim publikacijama; formule, konverzije, izvori i kontrolne vrednosti nalaze se u [docs/project-brief.md](../../docs/project-brief.md). B-01 verzije/lockfile su određeni i offline proverljivi; pre build/test izvršavanja uskladiti lokalni Node sa `24.22.1` (lokalni Node.js `24.22.1` je potvrđen). Commit nije deo ovog task-generation/analysis koraka.
 
 ## Oblast A — Korisnički tok, UI i kriterijumi prihvatanja
 
@@ -43,7 +43,7 @@ description: "Zadaci za Fazu 1 funkcionalnosti TrialMatch"
 
 ## Oblast C — AI integracija, pronalaženje i workflow
 
-- [x] T010 [P] [US1] [Oblast C] Napisati unit testove u `apps/server/test/unit/units.test.ts` za decimale sa zarezom/tačkom i podržane konverzije kreatinina i HbA1c, uključujući nevažeću/nepoznatu jedinicu; proveriti deljenje kreatinina sa `88.4` i HbA1c konverziju `0.09148 × vrednost + 2.152` prema izvorima iz brief-a. **AC**: AC-02. **EV**: EV-01, EV-02, EV-11. **Zavisnosti**: T004. **Blocker**: nema; B-03 je razrešen.
+- [x] T010 [P] [US1] [Oblast C] Napisati unit testove u `apps/server/test/unit/units.test.ts` za decimale sa zarezom/tačkom i podržane konverzije kreatinina i HbA1c, uključujući nevažeću/nepoznatu jedinicu; proveriti deljenje kreatinina sa `88.4` i HbA1c konverziju `0.09148 × vrednost + 2.152` prema izvorima iz brief-a. **AC**: AC-02. **EV**: EV-01, EV-02, EV-11. **Zavisnosti**: T004. **Blocker za implementaciju**: nema; formalna potvrda B-03 ostaje otvorena.
 - [x] T011 [US1] [Oblast C] Implementirati normalizaciju podržanih jedinica u `apps/server/src/derived/units.ts`; rezultat zadržava izvornu vrednost/poreklo, daje normalizovanu vrednost samo za poznatu jedinicu i odbacuje nevažeći ulaz. Koristiti konverzije i reference potvrđene u projektnom brief-u. **AC**: AC-02. **EV**: EV-01, EV-02, EV-11. **Zavisnosti**: T010. **Blocker**: nema.
 - [x] T012 [P] [US1] [Oblast C] Napisati unit testove eGFR u `apps/server/test/unit/egfr.test.ts` za `male` i `female`, odsutan/nejasan pol, nedostajuću starost/kreatinin, jedinice i tehnički nevažeće vrednosti; eGFR se ne računa za nepoznat pol. Proveriti muškarca 62 g./1,3 mg/dL → `62.11` i ženu 70 g./1,0 mg/dL → `60.61 mL/min/1.73 m²`, tolerancija ±0,01. **AC**: AC-02, AC-03. **EV**: EV-01, EV-04, EV-08, EV-16. **Zavisnosti**: T004. **Blocker**: nema.
 - [x] T013 [US1] [Oblast C] Implementirati `compute_egfr` u `apps/server/src/derived/egfr.ts` prema potvrđenoj CKD-EPI 2021 jednačini za `male|female`; bez potrebnih ulaza ne vraća broj, a rezultat nosi naziv formule i NIDDK/izvorni navod iz brief-a. **AC**: AC-02, AC-03, AC-10. **EV**: EV-01, EV-04, EV-08, EV-16. **Zavisnosti**: T012, T011. **Blocker**: nema.
@@ -140,14 +140,14 @@ description: "Zadaci za Fazu 1 funkcionalnosti TrialMatch"
 
 **Razrešeno**: B-02 polje `sex`; B-04 pretraga/rangiranje; B-05 vrednosti konteksta i rate limit; B-06 retry semantika; B-07 API rute/statusi; B-08 jsdom + Testing Library u Fazi 1; B-09 provenance; B-10 timeout-i alata i retry politika; B-11 NCT ID tie-break. Odluke su zapisane u `docs/decisions.md` i primenjene u odgovarajućim ugovorima i zadacima.
 
-**Razrešeno — B-03**: korisnik je dostavio i potvrdio izvore, formule, konverzije i kontrolne vrednosti u `docs/project-brief.md`. Opsezi profila su potvrđeni samo kao tehničke granice unosa, ne kao medicinski/laboratorijski referentni opsezi. Nove ili izmenjene medicinske formule/pragovi bez potvrde i dalje nose oznaku „PROVERITI prema originalnoj publikaciji“.
+**B-03 — otvoreno**: korisnik je dostavio izvore, formule, konverzije i kontrolne vrednosti u `docs/project-brief.md`, ali odgovorna osoba još nije evidentirala proveru prema originalnim publikacijama, datum i ime. Opsezi profila su samo tehničke granice unosa, ne medicinski/laboratorijski referentni opsezi. Oznaka „PROVERITI prema originalnoj publikaciji“ ostaje dok se provera ne zabeleži.
 
 ## Potpunost Faze 1
 
 - Skelet i alati: T001–T002.
 - Zajedničke šeme i konfiguracija/limiti: T003–T006.
 - `data:prepare` i testovi: T007–T009.
-- Jedinični testovi i implementacija normalizacije/jedinica, eGFR i BMI: T010–T015 (B-03 razrešen; testirati kontrolne vrednosti). Matcher, izbor pitanja, registar/izvršilac, workflow/skladište, citati, numeričko uzemljenje i mock adapter: T016–T035.
+- Jedinični testovi i implementacija normalizacije/jedinica, eGFR i BMI: T010–T015 (provera kontrolnih vrednosti; formalna potvrda B-03 ostaje otvorena). Matcher, izbor pitanja, registar/izvršilac, workflow/skladište, citati, numeričko uzemljenje i mock adapter: T016–T035.
 - Demo API, minimalni UI i sva korisnička stanja: T036–T043/T075.
 - Svih 16 slučajeva, EV-07–EV-09 dry-run okvir, offline/fault pokretanja i osnovni zlatni skup: T044–T048, T074, T076–T077.
 - Dokumentacija, `.env.example`, manifest i CI: T049–T061.
