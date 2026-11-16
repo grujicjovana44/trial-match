@@ -4,12 +4,23 @@
 | --------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | Profilni tekst        | Sintetički unos u lokalnom pregledaču                 | Serverski zahtev, izdvaja se u strukturisani profil; stanje je memorijsko | Ne unositi stvarne podatke; nema trajnog skladištenja; run stanje ističe posle 30 minuta ili pri ograničenju kapaciteta |
 | Profilna polja        | Mock izdvajanje i/ili odgovor/hipoteza                | Shared Zod šeme, matcher i izvedene vrednosti                             | Nepomenuta polja ostaju odsutna; provenance beleži poreklo                                                              |
-| Studije i kriterijumi | `data/fixtures/trials.json` ili novi pregledani paket | Lokalni server i retrieval                                                | T-A/T-B/T-C su sintetički; realni paket zahteva hash review i potvrđenu licencu                                         |
+| Studije i kriterijumi | `data/fixtures/trials.json`, odobreni paket ili izolovani kandidat-korpus | Lokalni server i retrieval                                        | T-A/T-B/T-C su sintetički; pending kriterijumi ne ulaze u matcher; realni paket zahteva hash review i potvrđenu licencu |
 | Citati                | `sourceQuote` u lokalnim fixture-ima                  | Provera u serveru, prikaz u UI-ju                                         | Samo izvor iz tekućeg izvršavanja                                                                                       |
 | Evaluacioni primeri   | `eval/cases.jsonl`, sintetički                        | Offline evaluator i testovi                                               | Real-model slučajevi se preskaču/dry-run-ujemo bez PASS ishoda                                                          |
 | Trace evaluacije      | Generisani rezultati                                  | `eval/results/<label>/traces/`                                            | Bez sirovog profila, tajni i unutrašnjeg rezonovanja                                                                    |
 
-Pravi studijski snimak nije preuzet. Ako se koristi u kasnijoj fazi, čovek ga ručno stavlja u `data/raw/`; mrežno preuzimanje niti automatsko prikupljanje nisu dozvoljeni.
+Stari dostavljeni snimak i dalje ima nepotvrđene endpoint/query metapodatke. Zasebno, `data/raw/studies_20_api_provenance_2026-11-16.json` evidentira 20 stvarnih, jedinstvenih NCT zapisa sa zvaničnim ClinicalTrials.gov API v2 URL-jevima, SHA-256, datumom preuzimanja, statusom, `statusVerifiedDate` i `lastUpdatePostDate`. Osamnaest novih zapisa preuzeto je pojedinačno 2026-11-16; dva postojeća odobrena zapisa i njihovi raw fajlovi nisu menjani.
+
+Novi import i rezultati pripreme su izolovani u `data/review_candidates/studies_20_2026-11-16/`: 18 dodatnih zapisa, 300 izdvojenih tekstualnih kriterijuma (`manual_review`, `pending_review`) i 26 strukturisanih pol/starost kriterijuma koje importer može deterministički proveriti. Strukturisana polja nisu ljudsko odobrenje. Dve odobrene studije ostaju u `data/rule_sets/studies_2_approved_20261115_1539/` i nisu kopirane niti prepisane.
+
+Eksplicitni koreni za proveru postojećeg RAG corpus loader-a su:
+
+```text
+data/rule_sets/studies_2_approved_20261115_1539/
+data/review_candidates/studies_20_2026-11-16/import/
+```
+
+Loader iz ova dva korena vraća 20 jedinstvenih `Trial` zapisa. Novi pending direktorijum nije dodat podrazumevanim runtime putanjama, DEMO toku ili `DATA_DIR`. Postojeći `buildRagDocuments` koristi naslov, uslove, sažetak i `Trial.criteria`; ne koristi originalni `eligibilityText` ni import `sources`. Zato 300 novih odlomaka još nije RAG-pretraživo kao passage korpus. Nije izgrađen indeks i nijedan embeddings/API poziv nije izvršen.
 
 Faza 2 raw importer daje manifest, normalizovane studije, izvorne odlomke i report u jednom lokalnom JSON izlazu. Nerazdvojeni eligibility tekst ostaje u `sources` kao `unsplit`, a strukturisani pol/starost se normalizuju samo kad su podržani. `rules:review-template` pravi neodobrene hash-eve; čovek unosi pregled, a `compile:rules` odbija nepregledane ili izmenjene stavke. Prazan kriterijumski niz ne može postati kandidat. Realni manifest sa nepotvrđenom licencom server ne učitava.
 
