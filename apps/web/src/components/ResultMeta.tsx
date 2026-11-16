@@ -3,14 +3,17 @@ import { formatSnapshotDate } from "../result-view-model.js";
 import { copy } from "../copy.js";
 
 export function ResultMeta({ meta }: { meta: RunResponse["meta"] }) {
+  // Datum se prikazuje samo kada postoji i ispravan je; inače reda nema (T232).
+  const snapshotDate =
+    meta.dataSnapshotDate === null
+      ? null
+      : formatSnapshotDate(meta.dataSnapshotDate);
   return (
     <footer className="result-meta">
       <span>{copy.meta.dataVersion(meta.dataVersion)}</span>
-      <span>{meta.dataSynthetic ? "Sintetički skup" : "Snimak studija"}</span>
+      {snapshotDate !== null && <span>{copy.meta.snapshot(snapshotDate)}</span>}
       <span>
-        {meta.dataSnapshotDate
-          ? formatSnapshotDate(meta.dataSnapshotDate)
-          : "Datum nije dostupan"}
+        {meta.dataSynthetic ? copy.meta.syntheticData : copy.meta.realData}
       </span>
       <span>{meta.dataOrigin}</span>
       {meta.demoMode ? (

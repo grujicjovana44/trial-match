@@ -40,6 +40,94 @@ describe("red kriterijuma", () => {
   });
 });
 
+describe("jedinica i poreklo vrednosti (T220, AC-01)", () => {
+  function renderRow(criterion: ReturnType<typeof criterionOf>) {
+    render(
+      <ul>
+        <CriterionRow criterion={criterion} />
+      </ul>,
+    );
+  }
+
+  it("izračunata vrednost ima jedinicu i oznaku „izračunao kod“", () => {
+    renderRow({
+      ...criterionOf("T-1", 1, "met", 62.11),
+      observedUnit: "mL/min/1.73 m²",
+      observedOrigin: "derived",
+    });
+    expect(document.body.textContent).toContain("62,11 mL/min/1.73 m²");
+    expect(screen.getByText("izračunao kod")).toBeTruthy();
+  });
+
+  it("vrednost iz profila nema oznaku, a „%“ ide bez razmaka", () => {
+    renderRow({
+      ...criterionOf("T-1", 1, "met", 8.1),
+      observedUnit: "%",
+      observedOrigin: "profile",
+    });
+    expect(document.body.textContent).toContain("8,1%");
+    expect(screen.queryByText("izračunao kod")).toBeNull();
+    expect(document.body.textContent).not.toMatch(
+      /Izvedena vrednost|Iz profila|Nepoznato/,
+    );
+  });
+
+  it("bez vrednosti nema ni jedinice ni oznake", () => {
+    renderRow({
+      ...criterionOf("T-1", 1, "unknown", null),
+      observedUnit: "mL/min/1.73 m²",
+      observedOrigin: "derived",
+    });
+    expect(document.body.textContent).toContain("Vrednost: nije uneto");
+    expect(document.body.textContent).not.toContain("mL/min");
+    expect(screen.queryByText("izračunao kod")).toBeNull();
+  });
+});
+
+describe("status regrutacije i faza (T221, AC-01)", () => {
+  function renderCard(
+    overallStatus: string | null,
+    phase: string | null,
+  ): void {
+    render(
+      <TrialCard
+        trial={{ ...trialsOf(1)[0]!, overallStatus, phase }}
+        index={0}
+      />,
+    );
+  }
+
+  it("poznate vrednosti registra prikazuje srpskim tekstom", () => {
+    renderCard("RECRUITING", "PHASE2");
+    expect(
+      screen.getByText(/Status regrutacije: regrutuje učesnike/),
+    ).toBeTruthy();
+    expect(document.body.textContent).toContain("Faza: faza 2");
+    expect(document.body.textContent).not.toMatch(/RECRUITING|PHASE2/);
+  });
+
+  it("više faza spojenih zarezom prevodi pojedinačno", () => {
+    renderCard(null, "PHASE1, PHASE2");
+    expect(document.body.textContent).toContain("Faza: faza 1, faza 2");
+    expect(document.body.textContent).not.toContain("Status regrutacije");
+  });
+
+  it("nepoznatu vrednost prikazuje doslovno kao podatak registra", () => {
+    renderCard("AVAILABLE", null);
+    const value = screen.getByText("AVAILABLE");
+    expect(value.className).toBe("mono");
+    expect(document.body.textContent).not.toContain("Faza:");
+  });
+
+  it("bez oba polja nema reda i nema podrazumevane vrednosti", () => {
+    renderCard(null, "  ");
+    expect(document.querySelector(".trial-facts")).toBeNull();
+    expect(document.body.textContent).not.toMatch(
+      /Status regrutacije|Faza:|Nije naveden/,
+    );
+  });
+});
+
 describe("kartica studije", () => {
   it("prikazuje preveden ishod, sažetak i bezbednu vezu ka registru", () => {
     const trial: TrialResult = {

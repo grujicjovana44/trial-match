@@ -2,6 +2,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "../../src/App.js";
+import { ResultMeta } from "../../src/components/ResultMeta.js";
 import {
   httpErrorBody,
   jsonResponse,
@@ -174,5 +175,16 @@ describe("režim i metapodaci", () => {
     await screen.findByText("Skup podataka: ctgov-t2d-2026-12");
     expect(document.body.textContent).not.toContain("synthetic-trials-v1");
     expect(document.body.textContent).not.toContain("7. novembar 2026.");
+  });
+
+  it("prikazuje datum snimka samo kada postoji (T232, AC-01)", () => {
+    const { rerender } = render(
+      <ResultMeta meta={metaOf({ dataSnapshotDate: "2026-11-07" })} />,
+    );
+    expect(screen.getByText("Datum snimka: 7. novembar 2026.")).toBeTruthy();
+
+    rerender(<ResultMeta meta={metaOf({ dataSnapshotDate: null })} />);
+    expect(document.body.textContent).not.toContain("Datum snimka");
+    expect(document.body.textContent).not.toContain("Datum nije dostupan");
   });
 });
