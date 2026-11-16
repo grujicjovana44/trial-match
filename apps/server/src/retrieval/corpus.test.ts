@@ -3,12 +3,14 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import fixtureData from "../../../../data/fixtures/trials.json" with { type: "json" };
+import sourceProvenance from "../../../../data/raw/studies_20_api_provenance_2026-11-16.json" with { type: "json" };
 import {
   DatasetManifestSchema,
   TrialSchema,
   type Trial,
 } from "../../../../packages/shared/src/index.js";
 import { hashRagSourceContent, loadRagCorpus } from "./corpus.js";
+import { buildRagDocuments } from "./documents.js";
 
 const temporaryDirectories: string[] = [];
 
@@ -247,5 +249,27 @@ describe("RAG corpus loader", () => {
       "data/fixtures/trials.json",
       "data/rule_sets/approved/trials.json",
     ]);
+  });
+
+  it("učitava tačno 20 jedinstvenih studija iz odobrenog i pending korpusa", async () => {
+    const corpus = await loadRagCorpus([
+      "data/rule_sets/studies_2_approved_20261115_1539",
+      "data/review_candidates/studies_20_2026-11-16/import",
+    ]);
+    const trialIds = corpus.trials.map((item) => item.trialId);
+    const documents = buildRagDocuments(corpus.trials);
+
+    expect(trialIds).toEqual(
+      sourceProvenance.records
+        .map((record) => record.nctId)
+        .sort((left, right) => left.localeCompare(right, "en")),
+    );
+    expect(new Set(trialIds)).toHaveLength(20);
+    expect(
+      documents.filter((document) => document.kind === "study"),
+    ).toHaveLength(20);
+    expect(
+      documents.filter((document) => document.kind === "passage"),
+    ).toHaveLength(56);
   });
 });
