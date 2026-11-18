@@ -10,7 +10,10 @@ export default defineConfig({
   use: {
     baseURL: "http://127.0.0.1:5175",
     browserName: "chromium",
-    launchOptions: { channel: "msedge", headless: true },
+    launchOptions: {
+      channel: process.env.E2E_BROWSER_CHANNEL ?? "msedge",
+      headless: true,
+    },
     trace: "retain-on-failure",
   },
   webServer: {

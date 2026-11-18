@@ -1,0 +1,16 @@
+{
+  "status": "template_only_no_labels",
+  "cases": [
+    {
+      "caseId": "",
+      "language": "",
+      "profile": {},
+      "relevantTrialIds": [],
+      "relevantPassageIds": [],
+      "relevanceRule": "",
+      "shortReason": "",
+      "reviewer": "",
+      "reviewedAt": ""
+    }
+  ]
+}

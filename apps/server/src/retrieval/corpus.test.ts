@@ -253,10 +253,10 @@ describe("RAG corpus loader", () => {
     ]);
   });
 
-  it("učitava tačno 20 jedinstvenih studija iz odobrenog i pending korpusa", async () => {
+  it("učitava tačno 20 studija i 10 odobrenih auto pravila iz hash-pinned paketa", async () => {
     const corpus = await loadRagCorpus([
       "data/rule_sets/studies_2_approved_20261115_1539",
-      "data/review_candidates/studies_20_2026-11-16/review",
+      "data/rule_sets/studies_18_approved_20261118",
     ]);
     const trialIds = corpus.trials.map((item) => item.trialId);
     const documents = buildRagDocuments(corpus.trials);
@@ -278,19 +278,30 @@ describe("RAG corpus loader", () => {
     expect(
       documents.filter((document) => document.kind === "passage").length,
     ).toBeGreaterThanOrEqual(300);
+    const newStudies = corpus.trials.filter(
+      (item) =>
+        item.trialId.startsWith("NCT") &&
+        !["NCT07409714", "NCT07924436"].includes(item.trialId),
+    );
     expect(
-      corpus.trials
-        .filter(
-          (item) =>
-            item.trialId.startsWith("NCT") &&
-            !["NCT07409714", "NCT07924436"].includes(item.trialId),
-        )
-        .every((item) =>
-          item.criteria.every(
+      newStudies.reduce(
+        (count, item) =>
+          count +
+          item.criteria.filter((criterion) => criterion.checkability === "auto")
+            .length,
+        0,
+      ),
+    ).toBe(10);
+    expect(
+      newStudies.reduce(
+        (count, item) =>
+          count +
+          item.criteria.filter(
             (criterion) => criterion.checkability === "manual_review",
-          ),
-        ),
-    ).toBe(true);
+          ).length,
+        0,
+      ),
+    ).toBe(290);
     const unavailable: string[] = [];
     for (const item of corpus.trials) {
       const retrieval = retrieveTrials(

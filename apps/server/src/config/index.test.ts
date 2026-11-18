@@ -30,4 +30,20 @@ describe("konfiguracija", () => {
       parseConfig({ ...process.env, DEMO_MODE: "true" }),
     ).not.toThrow();
   });
+
+  it("prihvata Cohere kao opcioni reranker sa fiksiranom verzijom modela", () => {
+    const config = parseConfig({
+      DEMO_MODE: "true",
+      RAG_RERANKER: "cohere",
+    });
+    expect(config.RAG_RERANKER).toBe("cohere");
+    expect(config.COHERE_RERANK_MODEL).toBe("rerank-v5.0-fast");
+    expect(config.COHERE_API_KEY).toBeUndefined();
+    expect(() =>
+      parseConfig({
+        DEMO_MODE: "true",
+        COHERE_RERANK_MODEL: "another-model",
+      }),
+    ).toThrow();
+  });
 });

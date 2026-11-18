@@ -46,6 +46,7 @@ export type RagOfflineOptions = {
   embeddingMode?: "fake" | "real";
   caseIds?: string[];
   indexPath?: string;
+  datasetPath?: string;
 };
 
 function commandOptions(args: string[]): RagOfflineOptions {
@@ -66,6 +67,10 @@ function commandOptions(args: string[]): RagOfflineOptions {
       const value = inlineValue ?? args[++index];
       if (!value?.trim()) throw new Error("--index zahteva putanju.");
       options.indexPath = value;
+    } else if (flag === "--dataset") {
+      const value = inlineValue ?? args[++index];
+      if (!value?.trim()) throw new Error("--dataset zahteva putanju.");
+      options.datasetPath = value;
     } else {
       throw new Error(`Nepoznata opcija eval:rag:offline: ${flag}`);
     }
@@ -159,7 +164,7 @@ export async function runOfflineRagEvaluation(
   const root = process.cwd();
   const dataset = RetrievalDatasetSchema.parse(
     JSON.parse(
-      await readFile(resolve(root, "eval/rag/retrieval-v2.json"), "utf8"),
+      await readFile(resolve(root, options.datasetPath ?? "eval/rag/retrieval-v2.json"), "utf8"),
     ),
   );
   const trials: Trial[] = [];

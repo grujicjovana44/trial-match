@@ -29,7 +29,9 @@ const ReviewSchema = z
       "rejected",
     ]),
     reviewer: z.string().min(1).optional(),
-    reviewedAt: z.string().datetime({ offset: true }).optional(),
+    reviewedAt: z
+      .union([z.iso.date(), z.string().datetime({ offset: true })])
+      .optional(),
     sourceHash: z.string().regex(/^[a-f0-9]{64}$/),
     rulesHash: z.string().regex(/^[a-f0-9]{64}$/),
     rulesVersion: z.string().min(1),
@@ -174,8 +176,13 @@ export async function compileRules(
     synthetic: false,
     transformations: `${data.manifest.transformations}; lokalni compile:rules; bez generisanja modelom`,
     limitations: [
-      ...data.manifest.limitations,
+      ...data.manifest.limitations.filter(
+        (limitation) =>
+          limitation !==
+          "All eligibility text and extracted criteria require human review; no approval is implied.",
+      ),
       "Nepregledana pravila ne ulaze u matcher.",
+      "Od 300 kriterijuma u ovom paketu, 10 su odobrena za automatsku proveru; 290 ostaje manual_review/unknown.",
     ],
     includedCount: reviewed.length,
     rulesVersion: "1",

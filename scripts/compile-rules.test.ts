@@ -114,7 +114,7 @@ describe.each(["lt", "gt"] as const)(
     >;
     manuallyApproved[0]!.status = "approved";
     manuallyApproved[0]!.reviewer = "Synthetic reviewer";
-    manuallyApproved[0]!.reviewedAt = "2026-11-13T14:25:30+01:00";
+    manuallyApproved[0]!.reviewedAt = "2026-11-18";
     await writeFile(
       reviewPath,
       `${JSON.stringify(manuallyApproved, null, 2)}\n`,
@@ -142,10 +142,25 @@ describe.each(["lt", "gt"] as const)(
     ]);
     expect(report).toMatchObject({
       included: [
-        { reviewer: "Synthetic reviewer", sourceHash: expect.any(String) },
+        {
+          reviewer: "Synthetic reviewer",
+          reviewedAt: "2026-11-18",
+          sourceHash: expect.any(String),
+        },
       ],
       excluded: [],
       });
+    const manifest: unknown = JSON.parse(
+      await readFile(join(output, "manifest.json"), "utf8"),
+    );
+    expect(manifest).toMatchObject({
+      limitations: expect.arrayContaining([
+        "Od 300 kriterijuma u ovom paketu, 10 su odobrena za automatsku proveru; 290 ostaje manual_review/unknown.",
+      ]),
+    });
+    expect(JSON.stringify(manifest)).not.toContain(
+      "All eligibility text and extracted criteria require human review; no approval is implied.",
+    );
     },
   );
 });

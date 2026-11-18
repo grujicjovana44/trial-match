@@ -39,6 +39,7 @@ import {
 } from "../retrieval/hybrid-retrieve.js";
 import { createOpenAIEmbeddingClient } from "../retrieval/embeddings.js";
 import { GeminiCandidateReranker } from "../retrieval/gemini-reranker.js";
+import { CohereCandidateReranker } from "../retrieval/cohere-reranker.js";
 import {
   EMBEDDING_DIMENSIONS,
   RAG_MAX_CANDIDATES,
@@ -157,7 +158,7 @@ export class TrialMatchService {
     if (this.config.DATASET_PROFILE === "clinicaltrials-20") {
       const corpus = await loadRagCorpus([
         "data/rule_sets/studies_2_approved_20261115_1539",
-        "data/review_candidates/studies_20_2026-11-16/review",
+        "data/rule_sets/studies_18_approved_20261118",
       ]);
       if (corpus.trials.length !== 20)
         throw new Error(
@@ -174,11 +175,11 @@ export class TrialMatchService {
         license:
           "ClinicalTrials.gov Terms and Conditions: https://clinicaltrials.gov/terms-conditions (atribucija; mogu važiti prava trećih strana; ne tvrdi se zasebna licenca).",
         transformations:
-          "Validirani odobreni paket od dve studije spojen je sa 18 validiranih split nacrta; retrieval koristi naslov/uslove/sažetak i 300 izvornih kriterijumskih citata; neodobrena pravila ostaju manual_review.",
+          "Dva ranije odobrena zapisa spojena su sa 18 hash-pinned matcher pravila odobrenih 2026-11-18; od 300 novih kriterijuma, 10 eksplicitnih numeričkih pravila je auto-proverljivo, a 290 ostaje manual_review.",
         limitations: [
           "Korpus sadrži 20 izabranih zapisa, ne potpun rezultat registry pretrage.",
-          "Samo dve studije imaju hash-pinned matcher approval; kriterijumi ostalih 18 ostaju manual_review/unknown.",
-          "Izdvojeni eligibility kriterijumi dostupni su za RAG citiranje, ali ne daju automatski matcher podobnost.",
+          "Dve ranije studije i 18 novih studija imaju hash-pinned approval pakete; od 300 novih kriterijuma, 290 ostaje manual_review/unknown.",
+          "Samo deset eksplicitnih numeričkih pravila iz novih studija ulazi u deterministički matcher; ostali izvorni kriterijumi ostaju manual_review.",
           "Mogu važiti prava trećih strana.",
         ],
         downloadedCount: 20,
@@ -298,7 +299,14 @@ export class TrialMatchService {
               fetch,
               this.config.RAG_RERANK_TIMEOUT_MS,
             )
-          : undefined,
+          : this.config.RAG_RERANKER === "cohere"
+            ? new CohereCandidateReranker(
+                this.config.COHERE_API_KEY,
+                this.config.COHERE_RERANK_MODEL,
+                fetch,
+                this.config.RAG_RERANK_TIMEOUT_MS,
+              )
+            : undefined,
       );
       this.vectorStore = store;
       this.retrievalModeValue = "hybrid";

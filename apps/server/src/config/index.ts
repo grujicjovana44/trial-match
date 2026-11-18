@@ -27,13 +27,15 @@ const ConfigSchema = z
       .literal("gemini-3.5-flash-lite")
       .default("gemini-3.5-flash-lite"),
     GEMINI_API_KEY: z.string().min(1).optional(),
+    COHERE_API_KEY: z.string().min(1).optional(),
+    COHERE_RERANK_MODEL: z.literal("rerank-v5.0-fast").default("rerank-v5.0-fast"),
     DATA_DIR: z.string().min(1).default("data/fixtures"),
     DATASET_PROFILE: z
       .enum(["fixtures", "clinicaltrials-20"])
       .default("fixtures"),
     RAG_INDEX_PATH: z.string().min(1).default("data/index/rag.sqlite"),
     RAG_RERANKER: z
-      .enum(["deterministic", "gemini", "disabled"])
+      .enum(["deterministic", "gemini", "cohere", "disabled"])
       .default("deterministic"),
     RAG_RERANK_TIMEOUT_MS: integerSetting(2000, 10000),
     MAX_INPUT_CHARS: integerSetting(4000),
