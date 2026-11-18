@@ -12,6 +12,7 @@ import type { EmbeddingFailureReason } from "./embeddings.js";
 export type RetrievedContext = {
   trials: Trial[];
   sourceIds: string[];
+  passageIds: string[];
   sourceTexts: Map<string, string>;
   contextText: string;
   retrievalTrace?: {
@@ -51,13 +52,17 @@ function lexicalIndexFor(trials: Trial[]): LexicalIndex {
   search.addAll(documents);
   const index = {
     search,
-    documentsById: new Map(documents.map((document) => [document.id, document])),
+    documentsById: new Map(
+      documents.map((document) => [document.id, document]),
+    ),
   };
   lexicalIndexes.set(trials, index);
   return index;
 }
 
-function reciprocalRankFusion(rankings: readonly (readonly string[])[]): string[] {
+function reciprocalRankFusion(
+  rankings: readonly (readonly string[])[],
+): string[] {
   const scores = new Map<string, number>();
   for (const ranking of rankings) {
     const seen = new Set<string>();
@@ -86,7 +91,9 @@ export function retrieveTrials(
   const { search, documentsById } = lexicalIndexFor(trials);
   const trialsById = new Map(trials.map((trial) => [trial.trialId, trial]));
   const metadata = filterKnownMetadata(trials, options.metadataFilters);
-  const allowedTrialIds = new Set(metadata.trials.map((trial) => trial.trialId));
+  const allowedTrialIds = new Set(
+    metadata.trials.map((trial) => trial.trialId),
+  );
   const queries = buildRetrievalQueries(profile, options.derived);
   const queryTexts = queries.text
     .split(";")
@@ -108,8 +115,7 @@ export function retrieveTrials(
         .filter((hit) => {
           const document = documentsById.get(String(hit.id));
           return (
-            document?.kind === "study" &&
-            allowedTrialIds.has(document.trialId)
+            document?.kind === "study" && allowedTrialIds.has(document.trialId)
           );
         })
         .map((hit) => documentsById.get(String(hit.id))!.trialId),
@@ -162,6 +168,7 @@ export function retrieveTrials(
       : reciprocalRankFusion(passageRankings);
   const snippets: string[] = [];
   const sourceIds: string[] = [];
+  const passageIds: string[] = [];
   let contextLength = 0;
   for (const id of fallbackPassageIds) {
     if (snippets.length >= options.maxSnippets) break;
@@ -181,11 +188,13 @@ export function retrieveTrials(
     if (contextLength + addedLength > options.maxContextChars) continue;
     snippets.push(snippet);
     sourceIds.push(document.sourceId);
+    passageIds.push(id);
     contextLength += addedLength;
   }
   return {
     trials: selected,
     sourceIds,
+    passageIds,
     sourceTexts,
     contextText: snippets.join("\n"),
     retrievalTrace: {

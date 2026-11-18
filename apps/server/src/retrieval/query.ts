@@ -4,7 +4,7 @@ import {
   type Profile,
 } from "../../../../packages/shared/src/index.js";
 
-export const SR_EN_LEXICON_VERSION = "sr-en-clinical-v2";
+export const SR_EN_LEXICON_VERSION = "sr-en-clinical-v3";
 
 const diagnoses: Readonly<Record<string, string>> = {
   "dijabetes tip 2": "type 2 diabetes",
@@ -24,6 +24,12 @@ const diagnoses: Readonly<Record<string, string>> = {
   hypertension: "hypertension",
   "visok krvni pritisak": "high blood pressure hypertension",
   "bubrezna bolest": "kidney disease renal disease",
+  "bubrezno zdravlje": "renal kidney function egfr albumin urine albuminuria",
+  "funkcija bubrega": "renal kidney function egfr albumin urine albuminuria",
+  "renal health": "renal kidney function egfr albumin urine albuminuria",
+  "kidney health": "renal kidney function egfr albumin urine albuminuria",
+  "renal function": "renal kidney function egfr albumin urine albuminuria",
+  "kidney function": "renal kidney function egfr albumin urine albuminuria",
   "hronicna bubrezna bolest": "chronic kidney disease CKD",
   "bolest bubrega": "kidney disease renal disease",
   "hronicna bolest bubrega": "chronic kidney disease CKD",
@@ -163,10 +169,14 @@ export function buildRetrievalQueries(
     if (translated.untranslated) untranslatedTerms.add(translated.untranslated);
   }
 
-  const queries = [...new Set(aspects.map(({ value }) => value.trim()).filter(Boolean))];
+  const queries = [
+    ...new Set(aspects.map(({ value }) => value.trim()).filter(Boolean)),
+  ];
   return {
     text: queries.join("; "),
-    untranslatedTerms: [...untranslatedTerms].sort((a, b) => a.localeCompare(b, "en")),
+    untranslatedTerms: [...untranslatedTerms].sort((a, b) =>
+      a.localeCompare(b, "en"),
+    ),
     aspects: aspects.map(({ name }) => name),
   };
 }

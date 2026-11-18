@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import fixtureData from "../../data/fixtures/trials.json" with { type: "json" };
-import { TrialSchema } from "../../packages/shared/src/index.js";
 import retrievalDatasetV2 from "../rag/retrieval-v2.json" with { type: "json" };
+import retrievalProposalQueue from "../rag/retrieval-proposals-v1.json" with { type: "json" };
 import {
+  aggregateRankingMetrics,
   isMetricEligibleCase,
-  passageIdsInContext,
   rankingCutoffs,
   rankingMetrics,
   RetrievalDatasetSchema,
+  RetrievalProposalQueueSchema,
 } from "./rag-retrieval.js";
 
 describe("RAG retrieval ranking metrics", () => {
@@ -49,19 +49,22 @@ describe("RAG retrieval ranking metrics", () => {
     ).toBeGreaterThan(0);
   });
 
-  it("čuva stvarni redosled odlomaka u kontekstu", () => {
-    const trial = TrialSchema.array().parse(fixtureData)[0]!;
-    const [first, second] = trial.criteria;
-    if (!first || !second)
-      throw new Error("Fixture studija zahteva najmanje dva kriterijuma.");
-
+  it("koristi cutoffs odlomaka pri agregiranju baseline metrike", () => {
+    const metrics = {
+      at1: { recall: 0, precision: 0, reciprocalRank: 0, ndcg: 0 },
+      at3: {
+        recall: 0.5,
+        precision: 1 / 3,
+        reciprocalRank: 1 / 3,
+        ndcg: 0.4,
+      },
+    };
     expect(
-      passageIdsInContext(
-        `${second.sourceId}: ${second.sourceQuote}\n${first.sourceId}: ${first.sourceQuote}`,
-        new Set([trial.trialId]),
-        [trial],
-      ),
-    ).toEqual([second.id, first.id]);
+      aggregateRankingMetrics([{ metrics }], rankingCutoffs(15)),
+    ).toMatchObject({
+      at1: { ndcg: 0 },
+      at3: { ndcg: 0.4 },
+    });
   });
 });
 
@@ -145,5 +148,30 @@ describe("RAG retrieval dataset v2", () => {
           pattern.status === "description_only",
       ),
     ).toBe(true);
+  });
+});
+
+describe("RAG proposed-label review queue", () => {
+  const queue = RetrievalProposalQueueSchema.parse(retrievalProposalQueue);
+
+  it("ties every unapproved case to the frozen corpus without confirming its labels", () => {
+    const base = RetrievalDatasetSchema.parse(retrievalDatasetV2);
+    expect(queue.baseDatasetId).toBe(base.datasetId);
+    expect(queue.corpusSnapshotId).toBe(base.corpusSnapshotId);
+    expect(queue.cases).toHaveLength(4);
+    expect(
+      queue.cases.map(({ caseId, kind, labelStatus, reviewer, reviewedAt }) => [
+        caseId,
+        kind,
+        labelStatus,
+        reviewer,
+        reviewedAt,
+      ]),
+    ).toEqual([
+      ["RAG-P001", "ranking", "proposed", "TODO", "TODO"],
+      ["RAG-P002", "ranking", "proposed", "TODO", "TODO"],
+      ["RAG-P003", "ranking", "proposed", "TODO", "TODO"],
+      ["RAG-P004", "behavior", "proposed", "TODO", "TODO"],
+    ]);
   });
 });

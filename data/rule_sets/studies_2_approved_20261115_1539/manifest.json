@@ -9,7 +9,7 @@
   "limitations": [
     "Contains only the two individually requested NCT records; not a complete registry query result.",
     "Some record content may be subject to third-party rights.",
-    "Eligibility criteria require human review; no review approval is implied.",
+    "Human review approvals for both included studies are recorded in review-report.json against the exact source and rules hashes. Criteria marked manual_review remain unknown to the matcher.",
     "Nepregledana pravila ne ulaze u matcher."
   ],
   "downloadDate": "2026-11-15T13:13:45.803Z",

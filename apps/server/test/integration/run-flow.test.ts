@@ -316,6 +316,51 @@ it("učitava dve stvarne studije iz DATA_DIR i vraća rezultate bez greške cita
   }
 });
 
+it("clinicaltrials-20 profil izlaže nove stvarne studije kroz API uz unknown pravila", async () => {
+  const app = createApp({
+    config: parseConfig({
+      NODE_ENV: "test",
+      DEMO_MODE: "true",
+      DATASET_PROFILE: "clinicaltrials-20",
+    }),
+  });
+  try {
+    const result = await app.inject({
+      method: "POST",
+      url: "/api/runs",
+      payload: {
+        profileText: "Žena, 45 godina, dijabetes tip 2.",
+      },
+    });
+    const response = result.json();
+    expect(result.statusCode, result.body).toBe(200);
+    expect(response.meta).toMatchObject({
+      dataSynthetic: false,
+      dataVersion: expect.stringMatching(/^ctg-t2d-20-/u),
+      demoMode: true,
+    });
+    const newStudy = response.results.find(
+      (trial: { trialId: string }) =>
+        !["NCT07409714", "NCT07924436"].includes(trial.trialId),
+    );
+    expect(newStudy).toBeDefined();
+    expect(newStudy.criteria.length).toBeGreaterThan(0);
+    expect(
+      newStudy.criteria.every(
+        (criterion: { status: string }) => criterion.status === "unknown",
+      ),
+    ).toBe(true);
+    expect(
+      newStudy.criteria.every(
+        (criterion: { citation: { quote: string } }) =>
+          criterion.citation.quote.length > 0,
+      ),
+    ).toBe(true);
+  } finally {
+    await app.close();
+  }
+});
+
 it("003: isti ključ deli aktivan start i odbija promenjeno telo", async () => {
   const app = createApp();
   try {

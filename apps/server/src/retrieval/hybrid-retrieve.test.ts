@@ -139,6 +139,7 @@ describe("hibridni retrieval", () => {
 
     expect(retrieval.trials[0]?.criteria).toHaveLength(2);
     expect(retrieval.sourceIds).toEqual(["T-X#inc-1"]);
+    expect(retrieval.passageIds).toEqual(["T-X#inc-1"]);
     expect(retrieval.contextText).not.toContain("HbA1c at least 10%");
     expect(retrieval.retrievalTrace?.retrievalMode).toBe("hybrid");
     expect(retrieval.retrievalTrace?.vectorHitCount).toBeGreaterThan(0);

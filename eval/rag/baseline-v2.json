@@ -1,0 +1,732 @@
+{
+  "baselineId": "mini-search-rag-retrieval-v2",
+  "retrievalImplementation": "current MiniSearch retrieveTrials",
+  "datasetId": "rag-retrieval-v2",
+  "corpusSnapshotId": "rag-corpus-v0-dev",
+  "annotationStatus": "pending_human_review",
+  "annotationMethod": "Human review by JG on 2026-11-15. Conditional labels were resolved against the frozen local corpus snapshot. RAG-001/RAG-002 and behavior expectations RAG-003/RAG-004 are confirmed. Other planned patterns remain description-only. Relevance rules are independent of retrieval output.",
+  "gitCommit": "unavailable",
+  "limits": {
+    "maxCandidates": 5,
+    "maxSnippets": 5,
+    "maxContextChars": 12000,
+    "maxMetricK": 2
+  },
+  "corpus": [
+    {
+      "path": "data/fixtures/trials.json",
+      "version": "synthetic-trials-v1",
+      "sha256": "f368d13bff16dc5ad69636513281ed18ea8601978a83d6c3c000dd4b0cde4950",
+      "observedSha256": "f368d13bff16dc5ad69636513281ed18ea8601978a83d6c3c000dd4b0cde4950"
+    },
+    {
+      "path": "data/rule_sets/studies_2_approved_20261115_1539/trials.json",
+      "version": "rules-0b88455b00ae",
+      "sha256": "4b39b15a92b3ce20591c70ed54bb60e81a453c10b2c3a5dd2052b00ec3c8a2e5",
+      "observedSha256": "4b39b15a92b3ce20591c70ed54bb60e81a453c10b2c3a5dd2052b00ec3c8a2e5"
+    }
+  ],
+  "cases": [
+    {
+      "caseId": "RAG-001",
+      "language": "sr",
+      "kind": "ranking",
+      "split": "dev",
+      "labelStatus": "confirmed",
+      "metricsEligible": true,
+      "behaviorPassed": null,
+      "retrievedTrialIds": [
+        "NCT07924436",
+        "NCT07409714",
+        "T-C",
+        "T-A",
+        "T-B"
+      ],
+      "retrievedPassageIds": [
+        "NCT07924436#inc-5",
+        "NCT07409714#inc-1",
+        "T-C#inc-2",
+        "NCT07409714#inc-3"
+      ],
+      "contextChars": 305,
+      "latencyMs": 14.993600000000015,
+      "deterministic": true,
+      "citationsValid": true,
+      "studyMetrics": {
+        "at1": {
+          "recall": 1,
+          "precision": 1,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        },
+        "at2": {
+          "recall": 1,
+          "precision": 0.5,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        }
+      },
+      "passageMetrics": {
+        "at1": {
+          "recall": 0.5,
+          "precision": 1,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        },
+        "at2": {
+          "recall": 0.5,
+          "precision": 0.5,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at3": {
+          "recall": 0.5,
+          "precision": 0.3333333333333333,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at4": {
+          "recall": 0.5,
+          "precision": 0.25,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at5": {
+          "recall": 0.5,
+          "precision": 0.2,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at6": {
+          "recall": 0.5,
+          "precision": 0.16666666666666666,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at7": {
+          "recall": 0.5,
+          "precision": 0.14285714285714285,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at8": {
+          "recall": 0.5,
+          "precision": 0.125,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at9": {
+          "recall": 0.5,
+          "precision": 0.1111111111111111,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at10": {
+          "recall": 0.5,
+          "precision": 0.1,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at11": {
+          "recall": 0.5,
+          "precision": 0.09090909090909091,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at12": {
+          "recall": 0.5,
+          "precision": 0.08333333333333333,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at13": {
+          "recall": 0.5,
+          "precision": 0.07692307692307693,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at14": {
+          "recall": 0.5,
+          "precision": 0.07142857142857142,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at15": {
+          "recall": 0.5,
+          "precision": 0.06666666666666667,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at16": {
+          "recall": 0.5,
+          "precision": 0.0625,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at17": {
+          "recall": 0.5,
+          "precision": 0.058823529411764705,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at18": {
+          "recall": 0.5,
+          "precision": 0.05555555555555555,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at19": {
+          "recall": 0.5,
+          "precision": 0.05263157894736842,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at20": {
+          "recall": 0.5,
+          "precision": 0.05,
+          "reciprocalRank": 1,
+          "ndcg": 0.6131471927654584
+        }
+      }
+    },
+    {
+      "caseId": "RAG-002",
+      "language": "en",
+      "kind": "ranking",
+      "split": "test",
+      "labelStatus": "confirmed",
+      "metricsEligible": true,
+      "behaviorPassed": null,
+      "retrievedTrialIds": [
+        "NCT07409714",
+        "NCT07924436",
+        "T-C",
+        "T-A",
+        "T-B"
+      ],
+      "retrievedPassageIds": [
+        "NCT07924436#inc-5",
+        "NCT07409714#inc-1",
+        "T-C#inc-2",
+        "NCT07409714#inc-3"
+      ],
+      "contextChars": 305,
+      "latencyMs": 1.0762000000000853,
+      "deterministic": true,
+      "citationsValid": true,
+      "studyMetrics": {
+        "at1": {
+          "recall": 1,
+          "precision": 1,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        },
+        "at2": {
+          "recall": 1,
+          "precision": 0.5,
+          "reciprocalRank": 1,
+          "ndcg": 1
+        }
+      },
+      "passageMetrics": {
+        "at1": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at2": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at3": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at4": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at5": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at6": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at7": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at8": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at9": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at10": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at11": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at12": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at13": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at14": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at15": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at16": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at17": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at18": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at19": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        },
+        "at20": {
+          "recall": 0,
+          "precision": 0,
+          "reciprocalRank": 0,
+          "ndcg": 0
+        }
+      }
+    },
+    {
+      "caseId": "RAG-003",
+      "language": "sr",
+      "kind": "behavior",
+      "split": "dev",
+      "labelStatus": "confirmed",
+      "metricsEligible": false,
+      "behaviorPassed": true,
+      "retrievedTrialIds": [
+        "NCT07924436",
+        "NCT07409714",
+        "T-C",
+        "T-A",
+        "T-B"
+      ],
+      "retrievedPassageIds": [
+        "NCT07924436#inc-5",
+        "NCT07409714#inc-1",
+        "T-C#inc-2",
+        "NCT07409714#inc-3"
+      ],
+      "contextChars": 305,
+      "latencyMs": 0.7218000000000302,
+      "deterministic": true,
+      "citationsValid": true,
+      "studyMetrics": null,
+      "passageMetrics": null
+    },
+    {
+      "caseId": "RAG-004",
+      "language": "none",
+      "kind": "behavior",
+      "split": "test",
+      "labelStatus": "confirmed",
+      "metricsEligible": false,
+      "behaviorPassed": true,
+      "retrievedTrialIds": [
+        "NCT07409714",
+        "NCT07924436",
+        "T-A",
+        "T-B",
+        "T-C"
+      ],
+      "retrievedPassageIds": [
+        "NCT07409714#inc-1",
+        "NCT07409714#inc-2",
+        "NCT07409714#inc-3",
+        "NCT07409714#inc-4",
+        "NCT07409714#inc-5"
+      ],
+      "contextChars": 301,
+      "latencyMs": 0.4096000000000686,
+      "deterministic": true,
+      "citationsValid": true,
+      "studyMetrics": null,
+      "passageMetrics": null
+    }
+  ],
+  "aggregate": {
+    "dev": {
+      "studies": {
+        "at1": {
+          "recall": 1,
+          "precision": 1,
+          "mrr": 1,
+          "ndcg": 1
+        },
+        "at2": {
+          "recall": 1,
+          "precision": 0.5,
+          "mrr": 1,
+          "ndcg": 1
+        }
+      },
+      "passages": {
+        "at1": {
+          "recall": 0.5,
+          "precision": 1,
+          "mrr": 1,
+          "ndcg": 1
+        },
+        "at2": {
+          "recall": 0.5,
+          "precision": 0.5,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at3": {
+          "recall": 0.5,
+          "precision": 0.3333333333333333,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at4": {
+          "recall": 0.5,
+          "precision": 0.25,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at5": {
+          "recall": 0.5,
+          "precision": 0.2,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at6": {
+          "recall": 0.5,
+          "precision": 0.16666666666666666,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at7": {
+          "recall": 0.5,
+          "precision": 0.14285714285714285,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at8": {
+          "recall": 0.5,
+          "precision": 0.125,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at9": {
+          "recall": 0.5,
+          "precision": 0.1111111111111111,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at10": {
+          "recall": 0.5,
+          "precision": 0.1,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at11": {
+          "recall": 0.5,
+          "precision": 0.09090909090909091,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at12": {
+          "recall": 0.5,
+          "precision": 0.08333333333333333,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at13": {
+          "recall": 0.5,
+          "precision": 0.07692307692307693,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at14": {
+          "recall": 0.5,
+          "precision": 0.07142857142857142,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at15": {
+          "recall": 0.5,
+          "precision": 0.06666666666666667,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at16": {
+          "recall": 0.5,
+          "precision": 0.0625,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at17": {
+          "recall": 0.5,
+          "precision": 0.058823529411764705,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at18": {
+          "recall": 0.5,
+          "precision": 0.05555555555555555,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at19": {
+          "recall": 0.5,
+          "precision": 0.05263157894736842,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        },
+        "at20": {
+          "recall": 0.5,
+          "precision": 0.05,
+          "mrr": 1,
+          "ndcg": 0.6131471927654584
+        }
+      }
+    },
+    "test": {
+      "studies": {
+        "at1": {
+          "recall": 1,
+          "precision": 1,
+          "mrr": 1,
+          "ndcg": 1
+        },
+        "at2": {
+          "recall": 1,
+          "precision": 0.5,
+          "mrr": 1,
+          "ndcg": 1
+        }
+      },
+      "passages": {
+        "at1": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at2": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at3": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at4": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at5": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at6": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at7": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at8": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at9": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at10": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at11": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at12": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at13": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at14": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at15": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at16": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at17": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at18": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at19": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        },
+        "at20": {
+          "recall": 0,
+          "precision": 0,
+          "mrr": 0,
+          "ndcg": 0
+        }
+      }
+    }
+  },
+  "metricEligibility": {
+    "includedCaseIds": [
+      "RAG-001",
+      "RAG-002"
+    ],
+    "excludedCaseIds": [
+      "RAG-003",
+      "RAG-004"
+    ],
+    "reason": "Metrike rangiranja računaju se samo za ranking slučajeve sa potvrđenim oznakama.",
+    "cutoffs": [
+      1,
+      2
+    ],
+    "passageCutoffs": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20
+    ]
+  },
+  "checks": {
+    "allContextsWithinLimit": true,
+    "allCitationsValid": true,
+    "deterministicAcrossRepeatedRuns": true
+  }
+}

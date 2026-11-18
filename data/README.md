@@ -24,32 +24,38 @@ Novi import, split i pravila za ljudski rad su:
 
 Primenjene transformacije: originalni JSON je sačuvan zasebno po studiji; postojeći `data:prepare` normalizovao je naslove, uslove, sažetke, status i podržana strukturisana polja; `data:split` je sačuvao originalni eligibility tekst i doslovne citate uz postojeće `#unsplit-1`/`#inc-N`/`#exc-N` ID-jeve; `rules:draft` je napravio postojeći nacrt bez odobravanja. Nije menjana medicinska vrednost, izvorni tekst, prethodni odobreni paket, matcher, RAG algoritam ili indeks.
 
-| NCT ID | Status | Tekstualni kriterijumi/pravila | Strukturisana auto-proverljiva polja | Obrada |
-| --- | --- | ---: | ---: | --- |
-| NCT05439226 | RECRUITING | 17, svi `manual_review` | 2 | pending human review |
-| NCT05838287 | RECRUITING | 21, svi `manual_review` | 2 | pending human review |
-| NCT06118931 | RECRUITING | 16, svi `manual_review` | 1 | pending human review |
-| NCT06251323 | RECRUITING | 5, svi `manual_review` | 1 | pending human review; eligibility je na nivou klinike |
-| NCT06271382 | RECRUITING | 11, svi `manual_review` | 1 | pending human review |
-| NCT06296485 | RECRUITING | 14, svi `manual_review` | 1 | pending human review |
-| NCT06449833 | RECRUITING | 16, svi `manual_review` | 2 | pending human review |
-| NCT06852950 | RECRUITING | 18, svi `manual_review` | 1 | pending human review; mešovita T1D/T2D populacija |
-| NCT06862739 | RECRUITING | 17, svi `manual_review` | 2 | pending human review |
-| NCT06875193 | RECRUITING | 29, svi `manual_review` | 1 | pending human review |
-| NCT06888050 | RECRUITING | 16, svi `manual_review` | 2 | pending human review |
-| NCT07121504 | RECRUITING | 18, svi `manual_review` | 1 | pending human review |
-| NCT07350967 | RECRUITING | 23, svi `manual_review` | 2 | pending human review |
-| NCT07409714 | RECRUITING | 21 pravila: 17 `manual_review`, 4 `auto` | — | postojeći odobreni paket; neizmenjen |
-| NCT07574138 | RECRUITING | 13, svi `manual_review` | 0 | pending human review |
-| NCT07676773 | RECRUITING | 19, svi `manual_review` | 2 | pending human review |
-| NCT07767331 | RECRUITING | 3, svi `manual_review` | 1 | pending human review |
-| NCT07775846 | RECRUITING | 25, svi `manual_review` | 2 | pending human review |
-| NCT07919236 | RECRUITING | 19, svi `manual_review` | 2 | pending human review |
-| NCT07924436 | RECRUITING | 9 pravila: 6 `manual_review`, 3 `auto` | — | postojeći odobreni paket; neizmenjen |
+Napomena za tabelu: statusi „pending human review“ u koloni obrada odnose se na semantičko odobrenje strukturisanih matcher pravila, ne na vernost izvornog teksta studije. Jelena je sadržaj ručno proverila prema originalima, prema potvrdi vlasnika projekta od 2026-11-17.
 
-Sažetak obrade: 20 jedinstvenih stvarnih studija, 18 novih i 2 već odobrene; 300 novih tekstualnih kriterijuma čeka ljudski pregled, a 26 dodatnih strukturisanih polja može se deterministički proveriti bez ljudskog odobrenja. `data:split` je obradio svih 18 bez tehničkih problema i bez `needs_manual_split`; citati su doslovni podnizovi originalnog eligibility teksta. Dva postojeća paketa sadrže ukupno 30 odobrenih pravila, od kojih je 7 `auto`, a 23 ostaju `manual_review`.
+| NCT ID      | Status     |           Tekstualni kriterijumi/pravila | Strukturisana auto-proverljiva polja | Obrada                                                                        |
+| ----------- | ---------- | ---------------------------------------: | -----------------------------------: | ----------------------------------------------------------------------------- |
+| NCT05439226 | RECRUITING |                  17, svi `manual_review` |                                    2 | izvorni tekst ručno upoređen sa originalnom studijom; pravila `manual_review` |
+| NCT05838287 | RECRUITING |                  21, svi `manual_review` |                                    2 | pending human review                                                          |
+| NCT06118931 | RECRUITING |                  16, svi `manual_review` |                                    1 | pending human review                                                          |
+| NCT06251323 | RECRUITING |                   5, svi `manual_review` |                                    1 | pending human review; eligibility je na nivou klinike                         |
+| NCT06271382 | RECRUITING |                  11, svi `manual_review` |                                    1 | pending human review                                                          |
+| NCT06296485 | RECRUITING |                  14, svi `manual_review` |                                    1 | pending human review                                                          |
+| NCT06449833 | RECRUITING |                  16, svi `manual_review` |                                    2 | pending human review                                                          |
+| NCT06852950 | RECRUITING |                  18, svi `manual_review` |                                    1 | pending human review; mešovita T1D/T2D populacija                             |
+| NCT06862739 | RECRUITING |                  17, svi `manual_review` |                                    2 | pending human review                                                          |
+| NCT06875193 | RECRUITING |                  29, svi `manual_review` |                                    1 | pending human review                                                          |
+| NCT06888050 | RECRUITING |                  16, svi `manual_review` |                                    2 | pending human review                                                          |
+| NCT07121504 | RECRUITING |                  18, svi `manual_review` |                                    1 | pending human review                                                          |
+| NCT07350967 | RECRUITING |                  23, svi `manual_review` |                                    2 | pending human review                                                          |
+| NCT07409714 | RECRUITING | 21 pravila: 17 `manual_review`, 4 `auto` |                                    — | postojeći odobreni paket; neizmenjen                                          |
+| NCT07574138 | RECRUITING |                  13, svi `manual_review` |                                    0 | pending human review                                                          |
+| NCT07676773 | RECRUITING |                  19, svi `manual_review` |                                    2 | pending human review                                                          |
+| NCT07767331 | RECRUITING |                   3, svi `manual_review` |                                    1 | pending human review                                                          |
+| NCT07775846 | RECRUITING |                  25, svi `manual_review` |                                    2 | pending human review                                                          |
+| NCT07919236 | RECRUITING |                  19, svi `manual_review` |                                    2 | pending human review                                                          |
+| NCT07924436 | RECRUITING |   9 pravila: 6 `manual_review`, 3 `auto` |                                    — | postojeći odobreni paket; neizmenjen                                          |
 
-Postojeći `loadRagCorpus` validaciono učitava 20 jedinstvenih studija kada se eksplicitno koriste koreni `rule_sets/studies_2_approved_20261115_1539/` i `review_candidates/studies_20_2026-11-16/import/`. Novi kandidati nisu dodati podrazumevanom `data/trials/` ili `DATA_DIR` toku, pa DEMO i matcher ostaju nepromenjeni. Ovo je provera kompatibilnosti loader-a, ne izgrađen ili evaluiran RAG indeks. Postojeći RAG dokument-builder ne koristi originalni `eligibilityText`/`sources`, pa novih 300 izdvojenih kriterijuma još nema u passage pretrazi. Puna kriterijumska pretraga i matcher upotreba čekaju podršku za pending passages i ljudski pregled/odobrenje.
+Sažetak obrade: 20 jedinstvenih stvarnih studija, 18 novih i 2 ranije odobrene. Vlasnik projekta je 2026-11-17 potvrdio da je Jelena ručno uporedila stvarne studije i kriterijume sa originalnim studijama; izvorni sadržaj ovih studija zato se tretira kao ručno proveren, a ne kao neproveren. Za dve ranije odobrene studije postoje i hash-povezani `review-report.json` zapisi. Ova potvrda vernosti izvornom tekstu nije automatsko odobrenje strukturisanih matcher pravila: 300 novih tekstualnih kriterijuma ostaju `manual_review`, a 26 strukturisanih polja može se deterministički proveriti bez ljudskog odobrenja kriterijumske semantike. `data:split` je obradio svih 18 bez tehničkih problema i bez `needs_manual_split`; citati su doslovni podnizovi originalnog eligibility teksta.
+
+ClinicalTrials.gov [uslovi korišćenja](https://clinicaltrials.gov/terms-conditions) potvrđuju dostupnost podataka bez naknade, uz obavezu atribucije, održavanja ažurnosti, prikaza datuma obrade i opisa izmena; uslovi takođe upozoravaju da mogu važiti prava trećih strana. Ovo nije blanket licenca niti pravna potvrda za svako polje. Evidentirani per-study endpointi, datum preuzimanja i hash potvrđuju poreklo zapisa, ali tačan query/filter/paginacija i potpunost kohorte još nisu evidentirani. Za primer, [zvanični NCT07409714 zapis](https://clinicaltrials.gov/study/NCT07409714) je primarni izvor koji treba koristiti pri proveri ažurnosti. Originalni tekst koji je Jelena proverila nije samim tim odobren matcher rule; proces per-kriterijumskog odobravanja je opisan u `eval/rag/proposal-review-guide.md`.
+
+Nezavisna granica: per-record zvanični API URL, datum i hash dokumentuju poreklo pojedinačnih zapisa, ali ne dokazuju da je izabrana kohorta potpuna u odnosu na query/filter/pagination. ClinicalTrials.gov uslovi i moguća prava trećih strana su navedeni; pravno/licencno odobrenje se ne pretpostavlja. Ne menjati `manual_review` status bez hash-povezanog pregleda/odobrenja konkretnog matcher pravila.
+
+Za eksplicitni demo izbor `DATASET_PROFILE=clinicaltrials-20`, `loadRagCorpus` spaja hash-pinned paket dve ranije odobrene studije sa `review/studies_18_split_2026-11-16.json`. Loader validira tačno 20 jedinstvenih NCT zapisa; 18 dodatih studija sadrže 300 tekstualnih kriterijuma sa izvornim quote-ovima, svi `manual_review`/`raw_extracted`. RAG builder pravi 20 study dokumenata i 330 passage dokumenata (300 pending + 30 iz odobrenog paketa); regression test proverava broj, stabilne ID-jeve i da se svaka studija može dohvatiti odgovarajućim terminom. U ovom bezbednom demo profilu se koristi lokalni lexical MiniSearch nad svim dokumentima; nema plaćenih embedding poziva niti tvrdnje da postoji persistentni vektorski indeks. Ovaj profil nije podrazumevan: fixture režim ostaje nepromenjen. API vraća nove studije, a pending kriterijumi imaju `unknown` status i citate; browser potvrda pripada Playwright koraku. Demo izbor ne odobrava nijedno dodatno matcher pravilo.
 
 ## Faza 2: lokalni uvoz i ljudski pregled
 

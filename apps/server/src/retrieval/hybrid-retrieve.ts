@@ -27,7 +27,10 @@ import {
 import type { PersistentVectorStore, VectorHit } from "./vector-store.js";
 
 type RankedCandidate = { id: string; score: number };
-export type RerankCandidate = Pick<RagDocument, "id" | "trialId" | "kind" | "text">;
+export type RerankCandidate = Pick<
+  RagDocument,
+  "id" | "trialId" | "kind" | "text"
+>;
 
 export interface CandidateReranker {
   readonly id: "deterministic" | "gemini";
@@ -90,7 +93,9 @@ function deterministicReranker(): CandidateReranker {
   return {
     id: "deterministic",
     async rerank(query, candidates) {
-      const terms = new Set(query.toLocaleLowerCase("en").match(/[\p{Letter}\p{Number}]+/gu) ?? []);
+      const terms = new Set(
+        query.toLocaleLowerCase("en").match(/[\p{Letter}\p{Number}]+/gu) ?? [],
+      );
       return candidates
         .map((candidate) => {
           const text = new Set(
@@ -178,7 +183,9 @@ export class HybridTrialRetriever {
     const allowedTrials = metadata.trials.sort((left, right) =>
       left.trialId.localeCompare(right.trialId, "en"),
     );
-    const allowedTrialIds = new Set(allowedTrials.map((trial) => trial.trialId));
+    const allowedTrialIds = new Set(
+      allowedTrials.map((trial) => trial.trialId),
+    );
     const queries = buildRetrievalQueries(profile, options.derived);
     const queryTexts = queries.text
       .split(";")
@@ -343,40 +350,41 @@ export class HybridTrialRetriever {
     ]);
 
     const relevanceEligible = (trialId: string) => {
-      const hasLexicalEvidence =
-        this.documents.some(
-          (document) =>
-            document.trialId === trialId &&
-            lexicalScores.has(document.id),
-        );
+      const hasLexicalEvidence = this.documents.some(
+        (document) =>
+          document.trialId === trialId && lexicalScores.has(document.id),
+      );
       const hasVectorEvidence = vectorHits.some(
         (hit) => hit.trialId === trialId,
       );
       return hasLexicalEvidence || hasVectorEvidence;
     };
-    const rrfTrials = queryTexts.length === 0
-      ? allowedTrials.map((trial, index) => ({
-          id: trial.trialId,
-          score: -index,
-        }))
-      : [...trialScores]
-      .filter(
-        ([trialId]) => allowedTrialIds.has(trialId) && relevanceEligible(trialId),
-      )
-      .map(([id, score]) => ({ id, score }))
-      .sort(compareRanked);
+    const rrfTrials =
+      queryTexts.length === 0
+        ? allowedTrials.map((trial, index) => ({
+            id: trial.trialId,
+            score: -index,
+          }))
+        : [...trialScores]
+            .filter(
+              ([trialId]) =>
+                allowedTrialIds.has(trialId) && relevanceEligible(trialId),
+            )
+            .map(([id, score]) => ({ id, score }))
+            .sort(compareRanked);
     const candidateTrials = rrfTrials.slice(
       0,
       Math.min(RAG_MAX_RERANK_CANDIDATES, options.maxCandidates),
     );
 
-    const passageScores = queryTexts.length === 0
-      ? new Map(
-          this.documents
-            .filter((document) => document.kind === "passage")
-            .map((document, index) => [document.id, -index]),
-        )
-      : reciprocalRankFusion([...lexicalPassage, ...vectorPassage]);
+    const passageScores =
+      queryTexts.length === 0
+        ? new Map(
+            this.documents
+              .filter((document) => document.kind === "passage")
+              .map((document, index) => [document.id, -index]),
+          )
+        : reciprocalRankFusion([...lexicalPassage, ...vectorPassage]);
     const candidateIds = new Set(candidateTrials.map(({ id }) => id));
     const passageCandidates = [...passageScores]
       .filter(([id]) => {
@@ -398,15 +406,17 @@ export class HybridTrialRetriever {
         Math.max(0, RAG_MAX_RERANK_CANDIDATES - candidateTrials.length),
       );
     const rerankCandidates = [
-      ...candidateTrials.map(({ id }) => this.documents.find(
-        (document) => document.kind === "study" && document.trialId === id,
-      )),
+      ...candidateTrials.map(({ id }) =>
+        this.documents.find(
+          (document) => document.kind === "study" && document.trialId === id,
+        ),
+      ),
       ...passageCandidates.map(({ id }) => this.documentsById.get(id)),
     ].filter((document): document is RagDocument => document !== undefined);
     let rerankingState: RetrievalTrace["reranking"] =
       options.rerank === false || queryTexts.length === 0
-      ? "disabled"
-      : this.reranker.id;
+        ? "disabled"
+        : this.reranker.id;
     let rankedTrials = candidateTrials;
     let rankedPassages = passageCandidates;
     if (
@@ -428,11 +438,13 @@ export class HybridTrialRetriever {
         rankedTrials = candidateTrials
           .map(({ id, score }) => ({
             id,
-            score: scores.get(
-              this.documents.find(
-                (document) => document.kind === "study" && document.trialId === id,
-              )?.id ?? "",
-            ) ?? score,
+            score:
+              scores.get(
+                this.documents.find(
+                  (document) =>
+                    document.kind === "study" && document.trialId === id,
+                )?.id ?? "",
+              ) ?? score,
           }))
           .sort(compareRanked);
         rankedPassages = passageCandidates
@@ -463,6 +475,7 @@ export class HybridTrialRetriever {
 
     const snippets: string[] = [];
     const sourceIds: string[] = [];
+    const passageIds: string[] = [];
     let contextLength = 0;
     for (const { id } of rankedPassages) {
       if (snippets.length >= options.maxSnippets) break;
@@ -473,12 +486,14 @@ export class HybridTrialRetriever {
       if (contextLength + addedLength > options.maxContextChars) continue;
       snippets.push(snippet);
       sourceIds.push(document.sourceId);
+      passageIds.push(id);
       contextLength += addedLength;
     }
 
     return {
       trials: selectedTrials,
       sourceIds,
+      passageIds,
       sourceTexts,
       contextText: snippets.join("\n"),
       retrievalTrace: {

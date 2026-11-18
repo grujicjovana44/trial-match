@@ -28,6 +28,9 @@ const ConfigSchema = z
       .default("gemini-3.5-flash-lite"),
     GEMINI_API_KEY: z.string().min(1).optional(),
     DATA_DIR: z.string().min(1).default("data/fixtures"),
+    DATASET_PROFILE: z
+      .enum(["fixtures", "clinicaltrials-20"])
+      .default("fixtures"),
     RAG_INDEX_PATH: z.string().min(1).default("data/index/rag.sqlite"),
     RAG_RERANKER: z
       .enum(["deterministic", "gemini", "disabled"])

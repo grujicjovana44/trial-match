@@ -133,7 +133,7 @@ const ManualCriterionSchema = z
     trialId: z.string().min(1),
     kind: z.enum(["inclusion", "exclusion"]),
     checkability: z.literal("manual_review"),
-    origin: z.enum(["structured_field", "compiled_reviewed"]),
+    origin: z.enum(["structured_field", "compiled_reviewed", "raw_extracted"]),
     text: z.string().min(1),
     sourceId: z.string().min(1),
     sourceQuote: z.string().min(1),

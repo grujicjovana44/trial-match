@@ -28,6 +28,7 @@ import {
 import { verifyCitation } from "../citations/verify.js";
 import { evaluateCriteria } from "../matcher/evaluate-criteria.js";
 import { retrieveTrials } from "../retrieval/retrieve.js";
+import { loadRagCorpus } from "../retrieval/corpus.js";
 import type {
   RetrievedContext,
   RetrievalOptions,
@@ -152,6 +153,39 @@ export class TrialMatchService {
     this.vectorStore = undefined;
   }
   async initialize(): Promise<void> {
+    let realCorpusTrials: Trial[] | undefined;
+    if (this.config.DATASET_PROFILE === "clinicaltrials-20") {
+      const corpus = await loadRagCorpus([
+        "data/rule_sets/studies_2_approved_20261115_1539",
+        "data/review_candidates/studies_20_2026-11-16/review",
+      ]);
+      if (corpus.trials.length !== 20)
+        throw new Error(
+          `ClinicalTrials.gov demo korpus mora sadržati 20 jedinstvenih studija; učitano ${corpus.trials.length}.`,
+        );
+      realCorpusTrials = corpus.trials;
+      this.manifest = DatasetManifestSchema.parse({
+        name: "ClinicalTrials.gov T2D demo korpus",
+        version: `ctg-t2d-20-${corpus.sha256.slice(0, 12)}`,
+        date: null,
+        origin:
+          "Dve ranije hash-pinned studije i 18 pojedinačnih ClinicalTrials.gov API v2 zapisa; izvori i hash-evi su u data/raw/studies_20_api_provenance_2026-11-16.json.",
+        synthetic: false,
+        license:
+          "ClinicalTrials.gov Terms and Conditions: https://clinicaltrials.gov/terms-conditions (atribucija; mogu važiti prava trećih strana; ne tvrdi se zasebna licenca).",
+        transformations:
+          "Validirani odobreni paket od dve studije spojen je sa 18 validiranih split nacrta; retrieval koristi naslov/uslove/sažetak i 300 izvornih kriterijumskih citata; neodobrena pravila ostaju manual_review.",
+        limitations: [
+          "Korpus sadrži 20 izabranih zapisa, ne potpun rezultat registry pretrage.",
+          "Samo dve studije imaju hash-pinned matcher approval; kriterijumi ostalih 18 ostaju manual_review/unknown.",
+          "Izdvojeni eligibility kriterijumi dostupni su za RAG citiranje, ali ne daju automatski matcher podobnost.",
+          "Mogu važiti prava trećih strana.",
+        ],
+        downloadedCount: 20,
+        includedCount: 20,
+        sourceHash: corpus.sha256,
+      });
+    }
     if (!this.manifest)
       this.manifest = DatasetManifestSchema.parse(
         JSON.parse(
@@ -172,6 +206,7 @@ export class TrialMatchService {
       throw new Error("Licenca korpusa nije potvrđena za upotrebu.");
     const trials =
       this.trials ??
+      realCorpusTrials ??
       TrialSchema.array().parse(
         this.options.trials ?? (await loadTrials(this.config.DATA_DIR)),
       );
@@ -190,6 +225,17 @@ export class TrialMatchService {
   }
   private async initializeRetriever(trials: Trial[]): Promise<void> {
     if (this.retriever) return;
+    if (
+      this.config.DATASET_PROFILE === "clinicaltrials-20" &&
+      this.config.DEMO_MODE
+    ) {
+      this.retriever = {
+        retrieve: async (profile, corpus, options) =>
+          retrieveTrials(profile, corpus, options),
+      };
+      this.retrievalModeValue = "lexical-only";
+      return;
+    }
     if (this.config.NODE_ENV === "test") {
       this.retriever = {
         retrieve: async (profile, corpus, options) =>
