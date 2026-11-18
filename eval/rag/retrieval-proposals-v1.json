@@ -1,0 +1,74 @@
+{
+  "queueId": "rag-retrieval-proposals-v1",
+  "baseDatasetId": "rag-retrieval-v2",
+  "corpusSnapshotId": "rag-corpus-v0-dev",
+  "reviewStatus": "awaiting_human_review",
+  "cases": [
+    {
+      "caseId": "RAG-P001",
+      "language": "sr",
+      "profile": {
+        "age": 51,
+        "sex": "female",
+        "stated_diagnoses": ["шећерна болест тип 2", "гојазност"]
+      },
+      "relevantTrialIds": ["NCT07924436"],
+      "relevantPassageIds": ["NCT07924436#inc-3", "NCT07924436#inc-5"],
+      "rationale": "PREDLOG, nije adjudikovan: proveriti ćirilične sinonime prema engleskom izvoru i pravilu iz RAG-001. Potvrditi da oba odlomka, a ne samo study, odgovaraju oboma pojmovima.",
+      "relevanceRule": "Predlog: study relevant ako obuhvata T2D i gojaznost kao ciljnu populaciju/stratum; passage relevant ako direktno potkrepljuje te pojmove prema istom pravilu kao RAG-001.",
+      "labelStatus": "proposed",
+      "reviewer": "TODO",
+      "reviewedAt": "TODO",
+      "kind": "ranking",
+      "split": "dev"
+    },
+    {
+      "caseId": "RAG-P002",
+      "language": "en",
+      "profile": {
+        "age": 20,
+        "hba1c": { "value": 9.8, "unit": "%" },
+        "creatinine": { "value": 2.1, "unit": "mg/dL" },
+        "stated_diagnoses": ["type 2 diabetes", "renal function"]
+      },
+      "relevantTrialIds": ["NCT07409714"],
+      "relevantPassageIds": ["NCT07409714#exc-4", "NCT07409714#exc-5"],
+      "rationale": "PREDLOG, nije adjudikovan: proveriti numerički eGFR prag i albuminuriju u kontekstu uzrasta i T2D; vrednost serumskog kreatinina nije ekvivalent eGFR-u i ne sme se tako tumačiti.",
+      "relevanceRule": "Predlog: study relevant za T2D i bubrežnu funkciju; passage relevant samo ako neposredno govori o renalnoj funkciji/oštećenju ili pragovima prema RAG-002. Numerički profilni nalaz sam ne dokazuje eGFR.",
+      "labelStatus": "proposed",
+      "reviewer": "TODO",
+      "reviewedAt": "TODO",
+      "kind": "ranking",
+      "split": "dev"
+    },
+    {
+      "caseId": "RAG-P003",
+      "language": "en",
+      "profile": { "stated_diagnoses": ["celiac disease"] },
+      "relevantTrialIds": [],
+      "relevantPassageIds": [],
+      "rationale": "PREDLOG negativnog slučaja, nije adjudikovan: pregledati svih pet studija frozen korpusa i potvrditi da nijedna ne pokriva celijakiju. Prazne liste su predložene oznake, ne potvrđen negativan rezultat.",
+      "relevanceRule": "Predlog: relevantna je studija čiji naslov, stanja, sažetak ili cilj obuhvata celijakiju; relevantan passage mora je direktno potkrepljivati.",
+      "labelStatus": "proposed",
+      "reviewer": "TODO",
+      "reviewedAt": "TODO",
+      "kind": "ranking",
+      "split": "test"
+    },
+    {
+      "caseId": "RAG-P004",
+      "language": "none",
+      "profile": { "age": 22 },
+      "relevantTrialIds": [],
+      "relevantPassageIds": [],
+      "rationale": "PREDLOG nepotpunog profila, nije adjudikovan: proveriti da retrieval ne pretvara uzrast u dijagnozu i da unknown ostaje odgovornost matchera. Potvrditi ponašanje prema ovom snapshot-u.",
+      "relevanceRule": "Predlog behavior slučaja: bez pretraživog kliničkog pojma retrieval treba da koristi deterministički fallback i ne filtrira studije po uzrastu; relevantnost/rangiranje se ne boduje.",
+      "labelStatus": "proposed",
+      "reviewer": "TODO",
+      "reviewedAt": "TODO",
+      "kind": "behavior",
+      "split": "test",
+      "behaviorExpectation": "stable_fallback_order"
+    }
+  ]
+}

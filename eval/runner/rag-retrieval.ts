@@ -14,7 +14,7 @@ const CorpusSnapshotSchema = z
   })
   .strict();
 
-const RetrievalCaseSchema = z
+export const RetrievalCaseSchema = z
   .object({
     caseId: z.string().min(1),
     language: z.enum(["sr", "en", "none"]),
@@ -36,6 +36,38 @@ const RetrievalCaseSchema = z
       .optional(),
   })
   .strict();
+
+export const RetrievalProposalQueueSchema = z
+  .object({
+    queueId: z.string().min(1),
+    baseDatasetId: z.string().min(1),
+    corpusSnapshotId: z.string().min(1),
+    reviewStatus: z.literal("awaiting_human_review"),
+    cases: z.array(RetrievalCaseSchema).min(1),
+  })
+  .strict()
+  .superRefine((queue, ctx) => {
+    if (
+      new Set(queue.cases.map((item) => item.caseId)).size !==
+      queue.cases.length
+    )
+      ctx.addIssue({
+        code: "custom",
+        message: "ID predloga mora biti jedinstven.",
+      });
+    for (const [index, item] of queue.cases.entries()) {
+      if (
+        item.labelStatus !== "proposed" ||
+        item.reviewer !== "TODO" ||
+        item.reviewedAt !== "TODO"
+      )
+        ctx.addIssue({
+          code: "custom",
+          path: ["cases", index],
+          message: "Review queue sme sadržati samo neodobrene proposed oznake.",
+        });
+    }
+  });
 
 export const RetrievalDatasetSchema = z
   .object({
@@ -176,36 +208,33 @@ export function isMetricEligibleCase(testCase: {
   return testCase.kind === "ranking" && testCase.labelStatus === "confirmed";
 }
 
-export function passageIdsInContext(
-  contextText: string,
-  trialIds: Set<string>,
-  trials: z.infer<typeof TrialSchema>[],
-): string[] {
-  const criteriaBySourceId = new Map(
-    trials
-      .filter((trial) => trialIds.has(trial.trialId))
-      .flatMap((trial) =>
-        trial.criteria.map(
-          (criterion) => [criterion.sourceId, criterion] as const,
-        ),
-      ),
-  );
-  const retrieved: string[] = [];
-  for (const line of contextText.split("\n")) {
-    const separator = line.indexOf(": ");
-    if (separator < 0) continue;
-    const criterion = criteriaBySourceId.get(line.slice(0, separator));
-    if (criterion && !retrieved.includes(criterion.id))
-      retrieved.push(criterion.id);
-  }
-  return retrieved;
-}
-
 function average(values: Array<number | null>): number | null {
   const included = values.filter((value): value is number => value !== null);
   return included.length
     ? included.reduce((sum, value) => sum + value, 0) / included.length
     : null;
+}
+
+export function aggregateRankingMetrics(
+  cases: readonly {
+    metrics: Record<string, RankingMetrics | null> | null;
+  }[],
+  cutoffs: readonly number[],
+) {
+  return Object.fromEntries(
+    cutoffs.map((k) => {
+      const values = cases.map((item) => item.metrics?.[`at${k}`] ?? null);
+      return [
+        `at${k}`,
+        {
+          recall: average(values.map((value) => value?.recall ?? null)),
+          precision: average(values.map((value) => value?.precision ?? null)),
+          mrr: average(values.map((value) => value?.reciprocalRank ?? null)),
+          ndcg: average(values.map((value) => value?.ndcg ?? null)),
+        },
+      ];
+    }),
+  );
 }
 
 export async function buildMiniSearchBaseline(): Promise<void> {
@@ -266,11 +295,7 @@ export async function buildMiniSearchBaseline(): Promise<void> {
     });
     const elapsedMs = performance.now() - started;
     const retrievedTrialIds = result.trials.map((trial) => trial.trialId);
-    const retrievedPassageIds = passageIdsInContext(
-      result.contextText,
-      new Set(retrievedTrialIds),
-      allTrials,
-    );
+    const retrievedPassageIds = result.passageIds;
     const repeated = retrieveTrials(testCase.profile, allTrials, {
       maxCandidates: Math.min(10, allTrials.length),
       maxSnippets: 5,
@@ -316,13 +341,7 @@ export async function buildMiniSearchBaseline(): Promise<void> {
         JSON.stringify(retrievedTrialIds) ===
           JSON.stringify(repeated.trials.map((trial) => trial.trialId)) &&
         JSON.stringify(retrievedPassageIds) ===
-          JSON.stringify(
-            passageIdsInContext(
-              repeated.contextText,
-              new Set(repeated.trials.map((trial) => trial.trialId)),
-              allTrials,
-            ),
-          ),
+          JSON.stringify(repeated.passageIds),
       citationsValid,
       studyMetrics: metricsEligible
         ? Object.fromEntries(
@@ -357,23 +376,15 @@ export async function buildMiniSearchBaseline(): Promise<void> {
     key: "studyMetrics" | "passageMetrics",
     split: "dev" | "test",
   ) => {
-    const cases = caseResults.filter(
-      (item) =>
-        item.metricsEligible && item.split === split && item[key] !== null,
-    );
-    return Object.fromEntries(
-      metricCutoffs.map((k) => {
-        const values = cases.map((item) => item[key]?.[`at${k}`] ?? null);
-        return [
-          `at${k}`,
-          {
-            recall: average(values.map((value) => value?.recall ?? null)),
-            precision: average(values.map((value) => value?.precision ?? null)),
-            mrr: average(values.map((value) => value?.reciprocalRank ?? null)),
-            ndcg: average(values.map((value) => value?.ndcg ?? null)),
-          },
-        ];
-      }),
+    const eligibleCases = caseResults
+      .filter(
+        (item) =>
+          item.metricsEligible && item.split === split && item[key] !== null,
+      )
+      .map((item) => ({ metrics: item[key] }));
+    return aggregateRankingMetrics(
+      eligibleCases,
+      key === "studyMetrics" ? metricCutoffs : passageMetricCutoffs,
     );
   };
   const report = {
@@ -432,9 +443,66 @@ export async function buildMiniSearchBaseline(): Promise<void> {
   console.log(JSON.stringify(report.checks, null, 2));
 }
 
+async function printExistingMiniSearchBaselineSummary(): Promise<void> {
+  const baselinePath = resolve(process.cwd(), "eval/rag/baseline-v2.json");
+  const report = JSON.parse(await readFile(baselinePath, "utf8")) as {
+    baselineId: string;
+    datasetId: string;
+    corpusSnapshotId: string;
+    annotationStatus: string;
+    metricEligibility: { includedCaseIds: string[]; excludedCaseIds: string[] };
+    cases: Array<Record<string, unknown>>;
+    aggregate: Record<string, Record<string, Record<string, unknown>>>;
+    checks: Record<string, boolean>;
+  };
+  const selectMetrics = (value: unknown) => {
+    if (typeof value !== "object" || value === null) return null;
+    const metrics = value as Record<string, unknown>;
+    return Object.fromEntries(
+      ["at1", "at2", "at3", "at5"].flatMap((key) =>
+        key in metrics ? [[key, metrics[key]]] : [],
+      ),
+    );
+  };
+  const selectSplit = (split: Record<string, Record<string, unknown>>) => ({
+    studies: selectMetrics(split.studies),
+    passages: selectMetrics(split.passages),
+  });
+  console.log(
+    JSON.stringify(
+      {
+        baselineId: report.baselineId,
+        datasetId: report.datasetId,
+        corpusSnapshotId: report.corpusSnapshotId,
+        annotationStatus: report.annotationStatus,
+        metricEligibility: report.metricEligibility,
+        cases: report.cases.map((item) => ({
+          caseId: item.caseId,
+          labelStatus: item.labelStatus,
+          retrievedTrialIds: item.retrievedTrialIds,
+          retrievedPassageIds: item.retrievedPassageIds,
+          studyMetrics: selectMetrics(item.studyMetrics),
+          passageMetrics: selectMetrics(item.passageMetrics),
+        })),
+        aggregate: Object.fromEntries(
+          Object.entries(report.aggregate).map(([split, value]) => [
+            split,
+            selectSplit(value),
+          ]),
+        ),
+        checks: report.checks,
+      },
+      null,
+      2,
+    ),
+  );
+}
+
 if (
   process.argv[1] &&
   resolve(process.argv[1]) === resolve("dist/eval/runner/rag-retrieval.js")
 ) {
-  await buildMiniSearchBaseline();
+  if (process.argv.includes("--summary"))
+    await printExistingMiniSearchBaselineSummary();
+  else await buildMiniSearchBaseline();
 }

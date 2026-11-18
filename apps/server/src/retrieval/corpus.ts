@@ -16,6 +16,13 @@ const ImportEnvelopeSchema = z
     trials: TrialSchema.array(),
   })
   .passthrough();
+const SplitDraftEnvelopeSchema = z
+  .object({
+    format: z.literal("trialmatch-review-draft-v1"),
+    inputHash: z.string().min(1),
+    trials: z.array(z.unknown()),
+  })
+  .passthrough();
 
 export type CorpusSource = {
   path: string;
@@ -121,16 +128,33 @@ export async function loadRagCorpus(
           }
           trials = envelope.data.trials;
           version = manifest.version;
-        } else if (
-          typeof raw === "object" &&
-          raw !== null &&
-          "format" in raw &&
-          raw.format === "trialmatch-import-v2"
-        ) {
-          throw new Error(
-            `Import ${relative(workingDirectory, path)} nema validan manifest ili TrialSchema podatke.`,
-            { cause: envelope.error },
-          );
+        } else {
+          const splitDraft = SplitDraftEnvelopeSchema.safeParse(raw);
+          if (splitDraft.success) {
+            trials = TrialSchema.array().parse(
+              splitDraft.data.trials.map((trial) => {
+                if (typeof trial !== "object" || trial === null) return trial;
+                const normalizedTrial = { ...trial } as Record<
+                  string,
+                  unknown
+                >;
+                delete normalizedTrial.reviewStatus;
+                delete normalizedTrial.splitStatus;
+                return normalizedTrial;
+              }),
+            );
+            version = `review-draft-${splitDraft.data.inputHash}`;
+          } else if (
+            typeof raw === "object" &&
+            raw !== null &&
+            "format" in raw &&
+            raw.format === "trialmatch-import-v2"
+          ) {
+            throw new Error(
+              `Import ${relative(workingDirectory, path)} nema validan manifest ili TrialSchema podatke.`,
+              { cause: envelope.error },
+            );
+          }
         }
       }
 

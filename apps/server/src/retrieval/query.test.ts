@@ -13,7 +13,7 @@ describe("query iz validiranog profila", () => {
     });
     expect(query).toContain("type 2 diabetes");
     expect(query).toContain("dijabetes tip 2");
-    expect(SR_EN_LEXICON_VERSION).toBe("sr-en-clinical-v2");
+    expect(SR_EN_LEXICON_VERSION).toBe("sr-en-clinical-v3");
   });
 
   it("ne dodaje upit iz nedostupnih profilnih polja", () => {
@@ -70,5 +70,14 @@ describe("query iz validiranog profila", () => {
     });
     expect(query.text).toContain("sindrom plavog meseca");
     expect(query.untranslatedTerms).toEqual(["sindrom plavog meseca"]);
+  });
+
+  it("proširuje renal health na pojmove iz eGFR i albumin passage-a", () => {
+    const query = buildRetrievalQueries({
+      stated_diagnoses: ["type 2 diabetes", "renal health"],
+    });
+    expect(query.text).toContain("egfr");
+    expect(query.text).toContain("albumin");
+    expect(query.text).toContain("kidney function");
   });
 });

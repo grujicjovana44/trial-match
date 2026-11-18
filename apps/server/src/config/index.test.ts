@@ -8,6 +8,7 @@ describe("konfiguracija", () => {
     expect(config.MAX_INPUT_CHARS).toBe(4000);
     expect(config.TOOL_TIMEOUT_MS).toBe(2000);
     expect(config.DEMO_MODE).toBe(true);
+    expect(config.DATASET_PROFILE).toBe("fixtures");
   });
 
   it("validira tipove i dozvoljene granice", () => {
@@ -15,6 +16,13 @@ describe("konfiguracija", () => {
     expect(() => parseConfig({ PORT: "0" })).toThrow();
     expect(() => parseConfig({ UNKNOWN: "x" })).toThrow();
     expect(() => parseConfig({ DEMO_MODE: "false" })).toThrow("GEMINI_API_KEY");
+    expect(
+      parseConfig({ DEMO_MODE: "true", DATASET_PROFILE: "clinicaltrials-20" })
+        .DATASET_PROFILE,
+    ).toBe("clinicaltrials-20");
+    expect(() =>
+      parseConfig({ DEMO_MODE: "true", DATASET_PROFILE: "unknown" }),
+    ).toThrow();
   });
 
   it("čita poznate promenljive iz stvarnog okruženja", () => {

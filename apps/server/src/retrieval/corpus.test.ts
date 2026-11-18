@@ -11,6 +11,7 @@ import {
 } from "../../../../packages/shared/src/index.js";
 import { hashRagSourceContent, loadRagCorpus } from "./corpus.js";
 import { buildRagDocuments } from "./documents.js";
+import { retrieveTrials } from "./retrieve.js";
 
 const temporaryDirectories: string[] = [];
 
@@ -175,10 +176,11 @@ describe("RAG corpus loader", () => {
     expect(sourceTrials.map((item) => item.trialId)).toContain("T-A");
     expect(conflictingTrials.map((item) => item.trialId)).toEqual(["T-A"]);
 
-    await expect(loadRagCorpus(["data/trials", "data/fixtures"], root)).rejects
-      .toThrow(
-        /T-A.*različit sadržaj(?=.*data\/fixtures\/trials\.json)(?=.*data\/trials\/conflicting\.json)/s,
-      );
+    await expect(
+      loadRagCorpus(["data/trials", "data/fixtures"], root),
+    ).rejects.toThrow(
+      /T-A.*različit sadržaj(?=.*data\/fixtures\/trials\.json)(?=.*data\/trials\/conflicting\.json)/s,
+    );
   });
 
   it("dopušta identičan duplikat jednom i beleži oba izvora", async () => {
@@ -254,7 +256,7 @@ describe("RAG corpus loader", () => {
   it("učitava tačno 20 jedinstvenih studija iz odobrenog i pending korpusa", async () => {
     const corpus = await loadRagCorpus([
       "data/rule_sets/studies_2_approved_20261115_1539",
-      "data/review_candidates/studies_20_2026-11-16/import",
+      "data/review_candidates/studies_20_2026-11-16/review",
     ]);
     const trialIds = corpus.trials.map((item) => item.trialId);
     const documents = buildRagDocuments(corpus.trials);
@@ -270,6 +272,43 @@ describe("RAG corpus loader", () => {
     ).toHaveLength(20);
     expect(
       documents.filter((document) => document.kind === "passage"),
-    ).toHaveLength(56);
+    ).toHaveLength(
+      corpus.trials.reduce((count, item) => count + item.criteria.length, 0),
+    );
+    expect(
+      documents.filter((document) => document.kind === "passage").length,
+    ).toBeGreaterThanOrEqual(300);
+    expect(
+      corpus.trials
+        .filter(
+          (item) =>
+            item.trialId.startsWith("NCT") &&
+            !["NCT07409714", "NCT07924436"].includes(item.trialId),
+        )
+        .every((item) =>
+          item.criteria.every(
+            (criterion) => criterion.checkability === "manual_review",
+          ),
+        ),
+    ).toBe(true);
+    const unavailable: string[] = [];
+    for (const item of corpus.trials) {
+      const retrieval = retrieveTrials(
+        {
+          stated_diagnoses: [
+            item.trialId === "NCT06251323" ? "iPATH" : item.title,
+          ],
+        },
+        corpus.trials,
+        { maxCandidates: 10, maxSnippets: 5, maxContextChars: 12000 },
+      );
+      if (
+        !retrieval.trials.some(
+          (candidate) => candidate.trialId === item.trialId,
+        )
+      )
+        unavailable.push(item.trialId);
+    }
+    expect(unavailable).toEqual([]);
   });
 });

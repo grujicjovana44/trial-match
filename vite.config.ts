@@ -1,6 +1,8 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
+const apiTarget = `http://127.0.0.1:${process.env.TRIALMATCH_E2E_API_PORT ?? "3000"}`;
+
 export default defineConfig({
   plugins: [react({})],
   root: "apps/web",
@@ -8,7 +10,7 @@ export default defineConfig({
     host: "127.0.0.1",
     port: Number(process.env.WEB_PORT ?? 5173),
     proxy: {
-      "/api": "http://127.0.0.1:3000",
+      "/api": apiTarget,
     },
   },
   build: {
@@ -19,7 +21,7 @@ export default defineConfig({
     host: "127.0.0.1",
     port: 4173,
     proxy: {
-      "/api": "http://127.0.0.1:3000",
+      "/api": apiTarget,
     },
   },
 });

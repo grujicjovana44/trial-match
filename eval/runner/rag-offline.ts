@@ -52,7 +52,7 @@ function commandOptions(args: string[]): RagOfflineOptions {
   const options: RagOfflineOptions = {};
   for (let index = 0; index < args.length; index += 1) {
     const [flag, inlineValue] = args[index]!.split("=", 2);
-    if (flag === "--") continue;
+    if (flag === "--" || flag === "--summary") continue;
     if (flag === "--embedding-mode") {
       const value = inlineValue ?? args[++index];
       if (value !== "fake" && value !== "real")
@@ -133,22 +133,6 @@ class DeterministicHashEmbedder implements Embedder {
       tokens: 0,
     };
   }
-}
-
-function passageIds(
-  sourceIds: readonly string[],
-  trials: readonly Trial[],
-): string[] {
-  const sourceSet = new Set(sourceIds);
-  return [
-    ...new Set(
-      trials.flatMap((trial) =>
-        trial.criteria
-          .filter((criterion) => sourceSet.has(criterion.sourceId))
-          .map((criterion) => criterion.id),
-      ),
-    ),
-  ];
 }
 
 function metricSet(
@@ -325,7 +309,7 @@ export async function runOfflineRagEvaluation(
         });
         const latencyMs = performance.now() - started;
         const retrievedTrials = result.trials.map((trial) => trial.trialId);
-        const retrievedPassages = passageIds(result.sourceIds, result.trials);
+        const retrievedPassages = result.passageIds;
         const diagnosticEligible =
           testCase.kind === "ranking" && testCase.relevantTrialIds.length > 0;
         variantResults.push({
@@ -372,12 +356,24 @@ export async function runOfflineRagEvaluation(
     const reranked = results["hybrid+rerank"] ?? [];
     const pairedComparison = selectedCases.map((testCase, index) => {
       const base = hybrid[index] as
-        { studyMetrics?: Record<string, { ndcg: number } | null> } | undefined;
+        | {
+            studyMetrics?: Record<string, { ndcg: number } | null>;
+            passageMetrics?: Record<string, { ndcg: number } | null> | null;
+          }
+        | undefined;
       const rerank = reranked[index] as
-        { studyMetrics?: Record<string, { ndcg: number } | null> } | undefined;
+        | {
+            studyMetrics?: Record<string, { ndcg: number } | null>;
+            passageMetrics?: Record<string, { ndcg: number } | null> | null;
+          }
+        | undefined;
       const cutoff = `at${studyCutoffs.at(-1) ?? 1}`;
       const before = base?.studyMetrics?.[cutoff]?.ndcg ?? null;
       const after = rerank?.studyMetrics?.[cutoff]?.ndcg ?? null;
+      const passageCutoff = "at5";
+      const passageBefore = base?.passageMetrics?.[passageCutoff]?.ndcg ?? null;
+      const passageAfter =
+        rerank?.passageMetrics?.[passageCutoff]?.ndcg ?? null;
       return {
         caseId: testCase.caseId,
         labelStatus: testCase.labelStatus,
@@ -385,6 +381,13 @@ export async function runOfflineRagEvaluation(
         hybridNdcg: before,
         hybridRerankNdcg: after,
         delta: before === null || after === null ? null : after - before,
+        passageCutoff,
+        hybridPassageNdcg: passageBefore,
+        hybridRerankPassageNdcg: passageAfter,
+        passageDelta:
+          passageBefore === null || passageAfter === null
+            ? null
+            : passageAfter - passageBefore,
         conclusion:
           testCase.labelStatus === "confirmed"
             ? "eligible_for_human_review"
@@ -459,7 +462,49 @@ export async function runOfflineRagEvaluation(
       `${JSON.stringify(report, null, 2)}\n`,
       { flag: "wx" },
     );
-    console.log(JSON.stringify(report, null, 2));
+    if (process.argv.includes("--summary")) {
+      const selectMetrics = (value: unknown) => {
+        if (typeof value !== "object" || value === null) return null;
+        const metrics = value as Record<string, unknown>;
+        return Object.fromEntries(
+          ["at1", "at2", "at3", "at5"].flatMap((key) =>
+            key in metrics ? [[key, metrics[key]]] : [],
+          ),
+        );
+      };
+      console.log(
+        JSON.stringify(
+          {
+            evaluationId: report.evaluationId,
+            datasetId: report.datasetId,
+            corpusSnapshotId: report.corpusSnapshotId,
+            annotationStatus: report.annotationStatus,
+            embeddingEvaluation: report.embeddingEvaluation,
+            cases: Object.fromEntries(
+              Object.entries(results).map(([variant, entries]) => [
+                variant,
+                entries.map((entry) => {
+                  const item = entry as Record<string, unknown>;
+                  return {
+                    caseId: item.caseId,
+                    labelStatus: item.labelStatus,
+                    metricStatus: item.metricStatus,
+                    retrievedTrialIds: item.retrievedTrialIds,
+                    topPassages: item.topPassages,
+                    studyMetrics: selectMetrics(item.studyMetrics),
+                    passageMetrics: selectMetrics(item.passageMetrics),
+                  };
+                }),
+              ]),
+            ),
+            pairedHybridVsRerank: report.pairedHybridVsRerank,
+            vectorStore: report.vectorStore,
+          },
+          null,
+          2,
+        ),
+      );
+    } else console.log(JSON.stringify(report, null, 2));
     console.log(`Sačuvan offline RAG izveštaj: ${reportDirectory}`);
     return report;
   } finally {
