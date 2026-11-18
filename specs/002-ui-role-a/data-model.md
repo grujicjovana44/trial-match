@@ -140,7 +140,7 @@ Napomena za `runLost`: drugi argument funkcije je izvor, `"run"` (greška je sti
 | HTTP 5xx bez ispravnog omotača | `service` | `retry` | `false` |
 | Ostali HTTP 4xx bez ispravnog omotača | `request_rejected` | `restart` | `false` |
 
-`retryAfterSeconds`: ceo broj iz zaglavlja `Retry-After` ako je između 1 i 600; inače 60.
+`retryAfterSeconds`: ceo broj iz zaglavlja `Retry-After` ako je između 1 i 60; inače 60. Gornja granica je usklađena sa ugovorom Faze 2 ([003 contracts/api.md](../003-phase-2-live-integration/contracts/api.md): najviše 60 pri prozoru od 60000 ms); ranije je bila 600.
 
 ## 3. Lokalno stanje obrasca za unos (`ProfileForm`)
 

@@ -324,7 +324,7 @@ Jedna komponenta, jedna datoteka u `apps/web/src/components/`. Svi tekstovi dola
 | `ClarificationForm` | `question`, `busy`, `onAnswer(text)`, `headingRef` | `<form class="follow-up">`: `h3` „Potrebna dopuna“ (`tabIndex={-1}`); `<label for="answer">{pitanje}</label>`; ako ima opcija: `<div class="answer-options" role="group" aria-label="Ponuđeni odgovori">` sa dugmadima (`type="button"`, `aria-pressed`), jedan klik odmah zove `onAnswer(opcija)`; savet; polje `#answer`; „Pošalji dopunu“ šalje slobodan tekst, onemogućeno za prazan tekst ili `busy`. |
 | `HypothesisForm` | `busy`, `onSubmit(text)` | `<form class="follow-up hypothesis">` sa isprekidanim okvirom i pozadinom `--bg`: `h3` „Šta ako?“, oznaka, polje `#hypothesis` (`maxLength={4000}`), „Ponovi proveru“, napomena. Polje se prazni posle uspešnog odgovora. |
 | `ResultMeta` | `meta: Meta` | `<footer class="result-meta">` sa zasebnim elementima `span` (bez srednje tačke): verzija skupa; datum snimka kada postoji; u demo režimu „DEMO režim — bez poziva stvarnom modelu“, u stvarnom „Stvarni model: {modelId}“. |
-| `VoiceInput` | `onTranscript(text)`, `disabled` | Bez podrške pregledača ne prikazuje ništa. Inače dugme „Diktiraj“ / „Zaustavi diktiranje“ (`aria-pressed`), napomena o obradi zvuka i statusni red (`role="status"`). |
+| `VoiceInput` | `onTranscript(text)`, `disabled` | Bez podrške pregledača ne prikazuje ništa. Inače dugme „Diktiraj“ / „Zaustavi diktiranje“ (natpis nosi stanje, bez `aria-pressed`; izgled slušanja daje klasa `voice-listening`), napomena o obradi zvuka i statusni red (`role="status"`). Kada `disabled` postane `true`, diktat se prekida i kasni rezultat se odbacuje; `App` menja ključ kontrole pri „Počni iznova“ (T253). |
 
 Postojeće komponente u `motion/` ostaju. `SavedNotice` i `CriteriaSummaryBar` se ne menjaju.
 
@@ -684,8 +684,8 @@ Svi testovi su offline. Komande provere: `pnpm test`, `pnpm typecheck`, `pnpm li
 | `integration/trial-list.test.tsx` | 50 studija u redosledu servera, prikazanih za manje od 1 s; pregled studija i premeštanje fokusa; veza ka registru samo za NCT oblik, sa `rel="noopener noreferrer"`; vrednost, izvor i ceo citat po kriterijumu; poruka kada nema kriterijuma. | AC-01, AC-08 |
 | `integration/processing.test.tsx` | Red obrade odmah; kontrole onemogućene; dupli klik šalje jedan zahtev; poruka posle 5 s; zastareo rezultat označen; nova provera uklanja stari rezultat. | AC-10 |
 | `integration/safe-rendering.test.tsx` | HTML i skripta u objašnjenju, naslovu, citatu, pitanju, opciji i poruci greške prikazuju se doslovno; nema elementa `script` ni `img` u DOM-u; pretraga izvora ne nalazi `dangerouslySetInnerHTML` ni `innerHTML`. | AC-08, AC-09 |
-| `unit/speech-recognition.test.ts` | Kuka za prepoznavanje govora sa lažnim konstruktorom: jezik `sr-RS`, prenos teksta, odbijen mikrofon, pregledač bez podrške. | AC-13 |
-| `integration/voice-input.test.tsx` | Sa lažnim prepoznavanjem: tekst ulazi u polje, ništa se ne šalje; bez podrške kontrola ne postoji; odbijen mikrofon daje poruku. | AC-13 |
+| `unit/speech-recognition.test.ts` | Kuka za prepoznavanje govora sa lažnim konstruktorom: jezik `sr-RS`, prenos teksta, odbijen mikrofon, pregledač bez podrške, prekid (`cancel`) i uklanjanje bez kasnog rezultata. | AC-13 |
+| `integration/voice-input.test.tsx` | Sa lažnim prepoznavanjem: tekst ulazi u polje, ništa se ne šalje; bez podrške kontrola ne postoji; odbijen mikrofon daje poruku; slanje i „Počni iznova“ prekidaju diktat; dugme nema `aria-pressed`. | AC-13 |
 | `accessibility.test.tsx` | Postojeće provere, uz: uloge `status` i `alert`, živa oblast, fokus posle svakog koraka, nazivi kontrola nepromenjeni, pravila za uske ekrane i `prefers-reduced-motion` u `styles.css`, i provera da nijedno stanje, ni u demo ni u stvarnom režimu, ne prikazuje interni naziv. | AC-12 |
 
 ## 9. Dokumenta koja menja Uloga A

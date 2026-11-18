@@ -13,6 +13,7 @@ import {
 } from "./state/run-state.js";
 import { ResultPanel } from "./components/ResultPanel.js";
 import { ProfileForm } from "./components/ProfileForm.js";
+import { VoiceInput } from "./components/VoiceInput.js";
 import { ErrorPanel } from "./components/ErrorPanel.js";
 import { SiteHeader } from "./components/SiteHeader.js";
 import { SafetyNotice } from "./components/SafetyNotice.js";
@@ -22,6 +23,8 @@ import { useSlowNotice } from "./hooks/useSlowNotice.js";
 
 export function App() {
   const [profileText, setProfileText] = useState("");
+  // Novi ključ pri „Počni iznova“ ponovo pravi VoiceInput i prekida diktat.
+  const [voiceKey, setVoiceKey] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const clarificationRef = useRef<HTMLHeadingElement>(null);
@@ -55,6 +58,7 @@ export function App() {
     if (isBusy(state)) return;
     dispatch({ type: "reset" });
     setProfileText("");
+    setVoiceKey((key) => key + 1);
   }
 
   useEffect(() => {
@@ -101,7 +105,19 @@ export function App() {
           canStartOver={canStartOver(state)}
           onStartOver={startOver}
           textareaRef={textareaRef}
-        />
+        >
+          <VoiceInput
+            key={voiceKey}
+            disabled={isBusy(state)}
+            onTranscript={(spoken) =>
+              setProfileText((current) =>
+                current.trim().length > 0
+                  ? `${current.trim()} ${spoken}`
+                  : spoken,
+              )
+            }
+          />
+        </ProfileForm>
 
         {busy && <ProcessingStatus slow={slow} />}
         {state.error && (

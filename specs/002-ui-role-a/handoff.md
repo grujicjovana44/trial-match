@@ -11,7 +11,7 @@ Ovaj dokument predaje planiranje modelu koji implementira. Planiranje je završe
 | 1. `speckit-specify` | Završen | [spec.md](spec.md), ažuriran za finalni proizvod: 10 priča, FR-001–FR-034, SC-001–SC-016, 16 stanja prikaza. |
 | 2. `speckit-clarify` | Završen | Sedam odgovora u odeljku „Clarifications“ (2026-11-09 i 2026-11-10). |
 | 3. `speckit-plan` | Završen i odobren | [plan.md](plan.md), [research.md](research.md), [data-model.md](data-model.md), [contracts/ui-api.md](contracts/ui-api.md), [contracts/cross-team-requests.md](contracts/cross-team-requests.md), [quickstart.md](quickstart.md). |
-| 4. `speckit-tasks` | Završen | [tasks.md](tasks.md): 52 zadatka (T201–T252), 5 blokiranih, 2 ručna. |
+| 4. `speckit-tasks` | Završen | [tasks.md](tasks.md): 53 zadatka (T201–T253), 2 blokirana (T220, T221 i T232 deblokirani i završeni 2026-11-16), 2 ručna. |
 | 5. `speckit-checklist` | Završen | [checklists/ux.md](checklists/ux.md): 64 stavke; CHK001–CHK053 pregledane i označene, CHK054–CHK064 ostaju za gotovu implementaciju. |
 | 6. `speckit-analyze` | Završen, ispravke odobrene i primenjene | Vidi ispod. |
 | 7. Predaja | Ovaj dokument | |
@@ -49,15 +49,12 @@ Jedna grupa po sesiji ili po zahtevu vlasnika. Posle svake grupe model staje i �
 | 6 | T235–T238 | Priča 5: fokus, bezbedan prikaz, uski ekrani i smanjen pokret, provera internih naziva | Ne |
 | 7 | T239, T240, T241, T243, T245, T246, T247, T248 | Dokumenta (tabela AC, mapa pokrivenosti, demonstracioni scenario, pokret, odluke), provera izgrađene verzije, čišćenje, završna provera | Ne |
 | Ručno | T249 | Vlasnik Uloge A prolazi [quickstart.md](quickstart.md) u pregledaču | Ne |
-| 8 (poslednja) | T250–T252 | Priča 9: glasovni unos (AC-13, opciono) | Ne |
+| 8 (poslednja) | T250–T253 | Priča 9: glasovni unos (AC-13, opciono); T253 ispravlja nalaze pregleda | Ne |
 
 **Na čekanju** (ne ulaze ni u jednu grupu dok zahtev ne bude isporučen; tada se rade kao zasebna mala grupa):
 
 | Zadatak | Čeka | Šta tačno |
 |---|---|---|
-| T220 | Uloga B | REQ-B7: jedinica i poreklo uočene vrednosti po kriterijumu u `CriterionResultSchema` |
-| T221 | Uloga B i Uloga C | REQ-B6: status regrutacije i faza u `TrialResultSchema`; REQ-C2: stvarni snimak sa tim podacima |
-| T232 | Uloga B | REQ-B1: datum snimka u `MetaSchema` |
 | T242 | Uloga B | REQ-B8 i REQ-B9: javna isporuka i čuvanje provere na platformi Vercel |
 | T244 | Uloga B i Uloga C | REQ-B5: stvarni režim na serveru; REQ-C1: stvarni model u glavnom toku |
 
@@ -86,13 +83,14 @@ Pun tekst zahteva je u [contracts/cross-team-requests.md](contracts/cross-team-r
 | Zahtev | Kome | Šta je potrebno | Koji zadatak čeka |
 |---|---|---|---|
 | REQ-T1 | Tim / Uloga A | **Odobreno 2026-11-10**; preostaje prenos zapisa u `docs/decisions.md` kroz T246 | Nijedan; odobrenje više nije otvoreno |
-| REQ-B1 | Uloga B | Datum snimka skupa u `meta` | T232 |
+| REQ-B1 | Uloga B | Datum snimka skupa u `meta` | Isporučeno u Fazi 2; T232 završen |
 | REQ-B2 | Uloga B | Konačna lista kategorija grešaka, `retryable` za svaku, potvrda da je `message` bezbedan za prikaz | Nijedan; nepoznata kategorija dobija opštu poruku |
 | REQ-B3 | Uloga B | Isključene studije sa razlozima za `no_matching_trial` | Nijedan sada; kasniji rad |
 | REQ-B4 | Uloga B | Vreme čekanja uz HTTP 429 (zaglavlje `Retry-After`) | Nijedan; bez zaglavlja odbrojavanje je 60 s |
 | REQ-B5 | Uloga B | Stvarni režim na serveru, tačan `meta` | T244 |
-| REQ-B6 | Uloga B | Status regrutacije i faza u rezultatu po studiji | T221 |
-| REQ-B7 | Uloga B | Jedinica i poreklo uočene vrednosti po kriterijumu | T220 |
+| REQ-B6 | Uloga B | Status regrutacije i faza u rezultatu po studiji | Isporučeno u Fazi 2; T221 završen |
+| REQ-B7 | Uloga B | Jedinica i poreklo uočene vrednosti po kriterijumu | Isporučeno u Fazi 2; T220 završen |
+| REQ-B11 | Uloga B / Uloga C | Jedinica uočene vrednosti na srpskom (danas „years“) | Nijedan; vidi contracts/cross-team-requests.md |
 | REQ-B8 | Uloga B | Kako se izgrađeni interfejs služi uz server; pristup sa druge adrese | T242 |
 | REQ-B9 | Uloga B | Čuvanje provere i ograničenje broja zahteva na platformi Vercel | T242 |
 | REQ-B10 | Uloga B | Nastavak provere posle greške koja se može ponoviti u dopuni ili hipotezi | Nijedan; do tada „Pokušaj ponovo“ u tom slučaju vodi do „Počni iznova“ |

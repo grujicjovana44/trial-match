@@ -673,6 +673,11 @@ blockquote q {
   color: var(--ink-muted);
   font-size: 0.8rem;
 }
+.trial-facts {
+  margin: 0 0 var(--space-2);
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
 .chip-hypothetical {
   border-radius: var(--radius-pill);
   padding: 0 0.4rem;
@@ -711,7 +716,8 @@ blockquote q {
     grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
   }
 }
-.secondary-button[aria-pressed="true"] {
+.secondary-button[aria-pressed="true"],
+.secondary-button.voice-listening {
   color: var(--on-accent);
   background: var(--accent);
 }
@@ -793,4 +799,11 @@ blockquote q {
 .mode-badge,
 blockquote {
   overflow-wrap: anywhere;
+}
+
+.voice-input {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+  margin-top: var(--space-3);
 }

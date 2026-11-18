@@ -1,7 +1,10 @@
 import type { TrialResult } from "../../../../packages/shared/src/index.js";
 import { motion } from "motion/react";
 import {
+  phaseLabel,
+  recruitmentStatusLabel,
   summarizeCriteria,
+  type RegistryLabel,
   trialAnchorId,
   trialRegistryUrl,
   verdictLabel,
@@ -11,6 +14,14 @@ import { CriteriaSummaryBar } from "../motion/CriteriaSummaryBar.js";
 import { enter } from "../motion/motion-presets.js";
 import { CriterionRow } from "./CriterionRow.js";
 
+function RegistryValue({ label }: { label: RegistryLabel }) {
+  return label.known ? (
+    <>{label.text}</>
+  ) : (
+    <span className="mono">{label.text}</span>
+  );
+}
+
 export function TrialCard({
   trial,
   index,
@@ -19,6 +30,9 @@ export function TrialCard({
   index: number;
 }) {
   const registryUrl = trialRegistryUrl(trial.trialId);
+  // Polje koje nedostaje se izostavlja, bez podrazumevane vrednosti (FR-025).
+  const recruitment = recruitmentStatusLabel(trial.overallStatus);
+  const phase = phaseLabel(trial.phase);
   return (
     <motion.article
       className="trial-card"
@@ -38,10 +52,21 @@ export function TrialCard({
           {verdictLabel(trial.verdict)}
         </span>
       </div>
-      <p>
-        Status regrutacije: {trial.overallStatus ?? "Nije naveden"} · Faza:{" "}
-        {trial.phase ?? "Nije navedena"}
-      </p>
+      {(recruitment !== null || phase !== null) && (
+        <p className="trial-facts">
+          {recruitment !== null && (
+            <>
+              {copy.trial.recruitment} <RegistryValue label={recruitment} />
+            </>
+          )}
+          {recruitment !== null && phase !== null && " · "}
+          {phase !== null && (
+            <>
+              {copy.trial.phase} <RegistryValue label={phase} />
+            </>
+          )}
+        </p>
+      )}
       {registryUrl !== null && (
         <p className="trial-links">
           <a href={registryUrl} target="_blank" rel="noopener noreferrer">
