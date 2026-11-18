@@ -1,0 +1,605 @@
+[
+  {
+    "annotationId": "T323-01",
+    "sourceHash": "786bbb6bd3bff74adab5f6642bf59672e00ca5343acf0479c14a4f23ba9a9b71",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT05838287#unsplit-1",
+        "kind": "inclusion",
+        "field": "egfr",
+        "operator": "gt",
+        "value": 45,
+        "unit": "mL/min/1.73 m²",
+        "checkability": "auto"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-02",
+    "sourceHash": "a104ca44cc3b01bf50f419f681c85df0d6a80a3b968d83965b61d695af5a8945",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT06118931#unsplit-1",
+        "kind": "inclusion",
+        "field": "age",
+        "operator": "gte",
+        "value": 40,
+        "unit": "years",
+        "checkability": "auto"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-03",
+    "sourceHash": "a0641e51e480bd16ac6bdbde6de58d9fa965b53124cba6c11a828fa096921552",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT06271382#unsplit-1",
+        "kind": "inclusion",
+        "field": "age",
+        "operator": "gte",
+        "value": 18,
+        "unit": "years",
+        "checkability": "auto"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-04",
+    "sourceHash": "7405dffb25c6da84896e921d37e3d6b451b33b124d66994556863fedf0445119",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT06296485#unsplit-1",
+        "kind": "inclusion",
+        "field": "age",
+        "operator": "gte",
+        "value": 75,
+        "unit": "years",
+        "checkability": "auto"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-05",
+    "sourceHash": "77e6bd6d7121b3ae15d705a4bce4ed3246653adb014dfe7644bbe11ffc2a6380",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT07121504#unsplit-1",
+        "kind": "inclusion",
+        "field": "age",
+        "operator": "gte",
+        "value": 18,
+        "unit": "years",
+        "checkability": "auto"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-06",
+    "sourceHash": "83cf8fbf0ec09e3b03c9dccb6c7575345530fc78af6fd563826510955fc89341",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT07775846#unsplit-1",
+        "kind": "inclusion",
+        "field": "bmi",
+        "operator": "gte",
+        "value": 24,
+        "unit": "kg/m²",
+        "checkability": "auto"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-07",
+    "sourceHash": "b13b88fbf56ac154a719f84f990a68146b0c1b719af157b24598e187dc7302e7",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT07919236#unsplit-1",
+        "kind": "exclusion",
+        "field": "hba1c",
+        "operator": "gt",
+        "value": 10,
+        "unit": "%",
+        "checkability": "auto"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-08",
+    "sourceHash": "8dc782d66a4bebec02506d679302dac131fada930bb9796f442ee57183286958",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT06118931#unsplit-1",
+        "kind": "inclusion",
+        "field": "bmi",
+        "operator": "lt",
+        "value": 50,
+        "unit": "kg/m²",
+        "checkability": "auto"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-09",
+    "sourceHash": "575e31097b92bc6b9557b793c6d9396b5bd7c78b33db92027f9f53d15b00263c",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT07919236#unsplit-1",
+        "kind": "inclusion",
+        "field": "bmi",
+        "operator": "gte",
+        "value": 25,
+        "unit": "kg/m²",
+        "checkability": "auto"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-10",
+    "sourceHash": "ec618a2b07b6319e1b5df05b8a66fa194bf4fe04bb83ba9fe150c9dcc3cd6e27",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT07919236#unsplit-1",
+        "kind": "inclusion",
+        "field": "hba1c",
+        "operator": "between",
+        "value": [
+          7.5,
+          10
+        ],
+        "unit": "%",
+        "checkability": "auto"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-11",
+    "sourceHash": "0ed071202f24ee947a499b107d4b8c1954697889e67eb136baace322353489f8",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT05439226#unsplit-1",
+        "kind": "inclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-12",
+    "sourceHash": "0fa245177a3c3f4803ff11c2465c817c94a68a365e88ba6addc6927d59666b4b",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT05439226#unsplit-1",
+        "kind": "exclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-13",
+    "sourceHash": "5e81a1c7656d520c897e58e6dc768c877e6546ca4fd9a59b346c8ff12ef320f6",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT05838287#unsplit-1",
+        "kind": "inclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-14",
+    "sourceHash": "5a23aaf9238d1ebeac865f9e70743378754df30758ce8bd0ed0474c4d7fa2b92",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT06118931#unsplit-1",
+        "kind": "inclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-15",
+    "sourceHash": "ca9c3fae4323a265dbf1cef749ebde3e4e05ff02dc46e31754da7a98cebd04e3",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT06118931#unsplit-1",
+        "kind": "exclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-16",
+    "sourceHash": "a19602aeb0ae5a064c92ad211305a456e4a6a4ad6cd5da140e96581a2a9e2138",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT06852950#unsplit-1",
+        "kind": "inclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-17",
+    "sourceHash": "50fdb634caf9f72e61099560adb167c7834cf255e4453f17e1b306852b06706c",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT06888050#unsplit-1",
+        "kind": "inclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-18",
+    "sourceHash": "d5c7b8e6b25d174e929605bef15190acc4a5f0865ef656f80788a20ee9ca7b5d",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT07350967#unsplit-1",
+        "kind": "inclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-19",
+    "sourceHash": "ef40cdc7a701b14020f2183dbd612141dd630e2caa3e6aae17b2b5e85703ba2f",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT07574138#unsplit-1",
+        "kind": "inclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-20",
+    "sourceHash": "5e57b14e4379575cb1f545de6c680d217a85c2a5b507d159e9a72b2a4ca24ed9",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT07775846#unsplit-1",
+        "kind": "inclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-21",
+    "sourceHash": "a15892469d8b7ffb781057486cce478bb8e88d8df64efca34e5f90c68b83afd3",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT05439226#unsplit-1",
+        "kind": "exclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-22",
+    "sourceHash": "61706f7421c68034b6425f01f890eda500ccbb23c76b7a561cc4a559ccaff6bf",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT05838287#unsplit-1",
+        "kind": "exclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-23",
+    "sourceHash": "f3b299a4d0bd9f755faf36e3b40e1b66fd8da60068869950aa9f9acca4052e31",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT06271382#unsplit-1",
+        "kind": "exclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-24",
+    "sourceHash": "5008d9f2324abbfbb3f806c5613c632aa74a8d7ba93f49226f417ddab25f8c40",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT06296485#unsplit-1",
+        "kind": "exclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-25",
+    "sourceHash": "97cdc7d8200ffa4f2c0f6a59a5e27762a173e29975a4891f8abfe4736d316379",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT06852950#unsplit-1",
+        "kind": "inclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-26",
+    "sourceHash": "777284556904e434e858adfca605bc0809a8fdfb013da97b2d3bac9fd38ef3f2",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT06875193#unsplit-1",
+        "kind": "exclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-27",
+    "sourceHash": "3d5de5e3298c12a5bec6d657e8bf819b271e1b3394e0751965e116ab6142a869",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT06888050#unsplit-1",
+        "kind": "exclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-28",
+    "sourceHash": "df7c091af0faf2af468e55f5ad6b72b085d8ceb8b236c29ba6732149500ac535",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT07121504#unsplit-1",
+        "kind": "exclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-29",
+    "sourceHash": "6c31582661e33c70d0ee01b521bfbcf3d1a74fd0df651731af4f944b500dcc74",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT07574138#unsplit-1",
+        "kind": "exclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  },
+  {
+    "annotationId": "T323-30",
+    "sourceHash": "22a3cf7c4999babd03391d3f5106058d5e4b714d938495680ac5267df1c05171",
+    "datasetVersion": "rules-713d7b1f382f",
+    "annotationVersion": "t323-proposal-v1",
+    "candidate": [
+      {
+        "sourceId": "NCT07919236#unsplit-1",
+        "kind": "exclusion",
+        "field": null,
+        "operator": null,
+        "value": null,
+        "unit": null,
+        "checkability": "manual_review"
+      }
+    ],
+    "method": "structured",
+    "modelVersion": null,
+    "traceId": null
+  }
+]

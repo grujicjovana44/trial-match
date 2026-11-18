@@ -1,5 +1,13 @@
 # Spremnost za Fazu 2 — provera na `main` (2026-11-17)
 
+## Dopuna — korisnička potvrda i integraciona obrada (2026-11-18)
+
+Vlasnica projekta dostavila je 2026-11-18 potvrđeni CSV za 18 studija / 300 kriterijuma i potvrdila da je Jelena Kantarveic odobrila 10 numeričkih auto pravila tog dana. Hash-pinned compile uključuje svih 18 studija, 10 `auto` i 290 `manual_review` kriterijuma; 290 ostaju `unknown` uz citate. CSV-ova `matcherApproval=NOT_APPROVED` vrednost je pređena naknadnom izričitom potvrdom vlasnice projekta.
+
+RAG odluke Jelene prenete su u [retrieval-v3-adjudicated.json](../eval/rag/retrieval-v3-adjudicated.json) bez izmene zamrznutog v2. P001/P002 su potvrđeni ranking slučajevi, a P003 negativni slučaj važi samo za `rag-corpus-v0-dev` od pet studija. P004 je odvojen u [behavior-adjudication-v1.json](../eval/rag/behavior-adjudication-v1.json), jer je potvrđen na aktivnom 20-studijskom demo profilu i ne može se bodovati nad petostudijskim snimkom. Offline evaluator prihvata `--dataset` putanju radi ovakvih verzionisanih skupova. Fake/hash rezultat nije semantički dokaz.
+
+Poreklo za 18 zapisa i atribucija ClinicalTrials.gov već su dokumentovani u `data/README.md` i `data/raw/studies_20_api_provenance_2026-11-16.json`. Upit, filteri, paginacija/kohorta i nezavisna pravna procena i dalje nisu dokazani; nema tvrdnje da je korpus potpun niti da postoji blanket licenca.
+
 Ovaj izveštaj opisuje lokalno radno stablo na grani `main`, nakon offline provera. Promene nisu commit-ovane, push-ovane niti merge-ovane. `.env` nije čitan. Nisu pokretani live/plaćeni modeli ni evaluacije kasnijih faza.
 
 ## Nalaz
@@ -38,14 +46,22 @@ Jelena je ručno proverila stvarne studije i kriterijume prema originalnim studi
 | `pnpm gold:metrics`        | 8 sintetičkih slučajeva; TP 9, FP 0, FN 1; precision 1, recall 0.9 — nije stvarni korisnički/medicinski benchmark                                                                                                                         |
 | `pnpm sqlite:smoke`        | PASS, sqlite-vec v0.1.9 exact KNN                                                                                                                                                                                                         |
 
+## Dopuna aktuelnom stanju (2026-11-18)
+
+Prethodni paragrafi i tabela beleže stanje na 2026-11-17. Od tada su P001–P003 adjudikovani u novom v3 gold skupu, a P004 je zabeležen kao odvojena behavior adjudikacija na 20-studijskom profilu. Evaluacija `pnpm eval:rag:offline --dataset eval/rag/retrieval-v3-adjudicated.json --embedding-mode fake --summary` je prošla: P001 study nDCG@2 1.0 i passage nDCG@5 .613147 bez rerank promene; P002 study nDCG@2 1.0 i passage nDCG@5 .386853 → .919721 (+.532868). RAG-P003 je negativan slučaj i ne ulazi u ranking metrike. Ovo je fake/hash embedding merenje nad malim snapshot-om, ne semantički kvalitet.
+
+U ovom radnom stablu: `pnpm build`, `pnpm typecheck`, `pnpm lint`, `pnpm test` (61 fajl, 307/307), `pnpm smoke`, `pnpm eval:offline`, `pnpm gold:metrics`, v3 RAG offline evaluacija i real-20 Playwright tok u instaliranom Chrome-u (2/2) su prošli. Za browser proveru je dodat `E2E_BROWSER_CHANNEL` override; podrazumevana vrednost ostaje `msedge`. Build javlja bundle od 503.87 kB.
+
+**Preostalo za zatvaranje:** dostavljeni snimak od 50 studija nema query/filter/totalCount/paginaciju; 18 dodatnih studija su potvrđene kao podskup tih 50, ali pravilo izbora nije zabeleženo. Nezavisan pregled prava nije dokumentovan. T323 je odlukom tima odložen / van obima demo faze, nije završen. Kvalitet parsiranja kriterijuma nije merljiv jer sistem nema eligibility-text parser i nije izvršena nezavisna adjudikacija; kriterijumski parser i njegova nezavisna evaluacija su buduća faza. Demo se zatvara bez tvrdnje o parser kvalitetu. Matcher paket je hash-pinned i povezan sa 20-study profilom; 290 kriterijuma ostaje `manual_review`.
+
 Zamrznuti baseline-v2 važi za petostudijski snapshot (2 stvarne + 3 sintetičke), ne za real-20 aktivni korpus; lexicon-v3 merenja nisu uporediva sa njim. Proposal oznake nisu evaluator ulaz. Live embedding/Gemini, GitHub Actions i pravni pregled nisu urađeni. `format:check` pada na 210 fajlova globalno; nema masovnog formatiranja. `git diff --check`, typecheck i lint prolaze.
 
-## Pre zatvaranja Faze 2
+## Preostali ulazi za zatvaranje Faze 2
 
-1. 3.3: Jelena adjudikuje predloge i tek potom pravi hash-zamrznut benchmark snapshot sa odvojenim splitovima.
-2. 4.2: Reranker analiza nad dva rankinga je preliminarna (study delta 0/0; passage +.192161 samo za RAG-002); potreban je veći nezavisno adjudikovan skup.
-3. 6: evidentirati query/filter/pagination/kohortnu potpunost i dobiti odluku o pravima trećih strana; poreklo per-record samo po sebi nije pravno odobrenje.
-4. 5.3: pripremiti i testirati demo profile isključivo prema već hash-odobrenim pravilima; nema novih pravila iz 18 dodatnih studija.
-5. 5.2: per-criterion approval nije implementiran; koristiti minimalno bezbedno pravilo: samo eksplicitno pregledane stavke ulaze u draft studije/hash approval, ostatak ostaje `manual_review`/`unknown`.
+1. **Kohorta:** potvrditi ukupno rezultata i stranica za pretragu, da li je `nextPageToken` vraćen i korišćen do kraja, i kako je izabrano 18 zapisa od 100 mogućih po stranici. Postojeći query/status/pageSize su prepopunjeni u obrascu u završnom odgovoru.
+2. **Prava:** dokumentovati nezavisnog pregledavaoca, datum, odluku i uslove za CT.gov sadržaj i moguća prava trećih strana. Atribucija i CT.gov Terms su već navedeni; blanket licenca se ne tvrdi.
+3. **Reranker opseg:** P001/P002 daju ponovljene relevancy obrasce postojećih RAG-001/002, pa su rezultat i dalje pilot signal. Potrebna je odluka vlasnika da li se Faza 2 može zatvoriti uz ovo ograničenje ili se prvo dostavlja veći nezavisno adjudikovan skup.
+
+Matcher approval/compile i real-20 integracioni tok su završeni. Deset jasno strukturisanih pravila ulazi u deterministički matcher; svih 290 ostalih kriterijuma ostaju `manual_review`/`unknown`.
 
 Faze 3 i 4 ostaju van opsega. Nema merge/push preporuke dok navedeni Phase 2 kvalitetni i operativni dokazi ne budu rešeni.

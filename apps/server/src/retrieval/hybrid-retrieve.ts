@@ -33,12 +33,25 @@ export type RerankCandidate = Pick<
 >;
 
 export interface CandidateReranker {
-  readonly id: "deterministic" | "gemini";
+  readonly id: "deterministic" | "gemini" | "cohere";
   rerank(
     query: string,
     candidates: readonly RerankCandidate[],
   ): Promise<RankedCandidate[]>;
 }
+
+export type AppliedReranker =
+  | "cohere"
+  | "fallback-rrf"
+  | "gemini"
+  | "deterministic"
+  | "disabled";
+export type RerankerFallbackReason =
+  | "timeout"
+  | "http_error"
+  | "missing_key"
+  | "invalid_response"
+  | "provider_error";
 
 export type RetrievalTrace = {
   untranslatedTerms: string[];
@@ -46,7 +59,9 @@ export type RetrievalTrace = {
   retrievalMode: "hybrid" | "lexical_fallback" | "lexical_only";
   fallbackReason?: EmbeddingFailureReason;
   vectorHitCount: number;
-  reranking: "deterministic" | "gemini" | "rrf_fallback" | "disabled";
+  reranking: "deterministic" | "gemini" | "cohere" | "rrf_fallback" | "disabled";
+  appliedReranker: AppliedReranker;
+  rerankerFallbackReason?: RerankerFallbackReason;
   metadataFilters: { state?: string; status?: string };
 };
 
@@ -71,6 +86,26 @@ function reciprocalRankFusion(
 
 function compareRanked(left: RankedCandidate, right: RankedCandidate): number {
   return right.score - left.score || left.id.localeCompare(right.id, "en");
+}
+
+function classifyRerankerFallback(error: unknown): RerankerFallbackReason {
+  const message = error instanceof Error ? error.message : String(error);
+  if (error instanceof DOMException && error.name === "TimeoutError") return "timeout";
+  if (/timeout|aborted|abort/iu.test(message)) return "timeout";
+  if (/HTTP greška/iu.test(message)) return "http_error";
+  if (/API ključ/iu.test(message)) return "missing_key";
+  if (/odgovor|kandidat/iu.test(message)) return "invalid_response";
+  return "provider_error";
+}
+
+function logReranker(application: AppliedReranker, reason?: RerankerFallbackReason): void {
+  console.info(
+    JSON.stringify({
+      event: "retrieval_reranker",
+      reranker: application,
+      ...(reason ? { reason } : {}),
+    }),
+  );
 }
 
 function validateOptions(options: HybridRetrievalOptions): void {
@@ -417,6 +452,9 @@ export class HybridTrialRetriever {
       options.rerank === false || queryTexts.length === 0
         ? "disabled"
         : this.reranker.id;
+    let appliedReranker: AppliedReranker =
+      rerankingState === "disabled" ? "disabled" : rerankingState;
+    let rerankerFallbackReason: RerankerFallbackReason | undefined;
     let rankedTrials = candidateTrials;
     let rankedPassages = passageCandidates;
     if (
@@ -450,10 +488,13 @@ export class HybridTrialRetriever {
         rankedPassages = passageCandidates
           .map(({ id, score }) => ({ id, score: scores.get(id) ?? score }))
           .sort(compareRanked);
-      } catch {
+      } catch (error) {
         rerankingState = "rrf_fallback";
+        appliedReranker = "fallback-rrf";
+        rerankerFallbackReason = classifyRerankerFallback(error);
       }
     }
+    logReranker(appliedReranker, rerankerFallbackReason);
     const selectedIds = new Set(
       rankedTrials.slice(0, options.maxCandidates).map(({ id }) => id),
     );
@@ -508,6 +549,8 @@ export class HybridTrialRetriever {
         ...(fallbackReason ? { fallbackReason } : {}),
         vectorHitCount: new Set(vectorHits.map((hit) => hit.id)).size,
         reranking: rerankingState,
+        appliedReranker,
+        ...(rerankerFallbackReason ? { rerankerFallbackReason } : {}),
         metadataFilters: metadata.applied,
       },
     };

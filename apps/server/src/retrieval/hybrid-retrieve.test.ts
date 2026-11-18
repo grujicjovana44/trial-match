@@ -142,6 +142,7 @@ describe("hibridni retrieval", () => {
     expect(retrieval.passageIds).toEqual(["T-X#inc-1"]);
     expect(retrieval.contextText).not.toContain("HbA1c at least 10%");
     expect(retrieval.retrievalTrace?.retrievalMode).toBe("hybrid");
+    expect(retrieval.retrievalTrace?.appliedReranker).toBe("deterministic");
     expect(retrieval.retrievalTrace?.vectorHitCount).toBeGreaterThan(0);
     expect(evaluated[0]?.verdict).toBe("excluded");
     expect(evaluated[0]?.criteria.map((criterion) => criterion.id)).toEqual([
@@ -324,6 +325,7 @@ describe("hibridni retrieval", () => {
   });
 
   it("vraća RRF redosled kad reranker nije dostupan", async () => {
+    const log = vi.spyOn(console, "info").mockImplementation(() => undefined);
     const trial = studyWithUnretrievedExclusion();
     const retriever = new HybridTrialRetriever(
       new InMemoryVectorStore(),
@@ -345,6 +347,16 @@ describe("hibridni retrieval", () => {
 
     expect(result.trials.map((item) => item.trialId)).toEqual(["T-X"]);
     expect(result.retrievalTrace?.reranking).toBe("rrf_fallback");
+    expect(result.retrievalTrace?.appliedReranker).toBe("fallback-rrf");
+    expect(result.retrievalTrace?.rerankerFallbackReason).toBe("provider_error");
+    expect(log).toHaveBeenCalledWith(
+      JSON.stringify({
+        event: "retrieval_reranker",
+        reranker: "fallback-rrf",
+        reason: "provider_error",
+      }),
+    );
+    log.mockRestore();
   });
 });
 

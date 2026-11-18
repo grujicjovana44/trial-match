@@ -316,7 +316,7 @@ it("učitava dve stvarne studije iz DATA_DIR i vraća rezultate bez greške cita
   }
 });
 
-it("clinicaltrials-20 profil izlaže nove stvarne studije kroz API uz unknown pravila", async () => {
+it("clinicaltrials-20 učitava odobrena auto pravila i zadržava citirane unknown kriterijume", async () => {
   const app = createApp({
     config: parseConfig({
       NODE_ENV: "test",
@@ -346,7 +346,12 @@ it("clinicaltrials-20 profil izlaže nove stvarne studije kroz API uz unknown pr
     expect(newStudy).toBeDefined();
     expect(newStudy.criteria.length).toBeGreaterThan(0);
     expect(
-      newStudy.criteria.every(
+      newStudy.criteria.some(
+        (criterion: { status: string }) => criterion.status === "met",
+      ),
+    ).toBe(true);
+    expect(
+      newStudy.criteria.some(
         (criterion: { status: string }) => criterion.status === "unknown",
       ),
     ).toBe(true);

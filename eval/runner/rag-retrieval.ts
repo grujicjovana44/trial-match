@@ -28,6 +28,7 @@ export const RetrievalCaseSchema = z
     reviewedAt: z.union([
       z.literal("TODO"),
       z.string().datetime({ offset: true }),
+      z.iso.date(),
     ]),
     kind: z.enum(["ranking", "behavior", "negative", "injection", "language"]),
     split: z.enum(["dev", "test"]),
@@ -74,7 +75,7 @@ export const RetrievalDatasetSchema = z
     schemaVersion: z.literal(2),
     datasetId: z.string().min(1),
     corpusSnapshotId: z.string().min(1),
-    annotationStatus: z.literal("pending_human_review"),
+    annotationStatus: z.enum(["pending_human_review", "adjudicated"]),
     annotationMethod: z.string().min(1),
     corpus: z.array(CorpusSnapshotSchema).min(1),
     cases: z.array(RetrievalCaseSchema).min(1),
@@ -114,7 +115,7 @@ export const RetrievalDatasetSchema = z
       if (
         (testCase.labelStatus === "proposed" &&
           (testCase.reviewer !== "TODO" || testCase.reviewedAt !== "TODO")) ||
-        (testCase.labelStatus !== "proposed" &&
+      (testCase.labelStatus !== "proposed" &&
           (testCase.reviewer === "TODO" || testCase.reviewedAt === "TODO"))
       )
         ctx.addIssue({

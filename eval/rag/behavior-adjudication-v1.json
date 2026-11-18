@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "caseId": "RAG-P004",
+  "status": "approved",
+  "reviewer": "Jelena",
+  "reviewedAt": "2026-11-18",
+  "corpusScope": "active clinicaltrials-20 demo profile",
+  "profile": {
+    "age": 22
+  },
+  "observation": "Only age was extracted; no diagnosis inferred; all 20 studies remained unfiltered, 10 displayed; all criteria unknown and zero met.",
+  "expectedBehavior": "No age-based retrieval filtering or inferred diagnosis; matcher statuses remain unknown without criterion data.",
+  "note": "Separate behavior adjudication; excluded from five-study ranking metrics."
+}

@@ -1,0 +1,26 @@
+{
+  "name": "lokalni-pregledani-korpus",
+  "version": "rules-713d7b1f382f",
+  "date": "2026-11-16",
+  "origin": "Official ClinicalTrials.gov API v2 records retrieved individually; per-record URLs, retrieval dates, status dates and hashes are in data/raw/studies_20_api_provenance_2026-11-16.json.",
+  "synthetic": false,
+  "license": "ClinicalTrials.gov Terms and Conditions: https://clinicaltrials.gov/terms-conditions (source attribution required; third-party rights may apply; no separate license is asserted).",
+  "transformations": "Original API JSON retained per study in data/raw; locally normalized by the existing data:prepare importer; eligibility text and source IDs preserved; no medical criteria were changed.; lokalni compile:rules; bez generisanja modelom",
+  "limitations": [
+    "This import contains the 18 additions only; the two existing approved studies remain in their unchanged approved package.",
+    "Some records describe mixed or system-level populations and may not be individual patient-matching candidates.",
+    "ClinicalTrials.gov attribution is retained; third-party rights may apply; no separate license is asserted.",
+    "Nepregledana pravila ne ulaze u matcher.",
+    "Od 300 kriterijuma u ovom paketu, 10 su odobrena za automatsku proveru; 290 ostaje manual_review/unknown."
+  ],
+  "queryParameters": {
+    "api": "ClinicalTrials.gov API v2",
+    "search": "query.cond=type 2 diabetes",
+    "status": "RECRUITING,NOT_YET_RECRUITING",
+    "retrieval": "18 individually requested study records"
+  },
+  "downloadedCount": 18,
+  "includedCount": 18,
+  "sourceHash": "9505cb0d03135540b8e7065c3c7f0decff0745f0a46463409d1154113b4bc68c",
+  "rulesVersion": "1"
+}

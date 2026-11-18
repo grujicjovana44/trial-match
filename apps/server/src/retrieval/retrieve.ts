@@ -8,6 +8,7 @@ import { buildRagDocuments, type RagDocument } from "./documents.js";
 import { buildRetrievalQueries } from "./query.js";
 import { filterKnownMetadata } from "./metadata.js";
 import type { EmbeddingFailureReason } from "./embeddings.js";
+import type { AppliedReranker, RerankerFallbackReason } from "./hybrid-retrieve.js";
 
 export type RetrievedContext = {
   trials: Trial[];
@@ -21,7 +22,9 @@ export type RetrievedContext = {
     retrievalMode: "hybrid" | "lexical_fallback" | "lexical_only";
     fallbackReason?: EmbeddingFailureReason;
     vectorHitCount: number;
-    reranking: "deterministic" | "gemini" | "rrf_fallback" | "disabled";
+    reranking: "deterministic" | "gemini" | "cohere" | "rrf_fallback" | "disabled";
+    appliedReranker: AppliedReranker;
+    rerankerFallbackReason?: RerankerFallbackReason;
     metadataFilters: { state?: string; status?: string };
   };
 };
@@ -191,6 +194,9 @@ export function retrieveTrials(
     passageIds.push(id);
     contextLength += addedLength;
   }
+  console.info(
+    JSON.stringify({ event: "retrieval_reranker", reranker: "disabled" }),
+  );
   return {
     trials: selected,
     sourceIds,
@@ -203,6 +209,7 @@ export function retrieveTrials(
       retrievalMode: "lexical_only",
       vectorHitCount: 0,
       reranking: "disabled",
+      appliedReranker: "disabled",
       metadataFilters: metadata.applied,
     },
   };

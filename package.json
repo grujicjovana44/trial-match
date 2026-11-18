@@ -18,6 +18,7 @@
     "test:e2e:phase2": "playwright test",
     "smoke": "vitest run apps/server/test/smoke",
     "sqlite:smoke": "node scripts/sqlite-vec-smoke.mjs",
+    "reranker:smoke": "node --env-file-if-exists=.env dist/scripts/cohere-reranker-smoke.js",
     "embeddings:check": "node --env-file-if-exists=.env dist/scripts/embeddings-check.js",
     "index:build": "node --env-file-if-exists=.env dist/scripts/index-build.js",
     "data:prepare": "node dist/scripts/prepare-trials.js",
