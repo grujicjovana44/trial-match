@@ -124,8 +124,8 @@ export function ResultPanel({
         </div>
       )}
       {result.excludedTrials.length > 0 && (
-        <section aria-label="Isključene studije">
-          <h3>Isključene studije i razlozi</h3>
+        <section aria-label={copy.result.excludedLabel}>
+          <h3>{copy.result.excludedHeading}</h3>
           {result.excludedTrials.map((trial, index) => (
             <TrialCard key={trial.trialId} trial={trial} index={index} />
           ))}

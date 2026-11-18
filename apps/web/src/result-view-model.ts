@@ -112,6 +112,47 @@ export function criterionStatusIcon(status: CriterionStatus): string {
   return copy.criterion.icon[status];
 }
 
+export interface RegistryLabel {
+  text: string;
+  // false: vrednost nije u tabeli i prikazuje se doslovno, kao izvorni podatak registra.
+  known: boolean;
+}
+
+function registryLabel(
+  value: string | null | undefined,
+  table: Record<string, string>,
+): RegistryLabel | null {
+  const trimmed = value?.trim() ?? "";
+  if (trimmed.length === 0) return null;
+  const direct = table[trimmed];
+  if (direct !== undefined) return { text: direct, known: true };
+  // Server spaja više faza zarezom (npr. „PHASE1, PHASE2“); svaka se prevodi zasebno.
+  const parts = trimmed.split(",").map((part) => part.trim());
+  if (parts.length > 1 && parts.every((part) => table[part] !== undefined)) {
+    return { text: parts.map((part) => table[part]).join(", "), known: true };
+  }
+  return { text: trimmed, known: false };
+}
+
+export function recruitmentStatusLabel(
+  value: string | null | undefined,
+): RegistryLabel | null {
+  return registryLabel(value, copy.trial.recruitmentValues);
+}
+
+export function phaseLabel(
+  value: string | null | undefined,
+): RegistryLabel | null {
+  return registryLabel(value, copy.trial.phaseValues);
+}
+
+// Jedinica uz vrednost: „%“ bez razmaka, ostale sa razmakom (T220).
+export function formatUnit(unit: string | null): string {
+  const trimmed = unit?.trim() ?? "";
+  if (trimmed.length === 0) return "";
+  return trimmed === "%" ? "%" : ` ${trimmed}`;
+}
+
 export function formatNumber(value: number): string {
   return String(Math.round(value * 100) / 100).replace(".", ",");
 }

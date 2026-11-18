@@ -43,7 +43,7 @@ export type TransportCircumstance =
   | "invalid_schema"
   | { httpStatus: number };
 
-// Vrednost zaglavlja Retry-After: ceo broj između 1 i 600, inače podrazumevano.
+// Vrednost zaglavlja Retry-After: ceo broj između 1 i 60 (003 contracts/api.md), inače podrazumevano.
 export function parseRetryAfter(value: string | null): number {
   if (value === null) return DEFAULT_RETRY_AFTER_SECONDS;
   const trimmed = value.trim();
