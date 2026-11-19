@@ -256,7 +256,7 @@ describe("RAG corpus loader", () => {
   it("učitava tačno 20 studija i 10 odobrenih auto pravila iz hash-pinned paketa", async () => {
     const corpus = await loadRagCorpus([
       "data/rule_sets/studies_2_approved_20261115_1539",
-      "data/rule_sets/studies_18_approved_20261118",
+      "data/rule_sets/studies_18_approved_REVIEWED",
     ]);
     const trialIds = corpus.trials.map((item) => item.trialId);
     const documents = buildRagDocuments(corpus.trials);
