@@ -460,16 +460,21 @@ export class TrialMatchService {
         "Ova radnja nije dostupna u trenutnom stanju provere.",
       );
     try {
-      const extraction = await this.extract(text, this.sessions.get(runId)!);
+      const extraction =
+        this.parseExplicitHypothesis(text) ??
+        (await this.extract(text, this.sessions.get(runId)!));
       if (forbidden(extraction))
         throw this.badRequest(
           "forbidden_intent",
           "Unesite samo izmenu sintetičkog profila.",
         );
+      const changedFields = Object.keys(extraction.profile).filter(
+        (field) => field !== "ambiguities",
+      );
       if (
         extraction.intent !== "eligibility_check" ||
         extraction.profile.ambiguities?.length ||
-        Object.keys(extraction.profile).length === 0
+        changedFields.length !== 1
       )
         throw this.badRequest(
           "ambiguous_hypothesis",
@@ -502,6 +507,43 @@ export class TrialMatchService {
       );
     }
   }
+  /** Parse documented one-field hypothesis forms before invoking the LLM. */
+  private parseExplicitHypothesis(text: string): Extraction | undefined {
+    const candidates: Extraction[] = [];
+    const addMeasurement = (
+      expression: RegExp,
+      field: "hba1c" | "creatinine" | "height" | "weight",
+    ) => {
+      const match = expression.exec(text);
+      if (!match?.[1] || !match[2]) return;
+      const value = parseLocalizedNumber(match[1]);
+      if (value === undefined) return;
+      const profile = { [field]: { value, unit: match[2] } } as Profile;
+      this.validateTechnicalRanges(profile);
+      candidates.push(
+        ExtractionSchema.parse({ intent: "eligibility_check", profile }),
+      );
+    };
+
+    addMeasurement(
+      /(?:hba1c|hemoglobin\s*a1c|glikozilirani\s+hemoglobin)\s*(?:je|iznosi|[:=])?\s*(-?\d+(?:[.,]\d+)?)\s*(%|mmol\/mol(?:\s+ifcc)?)/iu,
+      "hba1c",
+    );
+    addMeasurement(
+      /(?:kreatinin|creatinine)\s*(?:je|iznosi|[:=])?\s*(-?\d+(?:[.,]\d+)?)\s*(mg\/dl|µmol\/l|umol\/l)/iu,
+      "creatinine",
+    );
+    addMeasurement(
+      /(?:visina|height)\s*(?:je|iznosi|[:=])?\s*(-?\d+(?:[.,]\d+)?)\s*(cm|m)\b/iu,
+      "height",
+    );
+    addMeasurement(
+      /(?:težina|tezina|weight)\s*(?:je|iznosi|[:=])?\s*(-?\d+(?:[.,]\d+)?)\s*(kg|g)\b/iu,
+      "weight",
+    );
+    return candidates.length === 1 ? candidates[0] : undefined;
+  }
+
   private async extract(
     text: string,
     session: ModelSession,
