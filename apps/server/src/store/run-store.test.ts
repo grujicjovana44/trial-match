@@ -28,6 +28,8 @@ const state = (runId: string, createdAt: number) => ({
       toolCalls: 0,
       tokens: 0,
       demoMode: true,
+      retrievalMode: "lexical_only",
+      retrievalFallbackReason: null,
     },
     status: "insufficient_evidence",
     stage: "completed",

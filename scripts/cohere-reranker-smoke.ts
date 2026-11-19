@@ -10,7 +10,7 @@ async function main(): Promise<void> {
   }
   const corpus = await loadRagCorpus([
     "data/rule_sets/studies_2_approved_20261115_1539",
-    "data/rule_sets/studies_18_approved_20261118",
+    "data/rule_sets/studies_18_approved_REVIEWED",
   ]);
   const documents = buildRagDocuments(corpus.trials)
     .filter((document) => /diabetes/iu.test(document.text))

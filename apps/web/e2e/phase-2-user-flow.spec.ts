@@ -30,6 +30,9 @@ test("synthetic profile → real-study corpus → visible citation and unknown c
   await expect(page.locator(".trial-unknown-count").first()).toBeVisible();
   await expect(page.locator(".trial-card .mono").first()).toContainText("NCT");
   await expect(page.locator(".technical-meta")).toContainText("Snimak studija");
+  await expect(page.locator(".technical-meta")).toContainText(
+    "Retrieval: lexical-only",
+  );
   await expect(page.locator(".technical-meta")).not.toHaveAttribute("open", "");
   await expect(page.locator(".mode-badge.mode-demo")).toBeVisible();
 });

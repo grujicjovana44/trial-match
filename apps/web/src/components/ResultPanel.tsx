@@ -52,6 +52,11 @@ export function ResultPanel({
       animate={{ opacity: 1, y: 0 }}
       transition={enter}
     >
+      {result.meta.retrievalFallbackReason && (
+        <p role="status" className="system-explanation">
+          {copy.meta.retrievalFallback(result.meta.retrievalFallbackReason)}
+        </p>
+      )}
       {stale && <p className="stale-banner">{copy.processing.stale}</p>}
       {showSaved && !stale && <SavedNotice />}
       {!stale && (

@@ -56,6 +56,8 @@ describe("korisnički tok", () => {
         toolCalls: 0,
         tokens: null,
         demoMode: true,
+        retrievalMode: "lexical_only",
+        retrievalFallbackReason: null,
       },
     };
     const completed = {
@@ -129,13 +131,14 @@ describe("korisnički tok", () => {
       name: "Potrebna je dopuna",
     });
     expect(
-      (screen.getByLabelText("Opišite profil") as HTMLTextAreaElement)
-        .value,
+      (screen.getByLabelText("Opišite profil") as HTMLTextAreaElement).value,
     ).toBe(profile);
 
     fireEvent.click(screen.getByRole("button", { name: "Ne" }));
     expect(
-      await screen.findByText("Uzrast od 18 do 75 godina.", { selector: ".criterion-text" }),
+      await screen.findByText("Uzrast od 18 do 75 godina.", {
+        selector: ".criterion-text",
+      }),
     ).toBeTruthy();
     expect(fetchMock.mock.calls[1]?.[0]).toBe("/api/runs/run-1/answer");
     expect(fetchMock.mock.calls[1]?.[1]).toMatchObject({
@@ -145,10 +148,9 @@ describe("korisnički tok", () => {
       screen.getByText("Odgovor je sačuvan · ista provera je nastavljena"),
     ).toBeTruthy();
 
-    fireEvent.change(
-      screen.getByLabelText("Promenite jedan podatak"),
-      { target: { value: "A šta ako je HbA1c 9,0%?" } },
-    );
+    fireEvent.change(screen.getByLabelText("Promenite jedan podatak"), {
+      target: { value: "A šta ako je HbA1c 9,0%?" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Proveri izmenu" }));
     await screen.findByText("Hipotetička izmena prikazana odvojeno.");
     expect(fetchMock.mock.calls[2]?.[0]).toBe("/api/runs/run-1/hypothesis");

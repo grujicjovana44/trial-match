@@ -194,4 +194,9 @@ describe("režim i metapodaci", () => {
     expect(document.body.textContent).not.toContain("Datum snimka");
     expect(document.body.textContent).not.toContain("Datum nije dostupan");
   });
+
+  it("prikazuje retrieval režim u tehničkim detaljima", () => {
+    render(<ResultMeta meta={metaOf({ retrievalMode: "hybrid" })} />);
+    expect(screen.getByText("Retrieval: hibridni")).toBeTruthy();
+  });
 });

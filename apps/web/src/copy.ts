@@ -227,6 +227,10 @@ export const copy = {
     syntheticData: "Sintetički skup",
     realData: "Snimak studija",
     demo: "DEMO režim — bez poziva stvarnom modelu",
+    retrieval: (mode: string) =>
+      `Retrieval: ${mode === "hybrid" ? "hibridni" : mode === "lexical_fallback" ? "lexical fallback" : "lexical-only"}`,
+    retrievalFallback: (reason: string) =>
+      `RAG indeks nije dostupan (${reason === "index_missing" ? "indeks nedostaje" : reason === "embedding_unconfigured" ? "embedding ključ nije podešen" : "indeks nije validan"}); korišćena je lexical pretraga.`,
     live: (modelId: string) => `Stvarni model: ${modelId}`,
     liveNoId: "Stvarni model",
   },
