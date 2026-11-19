@@ -30,3 +30,11 @@ Za svaki AC navodi stanje interfejsa koje ga prikazuje i dokaz. Brojevi stanja s
 | Tokovi EV-01, EV-02, EV-05–EV-09 kroz interfejs  | REQ-C1         | Ne može se izvesti.                                                         |
 | Ručna provera stanja 10 i 11 na živoj aplikaciji | REQ-D4         | Pokriveno testovima interfejsa.                                             |
 | Provera javne isporuke                           | REQ-B8, REQ-B9 | Lokalna provera izgrađene verzije.                                          |
+
+## Dopuna pokrivenosti redizajna (2026-11-19)
+
+- Rezime koristi UI prebrojavanje samo postojećih results, excludedTrials i kriterijumskih statusa. Test: integration/outcomes.test.tsx.
+- Kartice čuvaju redosled servera; glavne razloge uzimaju prvo iz not_met, zatim iz met. unknown se prikazuje samo kao broj i u sklopljenoj grupi. Testovi: integration/trial-list.test.tsx, integration/outcomes.test.tsx.
+- Opciono CriterionResult.kind prenosi postojeći Criterion.kind iz pravila. packages/shared/test/schemas.test.ts pokriva polje, a matcher test pokriva prosleđivanje; odgovori bez polja ostaju validni.
+- Prazno stanje, jedinstvena radnja greške, diktiranje i skeleton pokriveni su testovima u integration/outcomes.test.tsx, integration/errors.test.tsx, integration/voice-input.test.tsx i integration/processing.test.tsx.
+- Strukturisani zbir podataka koji bi rešili više nepoznatih kriterijuma i hash skupa nisu deo trenutnog RunResponse; to su predlozi za buduću API izmenu, ne UI izvedene vrednosti.

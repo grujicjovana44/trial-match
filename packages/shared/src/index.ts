@@ -237,6 +237,7 @@ export const CriterionResultSchema = z
   .object({
     id: z.string().min(1),
     text: z.string().min(1),
+    kind: z.enum(["inclusion", "exclusion"]).optional(),
     status: z.enum(["met", "not_met", "unknown"]),
     observedValue: z.union([
       z.number().finite(),

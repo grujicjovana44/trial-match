@@ -357,7 +357,13 @@ Identifikatori FR-xxx u ovom dokumentu odnose se na funkcionalnost 002. Pozivanj
 - Kategorija greške i informacija da li se greška može ponoviti već su deo odgovora o grešci; istek vremena modela ima zasebnu kategoriju. Konačnu listu kategorija potvrđuje Uloga B.
 - „Počni iznova“ ne briše proveru na serveru; prethodna provera ostaje dok se server ne restartuje, što je u skladu sa dokumentovanim ponašanjem skladišta izvršavanja.
 - Vizuelni stil (boje, tipografija, razmaci, komponente) određuje se u fazi plana na osnovu dizajnerskog uputstva vlasnika Uloge A (raniji mockup-i su odbačeni); ova specifikacija opisuje samo ponašanje i sadržaj.
-- Ova funkcionalnost ne menja zajedničke šeme, server, model ni evaluaciju. Svaka potrebna izmena formata odgovora upisuje se kao zahtev Ulozi B.
+- Izmena ponašanja ne menja matcher, pravila, retrieval, reranker, model ni evaluaciju. Opciono CriterionResult.kind samo prosleđuje postojeće Criterion.kind; ugovorna dopuna je zabeležena u contracts/ui-api.md.
+
+## Dopuna: redizajn korisničkog interfejsa (2026-11-19)
+
+Ova dopuna čuva postojeće AC ID-jeve i menja raspored prikaza. Na širokom ekranu unos profila ostaje vidljiv u levoj koloni, rezultati su desno; na užem ekranu unos je prvi u jednoj koloni. Rezime broji postojeće studije, presude i statuse kriterijuma iz odgovora, bez procenata ili novih zaključaka. Studije su kartice u serverovom redosledu; detalji se otvaraju na zahtev, a kriterijumi nepoznatog statusa su u sklopljenoj grupi.
+
+Pošto Criterion.kind već postoji u pripremljenim pravilima, CriterionResult dobija opciono kind polje koje matcher samo prosleđuje. Ne utiče na evaluaciju ili rangiranje, a odgovori bez njega ostaju validni. Greške imaju jedno kratko objašnjenje i jednu akciju; tehnički metapodaci su sklopljeni. „Šta nedostaje“ nije deo ovog kruga jer API ne vraća strukturisane potrebne podatke.
 
 ## Zavisnosti od drugih uloga
 

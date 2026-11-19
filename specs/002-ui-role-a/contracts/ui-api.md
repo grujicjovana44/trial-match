@@ -2,7 +2,7 @@
 
 **Datum**: 2026-11-10 | **Vlasnik ugovora**: Uloga B (`packages/shared/src/index.ts`) | **Korisnik**: Uloga A (`apps/web/`)
 
-Ovaj dokument ne menja ugovor. Navodi samo polja koja interfejs čita, da svaka izmena tih polja bude vidljiva kao rizik za interfejs. Puni ugovor je `specs/001-trialmatch-core/contracts/api.md` i `packages/shared/src/index.ts`.
+Ovaj dokument beleži polja koja interfejs čita, da svaka izmena bude vidljiva kao rizik za interfejs. Puni ugovor je `specs/001-trialmatch-core/contracts/api.md` i `packages/shared/src/index.ts`.
 
 ## Zahtevi koje interfejs šalje
 
@@ -32,15 +32,19 @@ Interfejs odbacuje svaki odgovor koji ne prolazi `RunResponseSchema` i prikazuje
 | `results[].trialId` | identifikator, sidro, veza ka registru | Veza samo za oblik `^NCT\d{8}$`. |
 | `results[].title` | naslov kartice | Nepouzdan tekst. |
 | `results[].verdict` | oznaka ishoda | `candidate`, `pending`, `excluded`. |
-| `results[].criteria[]` | redovi kriterijuma | `id` (ključ), `text`, `status`, `observedValue`, `sourceId`, `citation.quote`. |
+| `results[].criteria[]` | grupisani kriterijumi | `id` (ključ), `text`, opciono `kind` (`inclusion` / `exclusion`), `status`, `observedValue`, `sourceId`, `citation.quote`. `kind` služi samo za grupisanje u UI-ju i ne menja presudu. |
 | `question.text` | tekst pitanja | Nepouzdan tekst. |
 | `question.options` | dugmad ponuđenih odgovora | Može izostati ili biti prazan niz; oba znače „bez ponuđenih odgovora“. |
-| `error.category`, `error.retryable`, `error.message` | izbor poruke i radnje | Tabela u [data-model.md](../data-model.md), odeljak 2. |
+| `error.category`, `error.retryable` | izbor poruke i radnje | `error.message` ostaje skriven da se ne prikazuje tehnički tekst servera. |
 | `meta.demoMode` | oznaka režima, napomena u upozorenju, podnožje | |
 | `meta.modelId` | oznaka režima i podnožje u stvarnom režimu | Prazan tekst se ne prikazuje. |
 | `meta.dataVersion` | podnožje rezultata | |
 
-Polja `meta.promptVersion`, `meta.schemaVersion`, `meta.durationMs`, `meta.modelCalls`, `meta.toolCalls`, `meta.tokens`, `question.field`, `question.trialsResolved` i `results[].criteria[].citation.sourceId` interfejs ne prikazuje.
+Polja `meta.promptVersion`, `meta.schemaVersion`, `meta.durationMs`, `meta.modelCalls`, `meta.toolCalls`, `meta.tokens`, `question.field`, `question.trialsResolved` i `results[].criteria[].citation.sourceId` dostupna su u sklopljenim tehničkim detaljima gde je primenljivo.
+
+## Dopuna za redizajn UI-ja (2026-11-19)
+
+`CriterionResult.kind` je opciono aditivno polje. Izvorno `Criterion.kind` već postoji u pripremljenim pravilima; matcher ga prosleđuje bez promene evaluacije ili rangiranja. Odgovori bez polja ostaju validni. UI broji postojeće kriterijumske statuse i presude za rezime; ne računa procente ili nove ishode. Ugovor još nema strukturisanu listu nedostajućih podataka niti agregat koji povezuje jedan podatak sa više nerazrešenih kriterijuma; to ostaje budući rad.
 
 ## Odgovor sa greškom (HTTP 4xx ili 5xx)
 

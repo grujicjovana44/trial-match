@@ -5,12 +5,11 @@ import type { Ref } from "react";
 import { copy } from "../copy.js";
 import { enter } from "../motion/motion-presets.js";
 import { SavedNotice } from "../motion/SavedNotice.js";
-import { resultHeading } from "../result-view-model.js";
+import { resultCounts, resultHeading } from "../result-view-model.js";
 import { ClarificationForm } from "./ClarificationForm.js";
 import { HypothesisForm } from "./HypothesisForm.js";
 import { ProfileCard } from "./ProfileCard.js";
 import { TrialCard } from "./TrialCard.js";
-import { TrialOverview } from "./TrialOverview.js";
 import { ResultMeta } from "./ResultMeta.js";
 
 export function ResultPanel({
@@ -42,6 +41,7 @@ export function ResultPanel({
   hypothesisText: string | null;
   children?: ReactNode;
 }) {
+  const counts = resultCounts(result);
   return (
     <motion.section
       className={stale ? "panel results-panel is-stale" : "panel results-panel"}
@@ -54,6 +54,17 @@ export function ResultPanel({
     >
       {stale && <p className="stale-banner">{copy.processing.stale}</p>}
       {showSaved && !stale && <SavedNotice />}
+      {!stale && (
+        <p className="result-summary" aria-label="Sažetak rezultata">
+          {copy.summary.sentence(
+            counts.trials,
+            counts.excluded,
+            counts.met,
+            counts.notMet,
+            counts.unknown,
+          )}
+        </p>
+      )}
       {isHypothesis && !stale && (
         <div className="hypothesis-banner">
           <strong>{copy.result.hypothesisBanner}</strong>
@@ -108,6 +119,11 @@ export function ResultPanel({
           </p>
         </>
       )}
+      {(result.status === "ok" ||
+        (result.status === "insufficient_evidence" &&
+          result.reason === "no_matching_trial")) && (
+        <HypothesisForm key={resultSeq} busy={busy} onSubmit={onHypothesis} />
+      )}
       {result.profile && (
         <ProfileCard
           profile={result.profile}
@@ -115,7 +131,6 @@ export function ResultPanel({
           sourceText={sourceText}
         />
       )}
-      <TrialOverview trials={result.results} />
       {result.results.length > 0 && (
         <div className="trial-list">
           {result.results.map((trial, index) => (
@@ -139,11 +154,6 @@ export function ResultPanel({
           onAnswer={onAnswer}
           headingRef={clarificationRef}
         />
-      )}
-      {(result.status === "ok" ||
-        (result.status === "insufficient_evidence" &&
-          result.reason === "no_matching_trial")) && (
-        <HypothesisForm key={resultSeq} busy={busy} onSubmit={onHypothesis} />
       )}
       {children}
       <ResultMeta meta={result.meta} />

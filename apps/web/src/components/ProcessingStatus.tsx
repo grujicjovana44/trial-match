@@ -4,15 +4,19 @@ import { enter } from "../motion/motion-presets.js";
 
 export function ProcessingStatus({ slow }: { slow: boolean }) {
   return (
-    <motion.div
-      className="state-message"
+    <motion.section
+      className="loading-state"
       role="status"
+      aria-label={copy.processing.line}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={enter}
     >
-      <span className="shimmer-text">{copy.processing.line}</span>
-      {slow && <span className="state-detail">{copy.processing.slow}</span>}
-    </motion.div>
+      <h2>{copy.processing.line}</h2>
+      <p>{slow ? copy.processing.slow : copy.processing.short}</p>
+      <span className="skeleton skeleton-title" aria-hidden="true" />
+      <span className="skeleton" aria-hidden="true" />
+      <span className="skeleton skeleton-short" aria-hidden="true" />
+    </motion.section>
   );
 }

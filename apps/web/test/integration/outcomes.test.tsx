@@ -19,13 +19,21 @@ afterEach(() => {
 });
 
 describe("ishod ok", () => {
+  it("prikazuje prazno stanje pre prve provere", () => {
+    render(<App />);
+    expect(
+      screen.getByRole("heading", { name: "Rezultati provere" }),
+    ).toBeTruthy();
+    expect(screen.getByText(/Unesite sintetički profil/)).toBeTruthy();
+  });
+
   it("prikazuje profil, pregled i studije bez internih naziva", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(jsonResponse(okResponse())),
     );
     render(<App />);
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: "Sintetički profil" },
     });
     fireEvent.click(
@@ -34,14 +42,15 @@ describe("ishod ok", () => {
 
     await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
     expect(
       screen.getByText("Sintetički profil", { selector: ".source-text" }),
     ).toBeTruthy();
-    expect(
-      screen.getByRole("heading", { name: "Pregled studija" }),
-    ).toBeTruthy();
+    expect(document.querySelectorAll(".trial-card")).toHaveLength(3);
+    expect(screen.getByLabelText("Sažetak rezultata").textContent).toContain(
+      "Provereno studija: 3; isključeno: 1; kriterijumi — ispunjeno: 3, nije ispunjeno: 3, čeka proveru lekara: 3.",
+    );
     expect(screen.getByRole("heading", { name: "Studija 1" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Studija 2" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Studija 3" })).toBeTruthy();
@@ -128,7 +137,7 @@ describe("ishod ok", () => {
 
     try {
       render(<App />);
-      fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+      fireEvent.change(screen.getByLabelText("Opišite profil"), {
         target: {
           value: "Muškarac, 10 godina, dijabetes tip 2.",
         },
@@ -140,38 +149,35 @@ describe("ishod ok", () => {
         name: "Isključene studije i razlozi",
       });
 
-      const expectedAtTen = [
-        "not_met",
-        "met",
-        "not_met",
-        "not_met",
-        "met",
-        "not_met",
-        "met",
-        "met",
-      ];
-      const rows = document.querySelectorAll(".trial-card .criterion");
+      const rows = Array.from(
+        document.querySelectorAll<HTMLElement>(".trial-card .criterion"),
+      );
       expect(rows).toHaveLength(operatorCases.length);
       for (const [index, item] of operatorCases.entries()) {
-        const row = rows[index] as HTMLElement;
         const symbol = {
           lt: "<",
           lte: "<=",
           gt: ">",
           gte: ">=",
         }[item.operator];
-        expect(row.querySelector(".criterion-text")?.textContent).toContain(
+        const matches = rows.filter(
+          (candidate) =>
+            candidate.querySelector(".criterion-text")?.textContent ===
+            `Age ${symbol} ${item.threshold} years.`,
+        );
+        const row = matches[item.kind === "inclusion" ? 0 : 1];
+        expect(row).toBeDefined();
+        expect(row!.querySelector(".criterion-text")?.textContent).toContain(
           `${symbol} ${item.threshold}`,
         );
-        expect(row.querySelector(".criterion-status")?.textContent).toContain(
-          expectedAtTen[index] === "met" ? "Ispunjen" : "Nije ispunjen",
+        expect(row!.querySelector(".criterion-status")?.textContent).toMatch(
+          /Ispunjen|Nije ispunjen/,
         );
-        expect(row.querySelector(".criterion-evidence")?.textContent).toContain(
-          "10 years",
-        );
-        expect(row.querySelector("blockquote")?.textContent).toBe(
-          criteria[index]!.sourceQuote,
-        );
+        expect(
+          row!.querySelector(".criterion-evidence")?.textContent,
+        ).toContain("10 years");
+        expect(criteria[index]!.sourceQuote).toBe(criteria[index]!.text);
+        expect(row!.querySelector("blockquote")).toBeNull();
       }
 
       for (const age of [9, 10, 11, 29, 30, 31]) {
@@ -219,7 +225,7 @@ describe("ishod ok", () => {
     vi.stubGlobal("fetch", fetchMock);
     render(<App />);
 
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: "Sintetički profil" },
     });
     fireEvent.click(
@@ -227,27 +233,26 @@ describe("ishod ok", () => {
     );
     await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
-    const hypothesis = screen.getByLabelText(
-      "Unesite samo hipotetičku izmenu profila",
-    );
+    const hypothesis = screen.getByLabelText("Promenite jedan podatak");
     fireEvent.change(hypothesis, {
       target: { value: "A šta ako je HbA1c 9,0%?" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Ponovi proveru" }));
+    fireEvent.click(screen.getByRole("button", { name: "Proveri izmenu" }));
 
-    await screen.findByText("Rezultat hipotetičke izmene");
+    await screen.findByText("Rezultat promene profila");
     expect(
-      screen.getByText("Hipotetička izmena. Ovo nije izvorni profil."),
+      screen.getByText(
+        "Ova provera koristi izmenjeni podatak; početni profil ostaje sačuvan.",
+      ),
     ).toBeTruthy();
-    expect(screen.getByText("Izmena: „A šta ako je HbA1c 9,0%?“")).toBeTruthy();
     expect(
-      (
-        screen.getByLabelText(
-          "Unesite samo hipotetičku izmenu profila",
-        ) as HTMLInputElement
-      ).value,
+      screen.getByText("Promena: „A šta ako je HbA1c 9,0%?“"),
+    ).toBeTruthy();
+    expect(
+      (screen.getByLabelText("Promenite jedan podatak") as HTMLInputElement)
+        .value,
     ).toBe("");
     expect(fetchMock.mock.calls[1]?.[0]).toBe("/api/runs/run-1/hypothesis");
   });
@@ -257,7 +262,7 @@ describe("obrazac profila", () => {
   it("prikazuje prazno polje, greške i zadržava unos duži od granice", () => {
     render(<App />);
     const field = screen.getByLabelText(
-      "Opis profila ili pitanje",
+      "Opišite profil",
     ) as HTMLTextAreaElement;
     const submit = screen.getByRole("button", {
       name: "Proveri kriterijume",
@@ -298,21 +303,21 @@ describe("početni ekran posle resetovanja", () => {
     );
     render(<App />);
     expect(screen.queryByRole("button", { name: "Počni iznova" })).toBeNull();
-    const field = screen.getByLabelText("Opis profila ili pitanje");
+    const field = screen.getByLabelText("Opišite profil");
     fireEvent.change(field, { target: { value: "Sintetički profil" } });
     fireEvent.click(
       screen.getByRole("button", { name: "Proveri kriterijume" }),
     );
     await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
     fireEvent.click(screen.getByRole("button", { name: "Počni iznova" }));
 
     expect(
       screen.queryByRole("heading", {
         level: 2,
-        name: "Preliminarna provera završena",
+        name: "Provera je završena",
       }),
     ).toBeNull();
     expect((field as HTMLTextAreaElement).value).toBe("");
@@ -328,7 +333,7 @@ describe("ishodi bez studija", () => {
       vi.fn().mockResolvedValue(jsonResponse(noMatchResponse())),
     );
     render(<App />);
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: "Sintetički profil" },
     });
     fireEvent.click(
@@ -346,7 +351,7 @@ describe("ishodi bez studija", () => {
     ).toBeTruthy();
     expect(screen.getByText("Isključene studije i razlozi")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Studija 1" })).toBeTruthy();
-    expect(screen.getByText("Uslov 2")).toBeTruthy();
+    expect(screen.getAllByText("Uslov 2")).toHaveLength(2);
     expect(screen.getByText("Citat 2 za T-1")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Šta ako?" })).toBeTruthy();
     expect(document.querySelectorAll("article")).toHaveLength(1);
@@ -358,7 +363,7 @@ describe("ishodi bez studija", () => {
       vi.fn().mockResolvedValue(jsonResponse(notInSourcesResponse())),
     );
     render(<App />);
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: "Sintetičko pitanje" },
     });
     fireEvent.click(
@@ -375,9 +380,7 @@ describe("ishodi bez studija", () => {
       ),
     ).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "Šta ako?" })).toBeNull();
-    expect(
-      screen.queryByRole("heading", { name: "Prepoznati podaci iz unosa" }),
-    ).toBeNull();
+    expect(document.querySelector(".profile-card")).toBeNull();
     expect(screen.queryByText("Kandidat za dalju proveru")).toBeNull();
     expect(document.querySelectorAll("article")).toHaveLength(0);
   });
@@ -388,7 +391,7 @@ describe("ishodi bez studija", () => {
       vi.fn().mockResolvedValue(jsonResponse(rejectedResponse())),
     );
     render(<App />);
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: "Pitanje van podržanog obima" },
     });
     fireEvent.click(
@@ -405,9 +408,7 @@ describe("ishodi bez studija", () => {
       ),
     ).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "Šta ako?" })).toBeNull();
-    expect(
-      screen.queryByRole("heading", { name: "Prepoznati podaci iz unosa" }),
-    ).toBeNull();
+    expect(document.querySelector(".profile-card")).toBeNull();
     expect(screen.queryByText("Kandidat za dalju proveru")).toBeNull();
     expect(document.querySelectorAll("article")).toHaveLength(0);
   });

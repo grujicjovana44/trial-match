@@ -55,6 +55,22 @@ data/fixtures/trials.json /tmp/trialmatch-trials-prepared.json` uspešno je
 
 Najnoviji offline artifact je `eval/results/offline-2026-11-12T02-16-35.799Z-80b29912/`; nije dokaz stvarnog modela, pravog korpusa ili live EV prolaza. CAP-08 ne može se zameniti modelskim baseline-om: traži suštinski tehnički doprinos člana, pregled rada drugog člana i proverene primere pomoći za svakog člana.
 
+## Dopuna statusa — 2026-11-19
+
+| Stavka | Dokaz / izvor | Status |
+| --- | --- | --- |
+| T329 Gemini ključ | Potvrdila Jovana Grujić, 2026-11-19; izvor tvrdnje: ovaj dokument. Tajna nije pregledana. | Završeno prema vlasničkoj potvrdi; bez fajl dokaza |
+| T330 scope approval | Potvrdila Jovana Grujić, 2026-11-19; kod `eval/runner/live.ts` / `live-runner.ts` definiše 16 sintetičkih fixtures i `gemini-3.5-flash-lite`. Attempts/token cap-ovi nisu zabeleženi. | Završeno prema vlasničkoj potvrdi; detalji ograničeni |
+| T331 live baseline | `package.json` komanda `pnpm eval:live`; očekivani izlazi `eval/results/baseline/manifest.json`, `results.jsonl`, `traces/`. Nijedan nije pronađen; `eval/approval.json` takođe nedostaje. | **OTVORENO**; vlasnička potvrda izvršenja nije artifact dokaz |
+| T332 live UI smoke | Potvrdila Jovana Grujić, 2026-11-19; izvor tvrdnje: ovaj dokument. Uspešan; koraci/browser/build hash nisu navedeni. | Završeno prema vlasničkoj potvrdi, detalji nisu zabeleženi |
+| Cohere reranker | `apps/server/src/retrieval/cohere-reranker.ts`; živi poziv potvrđen smoke testom 2026-11-18. | `rerank-v5.0-fast` integrisan; kvalitet nije evaluiran, RAG-T402 otvoren |
+| T323 / parser | `specs/003-phase-2-live-integration/tasks.md`; nema eligibility-text parser evaluacije. | Odloženo; kvalitet parsera nije merljiv |
+| T319/T321 poreklo/prava | `docs/phase-2-final-inputs-2026-11-18.md` §1–2; query/paginacija delimično nisu zabeleženi. | Zatvoreno sa ograničenjem; nezavisan pregled prava nije sproveden |
+
+Zato Faza 2 nije formalno zatvorena. Live baseline metrike/zaključci nisu prepisani u ovu mapu.
+
+Provere u dokumentacionoj sesiji 2026-11-19: `pnpm typecheck` PASS (`tsc --noEmit -p tsconfig.json`, exit 0); `pnpm lint` PASS (`eslint .`, exit 0); `pnpm test` PASS (63 fajla, 323 testa, exit 0). Ovo su provere radnog stabla, ne dokaz live baseline-a; ostali T334 offline koraci nisu izvršeni.
+
 ## Provera Faze 2 — 2026-11-17
 
 | Oblast                  | Lokalni dokaz                                                                                       | Ishod / ograničenje                                                                                                                                                                                                                                                                                                                                                            |

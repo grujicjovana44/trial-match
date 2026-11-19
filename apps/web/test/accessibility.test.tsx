@@ -16,14 +16,14 @@ afterEach(() => {
 });
 
 function enterProfile() {
-  fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+  fireEvent.change(screen.getByLabelText("Opišite profil"), {
     target: { value: "Sintetički profil" },
   });
   fireEvent.click(screen.getByRole("button", { name: "Proveri kriterijume" }));
 }
 
 function submitButtonNames() {
-  expect(screen.getByLabelText("Opis profila ili pitanje")).toBeTruthy();
+  expect(screen.getByLabelText("Opišite profil")).toBeTruthy();
   expect(
     screen.getByRole("button", { name: "Proveri kriterijume" }),
   ).toBeTruthy();
@@ -44,11 +44,11 @@ describe("pristupačnost i fokus", () => {
 
     const heading = await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
     await waitFor(() => expect(document.activeElement).toBe(heading));
     expect(screen.getByRole("heading", { name: "Šta ako?" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Ponovi proveru" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Proveri izmenu" })).toBeTruthy();
   });
 
   it("fokusira dopunu kada je potreban odgovor", async () => {

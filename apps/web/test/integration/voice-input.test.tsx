@@ -23,7 +23,7 @@ afterEach(() => {
 
 function profileField(): HTMLTextAreaElement {
   return screen.getByLabelText(
-    "Opis profila ili pitanje",
+    "Opišite profil",
   ) as HTMLTextAreaElement;
 }
 
@@ -112,7 +112,7 @@ describe("glasovni unos (AC-13)", () => {
 
     await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
@@ -155,7 +155,7 @@ describe("glasovni unos (AC-13)", () => {
     );
     await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
 
     dictate();

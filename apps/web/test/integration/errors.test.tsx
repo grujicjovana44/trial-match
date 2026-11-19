@@ -19,7 +19,7 @@ afterEach(() => {
 
 function submitProfile() {
   render(<App />);
-  fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+  fireEvent.change(screen.getByLabelText("Opišite profil"), {
     target: { value: "Sintetički profil" },
   });
   fireEvent.click(screen.getByRole("button", { name: "Proveri kriterijume" }));
@@ -49,7 +49,7 @@ describe("greške zahteva", () => {
     );
 
     fireEvent.click(panel.querySelector("button")!);
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: "Sintetički profil" },
     });
     fireEvent.click(
@@ -57,7 +57,7 @@ describe("greške zahteva", () => {
     );
     await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
     expect(fetchMock.mock.calls[1]?.[0]).toBe(firstPath);
     expect(fetchMock.mock.calls[1]?.[1]?.body).toBe(firstBody);
@@ -98,7 +98,7 @@ describe("greške zahteva", () => {
     expect(panel.querySelectorAll("button")).toHaveLength(1);
   });
 
-  it("shows no panel actions for an edit-only HTTP error", async () => {
+  it("offers one action to return to an edit-only input", async () => {
     vi.stubGlobal(
       "fetch",
       vi
@@ -110,7 +110,8 @@ describe("greške zahteva", () => {
     submitProfile();
     const panel = await screen.findByRole("alert");
     expect(panel.textContent).toContain("Unos nije prihvaćen");
-    expect(panel.querySelectorAll("button")).toHaveLength(0);
+    expect(panel.querySelectorAll("button")).toHaveLength(1);
+    expect(panel.querySelector("button")?.textContent).toBe("Izmeni unos");
   });
 
   it("allows retry after a network failure", async () => {
@@ -125,7 +126,7 @@ describe("greške zahteva", () => {
     fireEvent.click(screen.getByRole("button", { name: "Pokušaj ponovo" }));
     await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
     expect(screen.queryByRole("alert")).toBeNull();
   });
@@ -145,7 +146,7 @@ describe("greške zahteva", () => {
     });
   });
 
-  it("shows an unknown server message as plain text", async () => {
+  it("does not expose technical server messages", async () => {
     vi.stubGlobal(
       "fetch",
       vi
@@ -156,7 +157,7 @@ describe("greške zahteva", () => {
     );
     submitProfile();
     const panel = await screen.findByRole("alert");
-    expect(panel.textContent).toContain("Poruka servera: Poruka servera.");
+    expect(panel.textContent).not.toContain("Poruka servera:");
   });
 
   it("counts down the Retry-After value and enables retry at zero", async () => {
@@ -184,7 +185,7 @@ describe("greške zahteva", () => {
     fireEvent.click(retry);
     await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
   });
 
@@ -223,27 +224,24 @@ describe("greške zahteva", () => {
     submitProfile();
     await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
-    fireEvent.change(
-      screen.getByLabelText("Unesite samo hipotetičku izmenu profila"),
-      { target: { value: "Možda drugačije" } },
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Ponovi proveru" }));
+    fireEvent.change(screen.getByLabelText("Promenite jedan podatak"), {
+      target: { value: "Možda drugačije" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Proveri izmenu" }));
 
     const panel = await screen.findByRole("alert");
-    expect(panel.textContent).toContain("Hipotetička izmena nije primenjena");
-    expect(panel.textContent).toContain(
-      "Ispod je poslednji potvrđeni rezultat ove provere.",
-    );
+    expect(panel.textContent).toContain("Nismo prepoznali promenu");
+    expect(panel.textContent).toContain("Navedite jednu konkretnu promenu");
+    expect(panel.querySelectorAll("button")).toHaveLength(1);
+    expect(panel.querySelector("button")?.textContent).toBe("Izmeni unos");
     for (const study of ["Studija 1", "Studija 2", "Studija 3"]) {
       expect(
         screen.getByRole("heading", { level: 3, name: study }),
       ).toBeTruthy();
     }
-    expect(
-      screen.getByLabelText("Unesite samo hipotetičku izmenu profila"),
-    ).toBeTruthy();
+    expect(screen.getByLabelText("Promenite jedan podatak")).toBeTruthy();
   });
 
   it("clears a clarification when its run has expired", async () => {
@@ -285,13 +283,12 @@ describe("greške zahteva", () => {
     submitProfile();
     await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
-    fireEvent.change(
-      screen.getByLabelText("Unesite samo hipotetičku izmenu profila"),
-      { target: { value: "A šta ako je HbA1c 9%?" } },
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Ponovi proveru" }));
+    fireEvent.change(screen.getByLabelText("Promenite jedan podatak"), {
+      target: { value: "A šta ako je HbA1c 9%?" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Proveri izmenu" }));
 
     await screen.findByText("Servis nije odgovorio na vreme", {
       selector: "h2",

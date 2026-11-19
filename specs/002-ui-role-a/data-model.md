@@ -2,7 +2,9 @@
 
 **Datum**: 2026-11-10 | **Specifikacija**: [spec.md](spec.md) | **Plan**: [plan.md](plan.md)
 
-Ovaj dokument opisuje samo stanje i modele prikaza u `apps/web/`. Oblik odgovora servera je u [contracts/ui-api.md](contracts/ui-api.md); zajedničke šeme u `packages/shared` se ne menjaju. Tipovi su opisani TypeScript zapisom radi jednoznačnosti; to je ugovor za implementaciju, ne gotov kod.
+**Dopuna redizajna UI-ja (2026-11-19)**: `CriterionResult.kind` je opciono `"inclusion" | "exclusion"`; ako postoji, UI ga koristi za grupisanje kriterijuma. Matcher ga samo prosleđuje iz `Criterion.kind`; evaluacija i statusi se ne menjaju. Rezime broji postojeće presude i statuse kriterijuma u UI-ju. Nema strukturisanog polja za objedinjene nedostajuće podatke, pa taj prikaz nije deo ove izmene.
+
+Ovaj dokument opisuje samo stanje i modele prikaza u `apps/web/`. Oblik odgovora servera je u [contracts/ui-api.md](contracts/ui-api.md); promene deljenih šema beleže se u tom ugovoru. Tipovi su opisani TypeScript zapisom radi jednoznačnosti; to je ugovor za implementaciju, ne gotov kod.
 
 ## 1. Stanje provere (`apps/web/src/state/run-state.ts`)
 

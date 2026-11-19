@@ -32,7 +32,7 @@ describe("stanje obrade", () => {
     vi.stubGlobal("fetch", fetchMock);
     render(<App />);
 
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: "Sintetički profil" },
     });
     const submit = screen.getByRole("button", { name: "Proveri kriterijume" });
@@ -56,7 +56,7 @@ describe("stanje obrade", () => {
     });
     await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
     expect(screen.queryByRole("status")).toBeNull();
   });
@@ -72,7 +72,7 @@ describe("stanje obrade", () => {
       .mockReturnValueOnce(pendingAnswer);
     vi.stubGlobal("fetch", fetchMock);
     render(<App />);
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: "Sintetički profil" },
     });
     fireEvent.click(
@@ -99,7 +99,7 @@ describe("stanje obrade", () => {
     });
     await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
     expect(
       document.querySelector(".results-panel")?.hasAttribute("inert"),
@@ -118,7 +118,7 @@ describe("stanje obrade", () => {
       .mockReturnValueOnce(pendingSecond);
     vi.stubGlobal("fetch", fetchMock);
     render(<App />);
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: "Sintetički profil" },
     });
     fireEvent.click(
@@ -126,10 +126,10 @@ describe("stanje obrade", () => {
     );
     await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
 
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: "Drugi sintetički profil" },
     });
     fireEvent.click(
@@ -138,7 +138,7 @@ describe("stanje obrade", () => {
     expect(
       screen.queryByRole("heading", {
         level: 2,
-        name: "Preliminarna provera završena",
+        name: "Provera je završena",
       }),
     ).toBeNull();
     await act(async () => {
@@ -146,7 +146,7 @@ describe("stanje obrade", () => {
     });
     await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
   });
 });

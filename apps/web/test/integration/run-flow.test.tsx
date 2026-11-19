@@ -118,7 +118,7 @@ describe("korisnički tok", () => {
     render(<App />);
 
     const profile = "Sintetički profil 62 godine";
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: profile },
     });
     fireEvent.click(
@@ -129,13 +129,13 @@ describe("korisnički tok", () => {
       name: "Potrebna je dopuna",
     });
     expect(
-      (screen.getByLabelText("Opis profila ili pitanje") as HTMLTextAreaElement)
+      (screen.getByLabelText("Opišite profil") as HTMLTextAreaElement)
         .value,
     ).toBe(profile);
 
     fireEvent.click(screen.getByRole("button", { name: "Ne" }));
     expect(
-      await screen.findByText("Uzrast od 18 do 75 godina.", { selector: "q" }),
+      await screen.findByText("Uzrast od 18 do 75 godina.", { selector: ".criterion-text" }),
     ).toBeTruthy();
     expect(fetchMock.mock.calls[1]?.[0]).toBe("/api/runs/run-1/answer");
     expect(fetchMock.mock.calls[1]?.[1]).toMatchObject({
@@ -146,10 +146,10 @@ describe("korisnički tok", () => {
     ).toBeTruthy();
 
     fireEvent.change(
-      screen.getByLabelText("Unesite samo hipotetičku izmenu profila"),
+      screen.getByLabelText("Promenite jedan podatak"),
       { target: { value: "A šta ako je HbA1c 9,0%?" } },
     );
-    fireEvent.click(screen.getByRole("button", { name: "Ponovi proveru" }));
+    fireEvent.click(screen.getByRole("button", { name: "Proveri izmenu" }));
     await screen.findByText("Hipotetička izmena prikazana odvojeno.");
     expect(fetchMock.mock.calls[2]?.[0]).toBe("/api/runs/run-1/hypothesis");
   });
@@ -168,7 +168,7 @@ describe("korisnički tok", () => {
     vi.stubGlobal("fetch", fetchMock);
     render(<App />);
 
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: "Sintetički profil" },
     });
     fireEvent.click(
@@ -192,7 +192,7 @@ describe("korisnički tok", () => {
 
     await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
     expect(fetchMock.mock.calls[1]?.[1]).toMatchObject({
       body: JSON.stringify({ answer: "10 godina" }),
@@ -211,7 +211,7 @@ describe("korisnički tok", () => {
     vi.stubGlobal("fetch", fetchMock);
     render(<App />);
 
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: "Sintetički profil" },
     });
     fireEvent.click(
@@ -228,7 +228,7 @@ describe("korisnički tok", () => {
     resolveAnswer(jsonResponse(okResponse()));
     await screen.findByRole("heading", {
       level: 2,
-      name: "Preliminarna provera završena",
+      name: "Provera je završena",
     });
   });
 
@@ -240,7 +240,7 @@ describe("korisnički tok", () => {
     vi.stubGlobal("fetch", fetchMock);
     render(<App />);
 
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: "Sintetički profil" },
     });
     fireEvent.click(

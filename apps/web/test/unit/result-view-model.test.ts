@@ -50,7 +50,7 @@ describe("sažetak kriterijuma po studiji", () => {
 
 describe("prikaz statusa i nedostajućih polja", () => {
   it("daje tekstualne oznake nezavisno od boje", () => {
-    expect(statusLabel("ok")).toBe("Preliminarna provera završena");
+    expect(statusLabel("ok")).toBe("Provera je završena");
     expect(criterionStatusLabel("unknown")).toContain("Nepoznato");
     expect(criterionStatusLabel("not_met")).toContain("Nije ispunjen");
   });

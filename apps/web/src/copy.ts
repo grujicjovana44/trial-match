@@ -15,21 +15,29 @@ export const copy = {
   },
 
   intro: {
-    eyebrow: "Preliminarna provera kriterijuma",
-    title: "Uporedite sintetički profil sa studijama",
-    lead: "Unesite samo izmišljene podatke. Rezultat prikazuje dokaze i nepoznanice za pregled zdravstvenog radnika.",
+    eyebrow: "Provera studija",
+    title: "Proverite profil prema studijama",
+    lead: "Unesite izmišljeni profil. Pregledajte šta je poznato, a šta lekar treba da proveri.",
+  },
+
+  empty: {
+    heading: "Rezultati provere",
+    body: "Unesite sintetički profil i pokrenite proveru. Rezultati će se prikazati ovde.",
   },
 
   safety: {
     label: "Važno medicinsko upozorenje",
     strong: "Važno:",
-    body: "TrialMatch ne postavlja dijagnozu, ne preporučuje lečenje i ne odlučuje o uključivanju u studiju. Jezički model čita pravila i objašnjava rezultat. Odluku donosi deterministički kod. Konačnu odluku uvek donosi lekar. Unosite isključivo sintetičke (izmišljene) profile; ne unosite stvarne podatke pacijenata.",
+    short:
+      "Alat ne postavlja dijagnozu, ne preporučuje lečenje i ne odlučuje o uključivanju. Konačnu odluku donosi lekar. Unosite samo sintetičke profile.",
+    details: "O alatu i ograničenjima",
+    body: "Jezički model čita pravila i objašnjava rezultat; presudu određuje deterministički kod. Ne unosite stvarne podatke pacijenata.",
     demo: "Studije su sintetički primeri.",
   },
 
   form: {
-    heading: "Sintetički profil ili pitanje o studiji",
-    label: "Opis profila ili pitanje",
+    heading: "Podaci profila",
+    label: "Opišite profil",
     placeholder:
       "Primer: Muškarac, 62 godine, dijabetes tip 2, HbA1c 8,1%, kreatinin 1,3 mg/dL, visina 178 cm, težina 92 kg.",
     hint: "Ne unosite stvarne podatke pacijenata.",
@@ -46,27 +54,30 @@ export const copy = {
   voice: {
     start: "Diktiraj",
     stop: "Zaustavi diktiranje",
-    note: "Diktiranje koristi prepoznavanje govora vašeg pregledača, koji zvuk može obrađivati na svom servisu. Diktirajte samo sintetičke podatke.",
+    note: "Diktiranje koristi prepoznavanje govora pregledača; zvuk može da se obrađuje na njegovom servisu. Diktirajte samo sintetičke podatke.",
     listening: "Slušam. Govorite sada.",
     added: "Tekst je dodat u polje. Proverite ga i ispravite pre slanja.",
     noSpeech: "Govor nije prepoznat. Pokušajte ponovo ili unesite tekst.",
     denied:
       "Pristup mikrofonu nije dozvoljen. Unos tekstom radi kao i do sada.",
     failed: "Diktiranje nije uspelo. Unos tekstom radi kao i do sada.",
+    unsupported:
+      "Diktiranje nije dostupno u ovom pregledaču. Možete uneti tekst.",
   },
 
   processing: {
     line: "Provera je u toku…",
+    short: "Upoređujemo unete podatke sa kriterijumima studija.",
     slow: "Provera sa stvarnim modelom može trajati do jednog minuta. Zahtev je poslat jednom i ne treba ga ponavljati.",
     stale: "Prethodni rezultat. Nova provera je u toku.",
   },
 
   result: {
     eyebrow: "Rezultat provere",
-    eyebrowHypothesis: "Rezultat hipotetičke izmene",
+    eyebrowHypothesis: "Rezultat promene profila",
     excludedLabel: "Isključene studije",
     excludedHeading: "Isključene studije i razlozi",
-    headingOk: "Preliminarna provera završena",
+    headingOk: "Provera je završena",
     headingClarification: "Potrebna je dopuna",
     headingNoMatch: "Nijedna studija iz skupa ne odgovara profilu",
     headingNotInSources: "Tražena informacija nije u dostupnim izvorima",
@@ -82,14 +93,15 @@ export const copy = {
     rejectedNext:
       "Može da uporedi sintetički profil sa kriterijumima studija i da pokaže na kojim se podacima i izvorima to poređenje zasniva. Unesite sintetički profil ili pitanje o kriterijumima studije.",
     systemExplanation: "Obrazloženje sistema:",
-    hypothesisBanner: "Hipotetička izmena. Ovo nije izvorni profil.",
-    hypothesisChange: (text: string) => `Izmena: „${text}“`,
+    hypothesisBanner:
+      "Ova provera koristi izmenjeni podatak; početni profil ostaje sačuvan.",
+    hypothesisChange: (text: string) => `Promena: „${text}“`,
   },
 
   profile: {
-    heading: "Prepoznati podaci iz unosa",
+    heading: "Podaci profila",
     sourceLabel: "Izvorni tekst",
-    extractedLabel: "Prepoznato iz teksta",
+    extractedLabel: "Podaci iz unosa",
     noneExtracted: "Iz teksta nije prepoznata nijedna vrednost profila.",
     derivedLabel: "Izračunato",
     derivedSuffix: "izračunao kod",
@@ -122,6 +134,13 @@ export const copy = {
   },
 
   trial: {
+    details: "Detalji studije",
+    technical: "Tehnički detalji",
+    reviewGroup: (count: number) => `Potrebna provera lekara (${count})`,
+    reviewCount: (count: number) =>
+      count === 1
+        ? "kriterijum čeka proveru lekara"
+        : "kriterijuma čeka proveru lekara",
     registryLink: (trialId: string) =>
       `Otvori ${trialId} na ClinicalTrials.gov`,
     newTab: "(otvara se u novoj kartici)",
@@ -158,6 +177,17 @@ export const copy = {
     },
   },
 
+  summary: {
+    sentence: (
+      trials: number,
+      excluded: number,
+      met: number,
+      notMet: number,
+      unknown: number,
+    ) =>
+      `Provereno studija: ${trials}; isključeno: ${excluded}; kriterijumi — ispunjeno: ${met}, nije ispunjeno: ${notMet}, čeka proveru lekara: ${unknown}.`,
+  },
+
   criterion: {
     short: { met: "Ispunjen", not_met: "Nije ispunjen", unknown: "Nepoznato" },
     note: {
@@ -185,10 +215,10 @@ export const copy = {
 
   hypothesis: {
     heading: "Šta ako?",
-    label: "Unesite samo hipotetičku izmenu profila",
-    placeholder: "Na primer: A šta ako je HbA1c 9,0%?",
-    submit: "Ponovi proveru",
-    note: "Izmena se proverava u okviru iste provere i ne menja izvorni profil.",
+    label: "Promenite jedan podatak",
+    placeholder: "Na primer: Šta ako je HbA1c 9,0%?",
+    submit: "Proveri izmenu",
+    note: "Izmena važi samo za ovu proveru.",
   },
 
   meta: {
@@ -206,63 +236,63 @@ export const copy = {
   errors: {
     network: {
       title: "Server nije dostupan",
-      body: "Zahtev nije stigao do servera ili odgovor nije stigao nazad. Proverite internet vezu.",
+      body: "Server nije odgovorio; proverite vezu i pokušajte ponovo.",
     },
     client_timeout: {
       title: "Servis nije odgovorio na vreme",
-      body: "Odgovor nije stigao u predviđenom roku. Rezultat nije izračunat.",
+      body: "Servis nije odgovorio na vreme; pokušajte ponovo.",
     },
     model_timeout: {
       title: "Servis nije odgovorio na vreme",
-      body: "Jezički model nije odgovorio u predviđenom roku. Rezultat nije izračunat i nijedna studija nije ocenjena.",
+      body: "Servis nije odgovorio na vreme; pokušajte ponovo.",
     },
     bad_response: {
       title: "Odgovor servera nije čitljiv",
-      body: "Server je vratio odgovor koji aplikacija ne može da pročita. Rezultat nije prikazan.",
+      body: "Odgovor nije čitljiv; pokušajte ponovo.",
     },
     invalid_response: {
       title: "Odgovor servera nije u očekivanom obliku",
-      body: "Odgovor nije prošao proveru formata, pa nije prikazan ni delimično.",
+      body: "Odgovor nije u očekivanom obliku; pokušajte ponovo.",
     },
     rate_limited: {
       title: "Poslato je previše zahteva",
-      body: "Server ograničava broj zahteva u minuti po korisniku. Ovo nije greška modela i provera nije izgubljena.",
+      body: "Server trenutno ograničava broj zahteva; sačekajte odbrojavanje pre novog pokušaja.",
     },
     service: {
       title: "Provera nije završena",
-      body: "Došlo je do greške u servisu tokom provere. Rezultat nije izračunat i nijedna studija nije ocenjena.",
+      body: "Provera nije završena zbog greške u servisu; pokušajte ponovo.",
     },
     processing_limit: {
       title: "Provera je dostigla ograničenje obrade",
-      body: "Ova provera je potrošila dozvoljen broj koraka obrade. Rezultat nije izračunat.",
+      body: "Provera je dostigla ograničenje obrade; počnite novu proveru.",
     },
     question_limit: {
       title: "Dostignut je najveći broj dopuna",
-      body: "Broj dopuna u jednoj proveri je ograničen. U novom opisu navedite sve poznate podatke.",
+      body: "Dostigli ste broj dozvoljenih dopuna; počnite novu proveru sa svim poznatim podacima.",
     },
     input_invalid: {
       title: "Unos nije prihvaćen",
-      body: "Server nije mogao da obradi uneti tekst. Proverite da li su vrednosti i jedinice jasno napisane, pa pošaljite ponovo.",
+      body: "Unos nije jasan; proverite vrednosti i jedinice pa ga izmenite.",
     },
     input_too_large: {
       title: "Unos je predugačak",
-      body: "Tekst je duži od dozvoljene granice. Skratite ga i pošaljite ponovo.",
+      body: "Unos je predugačak; skratite ga.",
     },
     hypothesis_invalid: {
-      title: "Hipotetička izmena nije primenjena",
-      body: "Izmena nije dovoljno jasna ili nije u podržanom obliku. Sačuvana provera nije promenjena. Navedite jednu konkretnu izmenu, na primer: „A šta ako je HbA1c 9,0%?“",
+      title: "Nismo prepoznali promenu",
+      body: "Navedite jednu konkretnu promenu, na primer: „Šta ako je HbA1c 9,0%?“",
     },
     hypothesis_forbidden: {
-      title: "Hipotetička izmena nije primenjena",
-      body: "Izmena ne može da traži dijagnozu, savet o lečenju ili odluku o uključivanju. Sačuvana provera nije promenjena.",
+      title: "Ova promena nije podržana",
+      body: "Možete proveriti promenu podatka, ali ne tražiti dijagnozu, savet o lečenju ili odluku o uključivanju.",
     },
     run_expired: {
       title: "Provera više nije dostupna",
-      body: "Server više nema ovu proveru ili ona ne može da se nastavi, na primer posle ponovnog pokretanja servera.",
+      body: "Ova provera više nije dostupna; počnite novu.",
     },
     request_rejected: {
       title: "Zahtev nije prihvaćen",
-      body: "Server je odbio zahtev.",
+      body: "Zahtev nije prihvaćen; proverite unos pa pokušajte ponovo.",
     },
     hintRetry: "Pokušajte ponovo.",
     hintRestart: "Počnite iznova.",
@@ -273,6 +303,7 @@ export const copy = {
     previousKept: "Ispod je poslednji potvrđeni rezultat ove provere.",
     serverMessage: "Poruka servera:",
     retry: "Pokušaj ponovo",
+    editInput: "Izmeni unos",
     startOver: "Počni iznova",
   },
 } as const;
