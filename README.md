@@ -23,6 +23,8 @@ pnpm install --frozen-lockfile
 DEMO_MODE=true pnpm dev
 ```
 
+`pnpm dev` always selects the synthetic `fixtures` profile. `pnpm demo` starts the same local DEMO app with the 20-study `clinicaltrials-20` profile. Both use lexical retrieval if the local RAG index is missing or invalid; `/health` and result technical details show the active retrieval mode, and fallback is announced in the server log and result UI.
+
 Zatim otvorite `http://127.0.0.1:5173`. Primer sintetičkog profila:
 
 ```text
@@ -33,29 +35,30 @@ Lokalni DEMO može zatražiti dopunu, na primer podatak o upotrebi insulina. Za 
 
 ## Komande
 
-| Komanda                            | Namena                                                                       |
-| ---------------------------------- | ---------------------------------------------------------------------------- |
-| `pnpm dev`                         | Lokalni DEMO server i Vite interfejs                                         |
-| `pnpm typecheck`                   | TypeScript provera                                                           |
-| `pnpm lint`                        | ESLint provera                                                               |
-| `pnpm format:check`                | Provera Prettier formatiranja                                                |
-| `pnpm build`                       | Serverska TypeScript kompilacija i produkcioni UI build                      |
-| `pnpm test`                        | Offline unit i integracioni testovi                                          |
-| `pnpm smoke`                       | API demo smoke test                                                          |
-| `pnpm sqlite:smoke`                | Proverava učitavanje sqlite-vec ekstenzije i KNN upit offline                |
-| `pnpm embeddings:check`            | Jedan mali stvarni poziv za proveru embeddings pristupa                      |
-| `pnpm index:build`                 | Gradi/obnavlja lokalni inkrementalni RAG indeks                              |
-| `pnpm eval:offline`                | Offline i simulirane fault provere; živi slučajevi se preskaču               |
-| `pnpm eval:live -- ...`            | Zahteva `--confirm-live`, scope odobrenje, limits i serverski ključ          |
-| `pnpm eval:rag:offline`           | Poredi lexical/vector/hybrid/hybrid+rerank bez mrežnih poziva                 |
+| Komanda                            | Namena                                                                        |
+| ---------------------------------- | ----------------------------------------------------------------------------- |
+| `pnpm dev`                         | Lokalni DEMO server i Vite interfejs                                          |
+| `pnpm demo`                        | Lokalni DEMO server sa 20 ClinicalTrials.gov studija                          |
+| `pnpm typecheck`                   | TypeScript provera                                                            |
+| `pnpm lint`                        | ESLint provera                                                                |
+| `pnpm format:check`                | Provera Prettier formatiranja                                                 |
+| `pnpm build`                       | Serverska TypeScript kompilacija i produkcioni UI build                       |
+| `pnpm test`                        | Offline unit i integracioni testovi                                           |
+| `pnpm smoke`                       | API demo smoke test                                                           |
+| `pnpm sqlite:smoke`                | Proverava učitavanje sqlite-vec ekstenzije i KNN upit offline                 |
+| `pnpm embeddings:check`            | Jedan mali stvarni poziv za proveru embeddings pristupa                       |
+| `pnpm index:build`                 | Gradi/obnavlja lokalni inkrementalni RAG indeks                               |
+| `pnpm eval:offline`                | Offline i simulirane fault provere; živi slučajevi se preskaču                |
+| `pnpm eval:live -- ...`            | Zahteva `--confirm-live`, scope odobrenje, limits i serverski ključ           |
+| `pnpm eval:rag:offline`            | Poredi lexical/vector/hybrid/hybrid+rerank bez mrežnih poziva                 |
 | `pnpm eval:rag:live -- ...`        | RAGAS sudija; zahteva sintetički pregledan skup i strogo approval ograničenje |
-| `pnpm data:prepare [ulaz] [izlaz]` | Lokalno validira normalizovani skup ili uvozi CTG v2 JSON; ne pristupa mreži |
-| `pnpm gold:metrics`                | Izračunava profilne mock metrike                                             |
-| `pnpm gold:criteria ...`           | Izračunava odvojenu metriku ljudski označenih kriterijuma                    |
-| `pnpm compile:rules ...`           | Lokalno validira i pakuje samo ljudski odobrena pravila                      |
-| `pnpm rules:review-template ...`   | Pravi neodobren šablon sa source/rules hash-evima za ljudski pregled         |
-| `pnpm preview:ui`                  | Lokalno servira prethodno izgrađen UI na loopback portu 4173                 |
-| `pnpm eval:compare <pre> <posle>`  | Poredi dva sačuvana rezultata po ID-ju slučaja                               |
+| `pnpm data:prepare [ulaz] [izlaz]` | Lokalno validira normalizovani skup ili uvozi CTG v2 JSON; ne pristupa mreži  |
+| `pnpm gold:metrics`                | Izračunava profilne mock metrike                                              |
+| `pnpm gold:criteria ...`           | Izračunava odvojenu metriku ljudski označenih kriterijuma                     |
+| `pnpm compile:rules ...`           | Lokalno validira i pakuje samo ljudski odobrena pravila                       |
+| `pnpm rules:review-template ...`   | Pravi neodobren šablon sa source/rules hash-evima za ljudski pregled          |
+| `pnpm preview:ui`                  | Lokalno servira prethodno izgrađen UI na loopback portu 4173                  |
+| `pnpm eval:compare <pre> <posle>`  | Poredi dva sačuvana rezultata po ID-ju slučaja                                |
 
 CI pokreće samo lokalne provere, bez modelskih API poziva.
 

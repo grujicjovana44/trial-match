@@ -20,6 +20,7 @@ export function ResultMeta({ meta }: { meta: RunResponse["meta"] }) {
           {meta.dataSynthetic ? copy.meta.syntheticData : copy.meta.realData}
         </span>
         <span>{meta.dataOrigin}</span>
+        <span>{copy.meta.retrieval(meta.retrievalMode)}</span>
         {meta.demoMode ? (
           <span>{copy.meta.demo}</span>
         ) : (

@@ -6,7 +6,13 @@ if (build.status !== 0) process.exit(build.status ?? 1);
 
 const server = spawn(process.execPath, ["dist/apps/server/src/index.js"], {
   stdio: "inherit",
-  env: { ...process.env, DEMO_MODE: process.env.DEMO_MODE ?? "true" },
+  env: {
+    ...process.env,
+    DEMO_MODE: process.env.DEMO_MODE ?? "true",
+    DATASET_PROFILE: process.argv.includes("--clinicaltrials-20")
+      ? "clinicaltrials-20"
+      : "fixtures",
+  },
 });
 const web = spawn(
   process.execPath,

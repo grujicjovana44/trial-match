@@ -129,6 +129,7 @@ export class TrialMatchService {
   private vectorStore: SQLiteVectorStore | undefined;
   private retrievalModeValue: "lexical-only" | "hybrid" | "injected" =
     "lexical-only";
+  private retrievalFallbackReasonValue: string | null = null;
   constructor(private readonly options: ServiceOptions) {
     this.config = options.config;
     this.now = options.now ?? Date.now;
@@ -148,6 +149,9 @@ export class TrialMatchService {
   }
   get retrievalMode(): "lexical-only" | "hybrid" | "injected" {
     return this.retrievalModeValue;
+  }
+  get retrievalFallbackReason(): string | null {
+    return this.retrievalFallbackReasonValue;
   }
   async close(): Promise<void> {
     this.vectorStore?.close();
@@ -246,6 +250,14 @@ export class TrialMatchService {
     }
 
     const indexPath = resolve(this.config.RAG_INDEX_PATH);
+    const lexicalFallback = (reason: string) => {
+      this.retriever = {
+        retrieve: async (profile, corpus, options) =>
+          retrieveTrials(profile, corpus, options),
+      };
+      this.retrievalModeValue = "lexical-only";
+      this.retrievalFallbackReasonValue = reason;
+    };
     try {
       const info = await stat(indexPath);
       if (!info.isFile())
@@ -261,17 +273,19 @@ export class TrialMatchService {
           throw new Error(
             `RAG indeks nije pronađen na ${indexPath}. Pokrenite pnpm build, pnpm embeddings:check i pnpm index:build.`,
           );
-        this.retriever = {
-          retrieve: async (profile, corpus, options) =>
-            retrieveTrials(profile, corpus, options),
-        };
+        lexicalFallback("index_missing");
+        return;
+      }
+      if (this.config.DEMO_MODE) {
+        lexicalFallback("index_invalid");
         return;
       }
       throw error;
     }
 
-    const store = await openSQLiteVectorStore(indexPath);
+    let store: SQLiteVectorStore | undefined;
     try {
+      store = await openSQLiteVectorStore(indexPath);
       const serializedManifest = store.getManifest();
       if (!serializedManifest)
         throw new Error("SQLite RAG indeks nema manifest.");
@@ -287,6 +301,8 @@ export class TrialMatchService {
       if (manifest.dimensions !== EMBEDDING_DIMENSIONS)
         throw new Error("RAG indeks ima nepodržanu dimenziju embeddinga.");
       validateIndexDocuments(manifest.documentHashes, trials);
+      if (!process.env.OPENAI_API_KEY?.trim())
+        throw new Error("embedding_unconfigured");
       const embedder = createOpenAIEmbeddingClient(process.env);
       this.retriever = new HybridTrialRetriever(
         store,
@@ -310,9 +326,15 @@ export class TrialMatchService {
       );
       this.vectorStore = store;
       this.retrievalModeValue = "hybrid";
+      this.retrievalFallbackReasonValue = null;
     } catch (error) {
-      store.close();
-      throw error;
+      store?.close();
+      if (!this.config.DEMO_MODE) throw error;
+      lexicalFallback(
+        error instanceof Error && error.message === "embedding_unconfigured"
+          ? "embedding_unconfigured"
+          : "index_invalid",
+      );
     }
   }
   private input(body: unknown, field: "answer" | "profileText"): string {
@@ -800,6 +822,16 @@ export class TrialMatchService {
     sources = new Map<string, string>(),
   ): RunResponse {
     const session = this.sessions.get(runId)!;
+    const retrievalEvent = [...session.events]
+      .reverse()
+      .find((event) => event.step === "retrieval");
+    const retrievalMode =
+      retrievalEvent?.retrievalMode === "lexical_fallback"
+        ? "lexical_fallback"
+        : retrievalEvent?.retrievalMode === "hybrid" ||
+            this.retrievalModeValue === "hybrid"
+          ? "hybrid"
+          : "lexical_only";
     const response = RunResponseSchema.parse({
       runId,
       profile,
@@ -825,6 +857,9 @@ export class TrialMatchService {
         toolCalls: session.toolCalls,
         tokens: session.tokens,
         demoMode: this.adapter.providerId === "mock",
+        retrievalMode,
+        retrievalFallbackReason:
+          retrievalEvent?.fallbackReason ?? this.retrievalFallbackReasonValue,
       },
     });
     const removed = this.store.set({
