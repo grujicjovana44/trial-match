@@ -14,7 +14,10 @@ export function CriterionRow({ criterion }: { criterion: CriterionResult }) {
   const unit = value.missing ? "" : formatUnit(criterion.observedUnit);
   const computed = !value.missing && criterion.observedOrigin === "derived";
   return (
-    <li className={`criterion criterion-${criterion.status}`}>
+    <li
+      className={`criterion criterion-${criterion.status}`}
+      data-kind={criterion.kind}
+    >
       <div className="criterion-main">
         <p className="criterion-status">
           <span className={`status-pill status-${criterion.status}`}>
@@ -39,14 +42,14 @@ export function CriterionRow({ criterion }: { criterion: CriterionResult }) {
               {" "}
               <span className="chip-origin">{copy.criterion.computed}</span>
             </>
-          )}{" "}
-          · {copy.criterion.source}{" "}
-          <span className="mono">{criterion.sourceId}</span>
+          )}
         </p>
       </div>
-      <blockquote>
-        <q>{criterion.citation.quote}</q>
-      </blockquote>
+      {criterion.citation.quote.trim() !== criterion.text.trim() && (
+        <blockquote>
+          <q>{criterion.citation.quote}</q>
+        </blockquote>
+      )}
     </li>
   );
 }

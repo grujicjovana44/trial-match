@@ -17,7 +17,7 @@ afterEach(() => {
 });
 
 function submitProfile() {
-  fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+  fireEvent.change(screen.getByLabelText("Opišite profil"), {
     target: { value: "Sintetički profil" },
   });
   fireEvent.click(screen.getByRole("button", { name: "Proveri kriterijume" }));
@@ -54,20 +54,25 @@ describe("režim i metapodaci", () => {
       screen.getByText("DEMO režim — bez poziva stvarnom modelu"),
     ).toBeTruthy();
 
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: "Drugi sintetički profil" },
     });
     fireEvent.click(
       screen.getByRole("button", { name: "Proveri kriterijume" }),
     );
     await screen.findByText("STVARNI MODEL");
-    expect(screen.getByText("model-x")).toBeTruthy();
+    expect(document.querySelector(".mode-model")).toBeNull();
     expect(screen.queryByText("DEMO REŽIM")).toBeNull();
     expect(document.body.textContent).not.toContain(
       "bez poziva stvarnom modelu",
     );
     expect(document.body.textContent).not.toContain("sintetičke studije");
-    expect(screen.getByText("Stvarni model: model-x")).toBeTruthy();
+    expect(document.querySelector(".technical-meta")?.textContent).toContain(
+      "Stvarni model: model-x",
+    );
+    expect(
+      document.querySelector(".technical-meta")?.hasAttribute("open"),
+    ).toBe(false);
   });
 
   it("does not describe real study data as synthetic in DEMO mode", async () => {
@@ -127,9 +132,11 @@ describe("režim i metapodaci", () => {
     submitProfile();
     await screen.findByText("STVARNI MODEL");
     expect(document.querySelector(".mode-model")).toBeNull();
-    expect(screen.getByText("Stvarni model")).toBeTruthy();
+    expect(document.querySelector(".technical-meta")?.textContent).toContain(
+      "Stvarni model",
+    );
 
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: "Još jedan sintetički profil" },
     });
     fireEvent.click(
@@ -166,7 +173,7 @@ describe("režim i metapodaci", () => {
 
     submitProfile();
     await screen.findByText("Skup podataka: ctgov-t2d-2026-11");
-    fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+    fireEvent.change(screen.getByLabelText("Opišite profil"), {
       target: { value: "Drugi sintetički profil" },
     });
     fireEvent.click(

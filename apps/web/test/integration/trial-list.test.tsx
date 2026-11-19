@@ -13,7 +13,7 @@ afterEach(() => {
 });
 
 describe("red kriterijuma", () => {
-  it("prikazuje status, vrednost, izvor i ceo citat kao tekst", () => {
+  it("prikazuje status, vrednost i citat, a tehnički ID drži van reda kriterijuma", () => {
     const criteria = [
       criterionOf("T-1", 1, "met", 62),
       criterionOf("T-1", 2, "not_met", true),
@@ -32,7 +32,9 @@ describe("red kriterijuma", () => {
     expect(document.body.textContent).toContain("Vrednost: 62");
     expect(document.body.textContent).toContain("Vrednost: da");
     expect(document.body.textContent).toContain("Vrednost: nije uneto");
-    expect(document.body.textContent).toContain("T-1#inc-1");
+    expect(document.querySelector(".criterion")?.textContent).not.toContain(
+      "T-1#inc-1",
+    );
     expect(screen.getByText("Citat 1 za T-1", { selector: "q" })).toBeTruthy();
     expect(document.body.textContent).not.toMatch(
       /\b(?:met|not_met|true|null)\b/,
@@ -129,7 +131,36 @@ describe("status regrutacije i faza (T221, AC-01)", () => {
 });
 
 describe("kartica studije", () => {
-  it("prikazuje preveden ishod, sažetak i bezbednu vezu ka registru", () => {
+  it("grupiše kriterijume po kind-u, a nepoznate ostavlja sklopljene", () => {
+    const trial: TrialResult = {
+      ...trialsOf(1)[0]!,
+      criteria: [
+        { ...criterionOf("T-1", 1, "met", 62), kind: "inclusion" },
+        { ...criterionOf("T-1", 2, "not_met", true), kind: "exclusion" },
+        { ...criterionOf("T-1", 3, "unknown", null), kind: "inclusion" },
+      ],
+    };
+    render(<TrialCard trial={trial} index={0} />);
+    const cardDetails = document.querySelector(
+      ".trial-details",
+    ) as HTMLDetailsElement;
+    const unknownDetails = document.querySelector(
+      ".unknown-details",
+    ) as HTMLDetailsElement;
+    expect(cardDetails.open).toBe(false);
+    expect(unknownDetails.open).toBe(false);
+    expect(document.querySelector(".trial-unknown-count")?.textContent).toBe(
+      "1 kriterijum čeka proveru lekara",
+    );
+    fireEvent.click(screen.getByText("Detalji studije"));
+    expect(cardDetails.open).toBe(true);
+    expect(screen.getAllByRole("heading", { name: "Uključuje" })).toHaveLength(
+      1,
+    );
+    expect(screen.getByText("Potrebna provera lekara (1)")).toBeTruthy();
+  });
+
+  it("prikazuje preveden ishod, broj za proveru i bezbednu vezu ka registru", () => {
     const trial: TrialResult = {
       ...trialsOf(1, "NCT")[0]!,
       trialId: "NCT01234567",
@@ -147,8 +178,9 @@ describe("kartica studije", () => {
     expect(registryLink.getAttribute("target")).toBe("_blank");
     expect(registryLink.getAttribute("rel")).toBe("noopener noreferrer");
     expect(document.body.textContent).toContain(
-      "1 od 3 ispunjeno, 1 nije ispunjeno, 1 nepoznato",
+      "1 kriterijum čeka proveru lekara",
     );
+    expect(screen.getByText("Detalji studije")).toBeTruthy();
   });
 
   it("ne pravi registarsku vezu za sintetički ID i objašnjava prazan skup kriterijuma", () => {

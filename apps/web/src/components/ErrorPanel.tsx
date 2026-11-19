@@ -8,17 +8,17 @@ import { DEFAULT_RETRY_AFTER_SECONDS } from "../copy.js";
 
 export function ErrorPanel({
   error,
-  hasPreviousResult,
   busy,
   onRetry,
   onStartOver,
+  onEdit,
   panelRef,
 }: {
   error: UiError;
-  hasPreviousResult: boolean;
   busy: boolean;
   onRetry: () => void;
   onStartOver: () => void;
+  onEdit: () => void;
   panelRef?: Ref<HTMLElement>;
 }) {
   const startSeconds =
@@ -39,8 +39,6 @@ export function ErrorPanel({
     >
       <h2>{copy.errors[error.kind].title}</h2>
       <p>{copy.errors[error.kind].body}</p>
-      {error.action === "retry" && <p>{copy.errors.hintRetry}</p>}
-      {error.action === "restart" && <p>{copy.errors.hintRestart}</p>}
       {error.action === "wait_retry" && (
         <>
           <p aria-hidden="true">
@@ -51,45 +49,24 @@ export function ErrorPanel({
           </p>
         </>
       )}
-      {error.serverMessage && (
-        <p className="server-message">
-          {copy.errors.serverMessage} {error.serverMessage}
-        </p>
-      )}
-      {hasPreviousResult && <p>{copy.errors.previousKept}</p>}
-      <div className="form-actions">
-        {(error.action === "retry" || error.action === "wait_retry") && (
-          <motion.button
-            type="button"
-            disabled={busy || (error.action === "wait_retry" && left > 0)}
-            onClick={onRetry}
-            {...pressable}
-          >
-            {copy.errors.retry}
-          </motion.button>
-        )}
-        {(error.action === "retry" || error.action === "wait_retry") && (
-          <motion.button
-            type="button"
-            className="secondary-button"
-            disabled={busy}
-            onClick={onStartOver}
-            {...pressable}
-          >
-            {copy.form.startOver}
-          </motion.button>
-        )}
-        {error.action === "restart" && (
-          <motion.button
-            type="button"
-            disabled={busy}
-            onClick={onStartOver}
-            {...pressable}
-          >
-            {copy.form.startOver}
-          </motion.button>
-        )}
-      </div>
+      <motion.button
+        type="button"
+        disabled={busy || (error.action === "wait_retry" && left > 0)}
+        onClick={
+          error.action === "retry" || error.action === "wait_retry"
+            ? onRetry
+            : error.action === "restart"
+              ? onStartOver
+              : onEdit
+        }
+        {...pressable}
+      >
+        {error.action === "retry" || error.action === "wait_retry"
+          ? copy.errors.retry
+          : error.action === "restart"
+            ? copy.form.startOver
+            : copy.errors.editInput}
+      </motion.button>
     </motion.section>
   );
 }

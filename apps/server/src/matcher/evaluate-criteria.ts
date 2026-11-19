@@ -126,6 +126,7 @@ function evaluateCriterion(
   return {
     id: criterion.id,
     text: criterion.text,
+    kind: criterion.kind,
     status,
     observedValue: value,
     observedUnit:

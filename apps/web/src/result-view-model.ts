@@ -8,7 +8,7 @@ import type {
 import { copy } from "./copy.js";
 
 const statusLabels: Record<RunResponse["status"], string> = {
-  ok: "Preliminarna provera završena",
+  ok: "Provera je završena",
   needs_clarification: "Potrebna je dopuna",
   insufficient_evidence: "Nema dovoljno dokaza",
   rejected: "Zahtev nije podržan",
@@ -66,6 +66,20 @@ export function summarizeCriteria(
     notMet,
     unknown,
     label: parts.join(", "),
+  };
+}
+
+export function resultCounts(result: RunResponse) {
+  const trials = [...result.results, ...result.excludedTrials];
+  const criteria = trials.flatMap((trial) => trial.criteria);
+  return {
+    trials: trials.length,
+    excluded: trials.filter((trial) => trial.verdict === "excluded").length,
+    met: criteria.filter((criterion) => criterion.status === "met").length,
+    notMet: criteria.filter((criterion) => criterion.status === "not_met")
+      .length,
+    unknown: criteria.filter((criterion) => criterion.status === "unknown")
+      .length,
   };
 }
 

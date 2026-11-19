@@ -28,9 +28,9 @@
   --focus: #9a6700; /* bilo #e8a52a; odobreno */
 
   /* status kriterijuma: boja linije/segmenta, pozadina oznake, tekst oznake */
-  --met: #2f8f63;
-  --met-bg: #e3f4e9;
-  --met-ink: #15583f; /* tekst oznake; odobreno */
+  --met: #176f50;
+  --met-bg: #e6f2ec;
+  --met-ink: #15583f;
   --not-met: #c0533f;
   --not-met-bg: #ffebe8;
   --not-met-ink: #842e24; /* tekst oznake; odobreno */
@@ -43,8 +43,8 @@
   --demo-bg: #ffedc5;
   --live-ink: #244e3e;
   --live-bg: #e7f2eb;
-  --pending-ink: #77520c;
-  --pending-bg: #fff0cb;
+  --pending-ink: #49675d;
+  --pending-bg: #f1f4f2;
   --notice-border: #d39219;
   --notice-bg: #fff6e3;
   --notice-ink: #5e481e;
@@ -56,7 +56,6 @@
   --font-sans:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
-  --font-mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
 
   /* oblik */
   --radius-control: 0.65rem;
@@ -110,9 +109,47 @@ button:disabled {
 }
 
 .page-shell {
-  width: min(100% - 2rem, 920px);
+  width: min(100% - 2rem, 1440px);
   margin: 0 auto;
   padding: 1.25rem 0 2rem;
+}
+.workspace-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.36fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(1rem, 2.5vw, 2.5rem);
+}
+.input-column {
+  position: sticky;
+  top: 1rem;
+  align-self: start;
+}
+.input-column .intro {
+  margin: 0 0 1rem;
+}
+.input-column .intro h1 {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+}
+.input-column .intro p:last-child {
+  font-size: 0.95rem;
+}
+.results-region {
+  min-width: 0;
+}
+.empty-state {
+  margin: 1rem 0;
+  border: 1px dashed var(--border-input);
+  border-radius: var(--radius-panel);
+  padding: clamp(1.5rem, 4vw, 3rem);
+  color: var(--ink-muted);
+  background: var(--surface);
+}
+.empty-state h2 {
+  margin: 0 0 0.5rem;
+  color: var(--ink);
+}
+.empty-state p {
+  margin: 0;
 }
 .site-header,
 .brand,
@@ -202,7 +239,7 @@ button:disabled {
   text-transform: uppercase;
 }
 .mono {
-  font-family: var(--font-mono);
+  font-family: inherit;
   font-size: 0.95em;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
@@ -216,6 +253,17 @@ button:disabled {
   color: var(--notice-ink);
   background: var(--notice-bg);
   line-height: 1.6;
+}
+.safety-notice details {
+  margin-top: 0.45rem;
+  font-size: 0.9rem;
+}
+.safety-notice summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.safety-notice p {
+  margin: 0.55rem 0 0;
 }
 .panel {
   margin: 1rem 0;
@@ -261,6 +309,48 @@ textarea {
 .state-message {
   border-radius: var(--radius-control);
   padding: 0.9rem 1rem;
+}
+.loading-state {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  padding: 1.25rem;
+  background: var(--surface);
+}
+.loading-state h2,
+.loading-state p {
+  margin: 0;
+}
+.loading-state p {
+  color: var(--ink-muted);
+}
+.skeleton {
+  display: block;
+  width: 100%;
+  height: 1rem;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(
+    90deg,
+    var(--surface-soft),
+    var(--border-soft),
+    var(--surface-soft)
+  );
+  background-size: 200% 100%;
+  animation: tm-skeleton 1.6s ease-in-out infinite;
+}
+.skeleton-title {
+  width: 58%;
+  height: 1.5rem;
+}
+.skeleton-short {
+  width: 72%;
+}
+@keyframes tm-skeleton {
+  to {
+    background-position: -200% 0;
+  }
 }
 .state-message {
   color: var(--live-ink);
@@ -354,6 +444,36 @@ cite {
   border-radius: var(--radius-card);
   padding: var(--space-4);
   background: var(--bg);
+}
+.what-if-strip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-card);
+  padding: 1rem;
+  background: var(--surface-soft);
+}
+.what-if-heading {
+  grid-column: 1 / -1;
+}
+.what-if-field {
+  display: grid;
+  gap: 0.4rem;
+}
+.what-if-strip h3,
+.what-if-strip p {
+  margin: 0;
+}
+.what-if-strip p {
+  margin-top: 0.25rem;
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+}
+.what-if-strip label {
+  margin: 0;
 }
 .hypothesis-banner {
   display: grid;
@@ -561,6 +681,13 @@ blockquote q {
 .criterion-not_met {
   border-left-color: var(--not-met);
 }
+.criterion[data-kind="inclusion"].criterion-not_met {
+  border-left-color: var(--unknown);
+}
+.criterion[data-kind="inclusion"] .status-not_met {
+  color: var(--unknown-ink);
+  background: var(--unknown-bg);
+}
 .criterion-unknown {
   border-left-color: var(--unknown);
 }
@@ -703,6 +830,57 @@ blockquote q {
 .results-panel.is-stale {
   opacity: 0.55;
 }
+.result-summary {
+  margin: 0 0 1rem;
+  border-left: 4px solid var(--accent);
+  padding: 0.75rem 1rem;
+  color: var(--ink);
+  background: var(--surface-soft);
+  font-weight: 650;
+  line-height: 1.5;
+}
+.trial-reasons {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.85rem 0;
+  padding-left: 1.2rem;
+}
+.trial-reasons li {
+  line-height: 1.45;
+}
+.trial-unknown-count {
+  margin: 0.7rem 0;
+  color: var(--ink-muted);
+  font-weight: 650;
+}
+.trial-details,
+.unknown-details,
+.technical-details {
+  border-top: 1px solid var(--border-soft);
+  padding-top: 0.75rem;
+}
+.trial-details > summary,
+.unknown-details > summary,
+.technical-details > summary {
+  color: var(--accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+.trial-detail-body {
+  display: grid;
+  gap: 1rem;
+  padding-top: 0.75rem;
+}
+.criterion-group h4 {
+  margin: 0.5rem 0;
+}
+.technical-details {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+}
+.technical-details ul {
+  padding-left: 1.2rem;
+}
 .stale-banner {
   margin: 0 0 var(--space-4);
   border-radius: var(--radius-control);
@@ -744,7 +922,8 @@ blockquote q {
     transition: none;
   }
   .pulse-dot,
-  .shimmer-text {
+  .shimmer-text,
+  .skeleton {
     animation: none;
   }
   .shimmer-text {
@@ -776,6 +955,10 @@ blockquote q {
   .follow-up button {
     width: 100%;
   }
+  .what-if-strip {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
   .trial-card {
     border-right: 0;
     border-bottom: 0;
@@ -785,6 +968,14 @@ blockquote q {
   }
   .profile-card {
     padding: var(--space-3);
+  }
+}
+@media (max-width: 850px) {
+  .workspace-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .input-column {
+    position: static;
   }
 }
 .panel,

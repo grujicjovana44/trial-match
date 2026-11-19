@@ -53,6 +53,21 @@ it("003: zahteva metapodatke, poreklo i isključenja na izlaznoj granici", async
     await import("../../../apps/web/test/helpers/responses.js");
   const valid = okResponse();
   expect(RunResponseSchema.safeParse(valid).success).toBe(true);
+  const firstCriterion = valid.results[0]?.criteria[0];
+  expect(firstCriterion).toBeDefined();
+  const withKind = {
+    ...valid,
+    results: valid.results.map((trial, trialIndex) => ({
+      ...trial,
+      criteria: trial.criteria.map((criterion, criterionIndex) => ({
+        ...criterion,
+        ...(trialIndex === 0 && criterionIndex === 0
+          ? { kind: "exclusion" as const }
+          : {}),
+      })),
+    })),
+  };
+  expect(RunResponseSchema.safeParse(withKind).success).toBe(true);
   const { excludedTrials: _excluded, ...missing } = valid;
   void _excluded;
   expect(RunResponseSchema.safeParse(missing).success).toBe(false);

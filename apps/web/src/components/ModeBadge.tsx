@@ -17,9 +17,6 @@ export function ModeBadge({ meta }: { meta: RunResponse["meta"] | null }) {
       <span className="pulse-dot" aria-hidden="true" />
       <span className="visually-hidden">{copy.mode.srPrefix}</span>
       {copy.mode.live}
-      {model.modelId !== null && (
-        <span className="mono mode-model">{model.modelId}</span>
-      )}
     </span>
   );
 }

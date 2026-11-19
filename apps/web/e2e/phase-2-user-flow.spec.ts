@@ -7,11 +7,11 @@ test("synthetic profile → real-study corpus → visible citation and unknown c
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: "Uporedite sintetički profil sa studijama",
+      name: "Proverite profil prema studijama",
     }),
   ).toBeVisible();
   await page
-    .getByLabel("Opis profila ili pitanje")
+    .getByLabel("Opišite profil")
     .fill(
       "Muškarac, 62 godine, dijabetes tip 2, HbA1c 8,1%, kreatinin 1,3 mg/dL, visina 178 cm, težina 92 kg, bez insulina.",
     );
@@ -20,15 +20,17 @@ test("synthetic profile → real-study corpus → visible citation and unknown c
   await expect(page.locator("#results-heading")).toBeVisible({
     timeout: 25_000,
   });
-  await expect(
-    page.getByRole("heading", { name: "Pregled studija" }),
-  ).toBeVisible();
   await expect(page.locator(".trial-card").first()).toBeVisible();
+  await page
+    .locator(".trial-card")
+    .first()
+    .locator(".trial-details > summary")
+    .click();
   await expect(page.locator(".criterion").first()).toBeVisible();
-  await expect(page.locator(".criterion blockquote q").first()).toBeVisible();
+  await expect(page.locator(".trial-unknown-count").first()).toBeVisible();
   await expect(page.locator(".trial-card .mono").first()).toContainText("NCT");
-  await expect(page.locator(".criterion-unknown").first()).toBeVisible();
-  await expect(page.getByText("Snimak studija")).toBeVisible();
+  await expect(page.locator(".technical-meta")).toContainText("Snimak studija");
+  await expect(page.locator(".technical-meta")).not.toHaveAttribute("open", "");
   await expect(page.locator(".mode-badge.mode-demo")).toBeVisible();
 });
 
@@ -36,7 +38,7 @@ test("invalid profile response is shown as an accessible error", async ({
   page,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Opis profila ili pitanje").fill("HbA1c neispravno");
+  await page.getByLabel("Opišite profil").fill("HbA1c neispravno");
   await page.getByRole("button", { name: "Proveri kriterijume" }).click();
   await expect(page.getByRole("alert")).toBeVisible({ timeout: 15_000 });
 });

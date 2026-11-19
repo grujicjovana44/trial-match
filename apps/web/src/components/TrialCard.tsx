@@ -3,14 +3,12 @@ import { motion } from "motion/react";
 import {
   phaseLabel,
   recruitmentStatusLabel,
-  summarizeCriteria,
   type RegistryLabel,
   trialAnchorId,
   trialRegistryUrl,
   verdictLabel,
 } from "../result-view-model.js";
 import { copy } from "../copy.js";
-import { CriteriaSummaryBar } from "../motion/CriteriaSummaryBar.js";
 import { enter } from "../motion/motion-presets.js";
 import { CriterionRow } from "./CriterionRow.js";
 
@@ -33,6 +31,41 @@ export function TrialCard({
   // Polje koje nedostaje se izostavlja, bez podrazumevane vrednosti (FR-025).
   const recruitment = recruitmentStatusLabel(trial.overallStatus);
   const phase = phaseLabel(trial.phase);
+  const uncertain = trial.criteria.filter(
+    (criterion) => criterion.status === "unknown",
+  );
+  const exclusions = trial.criteria.filter(
+    (criterion) =>
+      criterion.status !== "unknown" && criterion.kind === "exclusion",
+  );
+  const inclusions = trial.criteria.filter(
+    (criterion) =>
+      criterion.status !== "unknown" && criterion.kind === "inclusion",
+  );
+  const untyped = trial.criteria.filter(
+    (criterion) => criterion.status !== "unknown" && !criterion.kind,
+  );
+  const reasons = [
+    ...trial.criteria.filter((criterion) => criterion.status === "not_met"),
+    ...trial.criteria.filter((criterion) => criterion.status === "met"),
+  ].slice(0, 3);
+  const unknownCount = uncertain.length;
+  const remainingUnknown = trial.criteria.filter(
+    (criterion) => criterion.status === "unknown",
+  );
+  function section(title: string, items: typeof trial.criteria, id: string) {
+    if (items.length === 0) return null;
+    return (
+      <section className="criterion-group" aria-labelledby={`${id}-heading`}>
+        <h4 id={`${id}-heading`}>{title}</h4>
+        <ul className="criteria-list">
+          {items.map((criterion) => (
+            <CriterionRow key={criterion.id} criterion={criterion} />
+          ))}
+        </ul>
+      </section>
+    );
+  }
   return (
     <motion.article
       className="trial-card"
@@ -43,7 +76,9 @@ export function TrialCard({
     >
       <div className="trial-heading">
         <div>
-          <p className="eyebrow mono">{trial.trialId}</p>
+          <p className="eyebrow">
+            Studija <span className="mono">{trial.trialId}</span>
+          </p>
           <h3 id={`${trialAnchorId(index)}-title`} tabIndex={-1}>
             {trial.title}
           </h3>
@@ -76,16 +111,67 @@ export function TrialCard({
           </a>
         </p>
       )}
-      <CriteriaSummaryBar summary={summarizeCriteria(trial.criteria)} />
-      {trial.criteria.length > 0 ? (
-        <ul className="criteria-list">
-          {trial.criteria.map((criterion) => (
-            <CriterionRow key={criterion.id} criterion={criterion} />
+      {reasons.length > 0 && (
+        <ul className="trial-reasons" aria-label="Glavni razlozi">
+          {reasons.map((criterion) => (
+            <li key={criterion.id}>
+              <span className={`status-pill status-${criterion.status}`}>
+                {criterion.status === "not_met" ? "Nije ispunjen" : "Ispunjen"}
+              </span>{" "}
+              {criterion.text}
+            </li>
           ))}
         </ul>
-      ) : (
-        <p className="trial-empty">{copy.trial.noCriteria}</p>
       )}
+      {unknownCount > 0 && (
+        <p className="trial-unknown-count">
+          {unknownCount} {copy.trial.reviewCount(unknownCount)}
+        </p>
+      )}
+      <details className="trial-details">
+        <summary>{copy.trial.details}</summary>
+        {trial.criteria.length > 0 ? (
+          <div className="trial-detail-body">
+            {section("Isključuje", exclusions, `exclusion-${index}`)}
+            {section("Uključuje", inclusions, `inclusion-${index}`)}
+            {section(
+              "Isključuje",
+              untyped.filter((criterion) => criterion.status === "not_met"),
+              `untyped-exclusion-${index}`,
+            )}
+            {section(
+              "Uključuje",
+              untyped.filter((criterion) => criterion.status === "met"),
+              `untyped-inclusion-${index}`,
+            )}
+            {remainingUnknown.length > 0 && (
+              <details className="unknown-details">
+                <summary>
+                  {copy.trial.reviewGroup(remainingUnknown.length)}
+                </summary>
+                <ul className="criteria-list">
+                  {remainingUnknown.map((criterion) => (
+                    <CriterionRow key={criterion.id} criterion={criterion} />
+                  ))}
+                </ul>
+              </details>
+            )}
+            <details className="technical-details">
+              <summary>{copy.trial.technical}</summary>
+              <ul>
+                {trial.criteria.map((criterion) => (
+                  <li key={criterion.id}>
+                    ID segmenta: <span className="mono">{criterion.id}</span>;
+                    izvor: <span className="mono">{criterion.sourceId}</span>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          </div>
+        ) : (
+          <p className="trial-empty">{copy.trial.noCriteria}</p>
+        )}
+      </details>
     </motion.article>
   );
 }

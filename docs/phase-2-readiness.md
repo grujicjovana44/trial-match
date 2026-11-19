@@ -65,3 +65,15 @@ Zamrznuti baseline-v2 važi za petostudijski snapshot (2 stvarne + 3 sintetičke
 Matcher approval/compile i real-20 integracioni tok su završeni. Deset jasno strukturisanih pravila ulazi u deterministički matcher; svih 290 ostalih kriterijuma ostaju `manual_review`/`unknown`.
 
 Faze 3 i 4 ostaju van opsega. Nema merge/push preporuke dok navedeni Phase 2 kvalitetni i operativni dokazi ne budu rešeni.
+
+## Audit dopuna — 2026-11-19
+
+Ova dopuna odražava statusne iskaze vlasnice projekta i pregled lokalnih artefakata. Za T329, T330 i T332, gde nema fajl dokaza: **potvrdila Jovana Grujić, 2026-11-19; izvor tvrdnje: ovaj dokument**. T329: Gemini ključ je lokalno postavljen i provera je izvršena; vrednost nije pregledana. T330: odobrenje je potvrđeno. Iz `eval/runner/live.ts` i `live-runner.ts` utvrđen scope od 16 sintetičkih fixture EV slučajeva i `gemini-3.5-flash-lite`; stvarni attempts/token cap-ovi nisu zabeleženi.
+
+T331 je **OTVOREN**: iako je vlasnica potvrdila da je prvi kompletan live baseline pokrenut 2026-11-19 bez grešaka, u radnom stablu nema `eval/results/baseline/manifest.json`, `results.jsonl` ni `traces/`, niti `eval/approval.json`. Rezultati se ne proglašavaju dokazanim bez tih artefakata. T332 je vlasnički potvrđen kao ručni live UI smoke sa uspešnim ishodom 2026-11-19; koraci/browser/build hash nisu dostavljeni. Ovo nije baseline niti EV evaluacija.
+
+T319/T321 su **ZATVORENO SA OGRANIČENJEM**: poreklo je dokumentovano koliko je poznato; nepoznati upiti/paginacija ostaju **NIJE ZABELEŽENO**, a nezavisan pregled prava **PREGLED NIJE SPROVEDEN**. Korpus je demo uzorak. T323 je **ODLOŽEN**; parser kvalitet nije merljiv. Cohere `rerank-v5.0-fast` je integrisan i živi poziv potvrđen smoke testom 2026-11-18; kvalitet nije evaluiran (**RAG-T402 otvoren**).
+
+**Faza 2 nije formalno zatvorena.** T335 ostaje otvoren dok T331–T334 nemaju kompletne dokaze. Ograničenja su: neocenjen kvalitet rerankera, odložen T323, nesproveden pregled prava, delimično nezabeleženo poreklo snimaka i demo uzorak korpusa. Nisu prepisivane metrike niti zaključci o kvalitetu live baseline-a.
+
+Provere u dokumentacionoj sesiji (2026-11-19): `pnpm typecheck` — PASS (`tsc --noEmit -p tsconfig.json`, exit 0); `pnpm lint` — PASS (`eslint .`, exit 0); `pnpm test` — PASS (63 fajla, 323 testa; exit 0). Ostale T334 provere nisu pokretane.

@@ -25,7 +25,7 @@ const payload =
 
 function startProfile() {
   render(<App />);
-  fireEvent.change(screen.getByLabelText("Opis profila ili pitanje"), {
+  fireEvent.change(screen.getByLabelText("Opišite profil"), {
     target: { value: "Sintetički profil" },
   });
   fireEvent.click(screen.getByRole("button", { name: "Proveri kriterijume" }));
@@ -100,10 +100,11 @@ describe("bezbedan prikaz teksta", () => {
     startProfile();
     await screen.findByRole("alert");
 
-    assertPayloadIsText();
-    expect(document.querySelector(".server-message")?.textContent).toContain(
-      payload,
-    );
+    expect(document.querySelector("main")?.textContent).not.toContain(payload);
+    expect(document.querySelector("main script")).toBeNull();
+    expect(document.querySelector("main img")).toBeNull();
+    expect(document.querySelector("main b")).toBeNull();
+    expect(document.querySelector(".server-message")).toBeNull();
   });
 
   it("does not use unsafe HTML insertion APIs in web source", () => {

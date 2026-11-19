@@ -19,17 +19,22 @@ export function HypothesisForm({
   }
 
   return (
-    <form className="follow-up hypothesis" onSubmit={submit}>
-      <h3>{copy.hypothesis.heading}</h3>
-      <label htmlFor="hypothesis">{copy.hypothesis.label}</label>
-      <input
-        id="hypothesis"
-        value={text}
-        onChange={(event) => setText(event.target.value)}
-        maxLength={MAX_INPUT_CHARS}
-        placeholder={copy.hypothesis.placeholder}
-        disabled={busy}
-      />
+    <form className="what-if-strip" onSubmit={submit}>
+      <div className="what-if-heading">
+        <h3>{copy.hypothesis.heading}</h3>
+        <p>{copy.hypothesis.note}</p>
+      </div>
+      <div className="what-if-field">
+        <label htmlFor="hypothesis">{copy.hypothesis.label}</label>
+        <input
+          id="hypothesis"
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+          maxLength={MAX_INPUT_CHARS}
+          placeholder={copy.hypothesis.placeholder}
+          disabled={busy}
+        />
+      </div>
       <motion.button
         type="submit"
         disabled={busy || text.trim().length === 0}
@@ -37,7 +42,6 @@ export function HypothesisForm({
       >
         {copy.hypothesis.submit}
       </motion.button>
-      <p>{copy.hypothesis.note}</p>
     </form>
   );
 }

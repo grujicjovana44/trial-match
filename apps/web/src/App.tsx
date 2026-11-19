@@ -81,92 +81,110 @@ export function App() {
       <main className="page-shell">
         <SiteHeader meta={state.meta} />
 
-        <section className="intro" aria-labelledby="page-title">
-          <p className="eyebrow">{copy.intro.eyebrow}</p>
-          <h1 id="page-title">{copy.intro.title}</h1>
-          <p>{copy.intro.lead}</p>
-        </section>
-
         <SafetyNotice dataSynthetic={state.meta?.dataSynthetic === true} />
-
-        <ProfileForm
-          text={profileText}
-          onTextChange={setProfileText}
-          onSubmit={(event) => {
-            event.preventDefault();
-            void send({
-              kind: "run",
-              path: "/api/runs",
-              body: { profileText },
-              userText: profileText,
-            });
-          }}
-          busy={busy}
-          canStartOver={canStartOver(state)}
-          onStartOver={startOver}
-          textareaRef={textareaRef}
-        >
-          <VoiceInput
-            key={voiceKey}
-            disabled={isBusy(state)}
-            onTranscript={(spoken) =>
-              setProfileText((current) =>
-                current.trim().length > 0
-                  ? `${current.trim()} ${spoken}`
-                  : spoken,
-              )
-            }
-          />
-        </ProfileForm>
-
-        {busy && <ProcessingStatus slow={slow} />}
-        {state.error && (
-          <ErrorPanel
-            error={state.error}
-            hasPreviousResult={state.result !== null}
-            busy={busy}
-            onRetry={() => {
-              if (state.lastRequest) void send(state.lastRequest);
-            }}
-            onStartOver={startOver}
-            panelRef={errorRef}
-          />
-        )}
-
-        <div className="results-region" aria-live="polite">
-          {result && (
-            <ResultPanel
-              key={result.runId}
-              result={result}
-              stale={resultIsStale(state)}
-              headingRef={headingRef}
-              sourceText={state.sourceText}
-              showSaved={showSavedNotice(state)}
+        <div className="workspace-layout">
+          <aside className="input-column" aria-label="Unos profila">
+            <section className="intro" aria-labelledby="page-title">
+              <h1 id="page-title">{copy.intro.title}</h1>
+              <p>{copy.intro.lead}</p>
+            </section>
+            <ProfileForm
+              text={profileText}
+              onTextChange={setProfileText}
+              onSubmit={(event) => {
+                event.preventDefault();
+                void send({
+                  kind: "run",
+                  path: "/api/runs",
+                  body: { profileText },
+                  userText: profileText,
+                });
+              }}
               busy={busy}
-              onAnswer={(text) => {
-                if (!result || result.status !== "needs_clarification") return;
-                void send({
-                  kind: "answer",
-                  path: `/api/runs/${encodeURIComponent(result.runId)}/answer`,
-                  body: { answer: text },
-                  userText: text,
-                });
-              }}
-              clarificationRef={clarificationRef}
-              resultSeq={state.resultSeq}
-              onHypothesis={(text) => {
-                if (!result || result.stage !== "completed") return;
-                void send({
-                  kind: "hypothesis",
-                  path: `/api/runs/${encodeURIComponent(result.runId)}/hypothesis`,
-                  body: { profileText: text },
-                  userText: text,
-                });
-              }}
-              isHypothesis={isHypothesisResult(state)}
-              hypothesisText={state.hypothesisText}
-            />
-          )}
+              canStartOver={canStartOver(state)}
+              onStartOver={startOver}
+              textareaRef={textareaRef}
+            >
+              <VoiceInput
+                key={voiceKey}
+                disabled={isBusy(state)}
+                onTranscript={(spoken) =>
+                  setProfileText((current) =>
+                    current.trim().length > 0
+                      ? `${current.trim()} ${spoken}`
+                      : spoken,
+                  )
+                }
+              />
+            </ProfileForm>
+          </aside>
+
+          <div
+            className="results-region"
+            aria-live="polite"
+            aria-label="Rezultati provere"
+          >
+            {busy && <ProcessingStatus slow={slow} />}
+            {state.error && (
+              <ErrorPanel
+                error={state.error}
+                busy={busy}
+                onRetry={() => {
+                  if (state.lastRequest) void send(state.lastRequest);
+                }}
+                onStartOver={startOver}
+                onEdit={() => {
+                  const hypothesisInput = document.getElementById("hypothesis");
+                  if (hypothesisInput instanceof HTMLInputElement) {
+                    hypothesisInput.focus();
+                  } else {
+                    textareaRef.current?.focus();
+                  }
+                }}
+                panelRef={errorRef}
+              />
+            )}
+            {result && (
+              <ResultPanel
+                key={result.runId}
+                result={result}
+                stale={resultIsStale(state)}
+                headingRef={headingRef}
+                sourceText={state.sourceText}
+                showSaved={showSavedNotice(state)}
+                busy={busy}
+                onAnswer={(text) => {
+                  if (!result || result.status !== "needs_clarification")
+                    return;
+                  void send({
+                    kind: "answer",
+                    path: `/api/runs/${encodeURIComponent(result.runId)}/answer`,
+                    body: { answer: text },
+                    userText: text,
+                  });
+                }}
+                clarificationRef={clarificationRef}
+                resultSeq={state.resultSeq}
+                onHypothesis={(text) => {
+                  if (!result || result.stage !== "completed") return;
+                  void send({
+                    kind: "hypothesis",
+                    path: `/api/runs/${encodeURIComponent(result.runId)}/hypothesis`,
+                    body: { profileText: text },
+                    userText: text,
+                  });
+                }}
+                isHypothesis={isHypothesisResult(state)}
+                hypothesisText={state.hypothesisText}
+              />
+            )}
+            {!result && !busy && !state.error && (
+              <section className="empty-state" aria-labelledby="empty-heading">
+                <h2 id="empty-heading">{copy.empty.heading}</h2>
+                <p>{copy.empty.body}</p>
+              </section>
+            )}
+          </div>
         </div>
 
         <footer className="site-footer">

@@ -29,7 +29,9 @@ export function VoiceInput({
     if (disabled) cancel();
   }, [disabled, cancel]);
 
-  if (!speech.supported) return null;
+  if (!speech.supported) {
+    return <p className="form-hint">{copy.voice.unsupported}</p>;
+  }
 
   // Natpis dugmeta se menja sa stanjem, pa nema `aria-pressed`: čitač ekrana bi
   // inače izgovorio „Zaustavi diktiranje, pritisnuto“.

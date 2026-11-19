@@ -9,20 +9,25 @@ export function ResultMeta({ meta }: { meta: RunResponse["meta"] }) {
       ? null
       : formatSnapshotDate(meta.dataSnapshotDate);
   return (
-    <footer className="result-meta">
-      <span>{copy.meta.dataVersion(meta.dataVersion)}</span>
-      {snapshotDate !== null && <span>{copy.meta.snapshot(snapshotDate)}</span>}
-      <span>
-        {meta.dataSynthetic ? copy.meta.syntheticData : copy.meta.realData}
-      </span>
-      <span>{meta.dataOrigin}</span>
-      {meta.demoMode ? (
-        <span>{copy.meta.demo}</span>
-      ) : (
+    <details className="technical-details technical-meta">
+      <summary>{copy.trial.technical}</summary>
+      <footer className="result-meta">
+        <span>{copy.meta.dataVersion(meta.dataVersion)}</span>
+        {snapshotDate !== null && (
+          <span>{copy.meta.snapshot(snapshotDate)}</span>
+        )}
         <span>
-          {meta.modelId ? copy.meta.live(meta.modelId) : copy.meta.liveNoId}
+          {meta.dataSynthetic ? copy.meta.syntheticData : copy.meta.realData}
         </span>
-      )}
-    </footer>
+        <span>{meta.dataOrigin}</span>
+        {meta.demoMode ? (
+          <span>{copy.meta.demo}</span>
+        ) : (
+          <span>
+            {meta.modelId ? copy.meta.live(meta.modelId) : copy.meta.liveNoId}
+          </span>
+        )}
+      </footer>
+    </details>
   );
 }

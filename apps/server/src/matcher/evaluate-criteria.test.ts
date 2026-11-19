@@ -83,6 +83,9 @@ describe("deterministički matcher", () => {
     );
 
     expect(results).toEqual(["not_met", "met", "met"]);
+    expect(evaluateCriteria({ age: 9 }, [trial])[0]?.criteria[0]?.kind).toBe(
+      "exclusion",
+    );
   });
 
   it("primenjuje strogi gt prag za inclusion kriterijum", () => {

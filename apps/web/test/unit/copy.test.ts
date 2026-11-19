@@ -72,9 +72,9 @@ describe("tekstovi interfejsa", () => {
   });
 
   it("nazivi dugmadi i polja su tačni", () => {
-    expect(copy.form.label).toBe("Opis profila ili pitanje");
+    expect(copy.form.label).toBe("Opišite profil");
     expect(copy.form.submit).toBe("Proveri kriterijume");
     expect(copy.clarify.submit).toBe("Pošalji dopunu");
-    expect(copy.hypothesis.submit).toBe("Ponovi proveru");
+    expect(copy.hypothesis.submit).toBe("Proveri izmenu");
   });
 });
