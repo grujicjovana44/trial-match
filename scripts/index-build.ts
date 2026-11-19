@@ -29,7 +29,17 @@ type BuildOptions = {
   confirmLarge: boolean;
 };
 
-export function parseBuildOptions(args: string[]): BuildOptions {
+export const CLINICALTRIALS_20_CORPUS_ROOTS = [
+  "data/rule_sets/studies_2_approved_20261115_1539",
+  "data/rule_sets/studies_18_approved_REVIEWED",
+] as const;
+
+const DEFAULT_CORPUS_ROOTS = ["data/trials", "data/fixtures"] as const;
+
+export function parseBuildOptions(
+  args: string[],
+  env: NodeJS.ProcessEnv = process.env,
+): BuildOptions {
   const corpusRoots: string[] = [];
   let indexPath = "data/index/rag.sqlite";
   let indexPathExplicit = false;
@@ -65,12 +75,20 @@ export function parseBuildOptions(args: string[]): BuildOptions {
       "Izbor korpusa zahteva eksplicitnu --index-path putanju indeksa.",
     );
 
+  const defaultCorpusRoots =
+    env.DATASET_PROFILE === "clinicaltrials-20"
+      ? [...CLINICALTRIALS_20_CORPUS_ROOTS]
+      : [...DEFAULT_CORPUS_ROOTS];
+
   return {
     corpusRoots:
       corpusRoots.length > 0
         ? corpusRoots
-        : ["data/trials", "data/fixtures"],
-    indexPath,
+        : defaultCorpusRoots,
+    indexPath:
+      indexPathExplicit || !env.RAG_INDEX_PATH?.trim()
+        ? indexPath
+        : env.RAG_INDEX_PATH.trim(),
     indexPathExplicit,
     estimateOnly,
     confirmLarge,

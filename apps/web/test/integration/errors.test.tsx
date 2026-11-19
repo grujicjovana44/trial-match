@@ -270,7 +270,7 @@ describe("greške zahteva", () => {
     expect(screen.queryByRole("button", { name: "Pokušaj ponovo" })).toBeNull();
   });
 
-  it("does not keep trials after a model timeout during a hypothesis", async () => {
+  it("keeps the confirmed result after a model timeout during a hypothesis", async () => {
     vi.stubGlobal(
       "fetch",
       vi
@@ -293,7 +293,7 @@ describe("greške zahteva", () => {
     await screen.findByText("Servis nije odgovorio na vreme", {
       selector: "h2",
     });
-    expect(document.querySelectorAll("article")).toHaveLength(0);
+    expect(document.querySelectorAll("article")).toHaveLength(3);
   });
 
   it("keeps the clarification visible after a network failure", async () => {

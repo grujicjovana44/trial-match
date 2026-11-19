@@ -72,13 +72,18 @@ export function runReducer(state: RunState, action: RunAction): RunState {
       const response = action.response;
       const requestKind = state.pending?.kind ?? null;
       if (response.status === "error") {
+        const preservesResult = requestKind === "hypothesis";
         return {
           ...state,
           phase: "error",
-          result: null,
-          resultKind: null,
+          ...(preservesResult
+            ? {}
+            : { result: null, resultKind: null }),
           pending: null,
-          error: uiErrorFromCategory(response.error, "run"),
+          error: uiErrorFromCategory(
+            response.error,
+            preservesResult ? "http" : "run",
+          ),
           meta: response.meta,
           focusToken: state.focusToken + 1,
         };
