@@ -158,7 +158,7 @@ export class TrialMatchService {
     if (this.config.DATASET_PROFILE === "clinicaltrials-20") {
       const corpus = await loadRagCorpus([
         "data/rule_sets/studies_2_approved_20261115_1539",
-        "data/rule_sets/studies_18_approved_20261118",
+        "data/rule_sets/studies_18_approved_REVIEWED",
       ]);
       if (corpus.trials.length !== 20)
         throw new Error(
