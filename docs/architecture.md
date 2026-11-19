@@ -3,16 +3,39 @@
 ## Komponente
 
 - `apps/web`: React + Vite interfejs; ne sadrži modelske ključeve.
-- `apps/server`: Fastify API, validacija, orkestracija, memorijski `runId` store, lokalno pronalaženje, provider-neutral adapter i Gemini REST adapter; `DEMO_MODE=true` eksplicitno bira mock.
+- `apps/server`: Fastify API, validacija, orkestracija, memorijski `runId` store, lokalno pronalaženje, provider-neutral adapter i Gemini REST adapter; lokalni `pnpm dev` i `pnpm demo` eksplicitno biraju mock.
 - `packages/shared`: Zod šeme i tipovi ugovora.
 - `data/fixtures`: manifestovani sintetički zapisi T-A, T-B i T-C.
 - `eval`: fiksni slučajevi, offline/fault izvršavanje i metrike zlatnog skupa.
 
 ## Tok podataka
 
-Unos prolazi kroz Zod/tehničku validaciju pre alata. Adapter određuje nameru i može izdvojiti samo navedena polja. Retrieval vraća izvore; matcher obrađuje sintetičke fixture-e ili lokalni paket pregledanih pravila sa potvrđenom licencom. Server proverava citate i `RunResponse` pre slanja odgovora. `unknown` pokreće dopunu kada je moguće; odgovor menja samo traženo polje. Hipoteza je odvojena ruta koja menja samo eksplicitno izdvojene vrednosti.
+Unos prolazi kroz Zod/tehničku validaciju pre alata. Adapter određuje nameru i može izdvojiti samo navedena polja. Retrieval vraća izvore; matcher obrađuje sintetičke fixture-e ili lokalni hash-pinned paket sa ljudski odobrenim pravilima. Pravni pregled podataka nije urađen. Server proverava citate i `RunResponse` pre slanja odgovora. `unknown` pokreće dopunu kada je moguće; odgovor menja samo traženo polje. Hipoteza je odvojena ruta koja menja samo eksplicitno izdvojene vrednosti.
 
-Stanje postoji samo u memoriji servera i briše se njegovim restartom. Run zapisi ističu posle 30 minuta i store zadržava najviše 1.000 zapisa; uklanjanje run-a uklanja i njegovu sesiju i izvedeni cache. Direktni server podrazumeva Gemini; `pnpm dev` bira lokalni mock. Run-scoped sesija beleži logičke pozive, pokušaje, alate, tokene kada su dostupni i zajednički rok. Idempotency cache i zaključavanje su process-local; idempotency zapisi imaju rok od 60 sekundi, a revisions se uklanjaju kada se red operacija za run isprazni.
+Stanje postoji samo u memoriji servera i briše se njegovim restartom. Run zapisi ističu posle 30 minuta i store zadržava najviše 1.000 zapisa; uklanjanje run-a uklanja i njegovu sesiju i izvedeni cache. Direktni server podrazumeva Gemini; `pnpm dev` i `pnpm demo` biraju lokalni mock. Run-scoped sesija beleži logičke pozive, pokušaje, alate, tokene kada su dostupni i zajednički rok. Idempotency cache i zaključavanje su process-local; idempotency zapisi imaju rok od 60 sekundi, a revisions se uklanjaju kada se red operacija za run isprazni.
+
+## Dijagram arhitekture
+
+```mermaid
+flowchart LR
+  U[Sintetički profil] --> W[React + Vite UI]
+  W -->|HTTP + Zod ugovor| A[Fastify API]
+  A --> V[Validacija ulaza]
+  V --> S[ModelSession / LLM adapter]
+  S -->|izdvojena polja| R[ProfileSchema]
+  R --> Q[Lexical / hybrid retrieval]
+  Q -->|izabrane studije i citati| T[Allowlisted tools]
+  T --> M[Deterministički matcher]
+  M -->|met / not_met / unknown| G[Grounding i provera citata]
+  G --> O[RunResponseSchema]
+  O --> W
+  D[(Lokalni paket + fixture-i)] --> Q
+  D --> M
+  E[(Offline eval skupovi)] -. metrike .-> M
+  E -. retrieval metrike .-> Q
+```
+
+U DEMO režimu adapter je mock: tok se demonstrira lokalno bez Gemini poziva. `pnpm dev` koristi sintetičke fixture-e; `pnpm demo` bira `clinicaltrials-20`. Retrieval režim prikazan je u `/health` i tehničkim detaljima rezultata.
 
 ## Workflow
 
@@ -24,7 +47,7 @@ Registar sadrži `compute_egfr`, `compute_bmi`, `evaluate_criteria` i `select_ne
 
 ## Provider i dataset granica 003
 
-ModelSession obavija svaki logički poziv rokom po run-u, ograničenom popravkom, retry pravilom i redigovanim događajima. GeminiAdapter koristi fiksni REST endpoint; prompt ne određuje provider alate ni URL-ove. Importer radi offline, a početni izlaz označava tekst kriterijuma za ručno razdvajanje. `compile:rules` objavljuje samo redove čiji ljudski review odgovara trenutnim hash-evima izvora i pravila. Repo sadrži lokalni paket sa review metapodacima, ali njihov identitet/licenca nisu nezavisno potvrđeni; stvarni EV baseline nije pokrenut.
+ModelSession obavija svaki logički poziv rokom po run-u, ograničenom popravkom, retry pravilom i redigovanim događajima. GeminiAdapter koristi fiksni REST endpoint; prompt ne određuje provider alate ni URL-ove. Importer radi offline, a početni izlaz označava tekst kriterijuma za ručno razdvajanje. `compile:rules` objavljuje samo redove čiji ljudski review odgovara trenutnim hash-evima izvora i pravila. Aktivni paket `studies_18_approved_REVIEWED` beleži Jovaninu potvrdu deset auto pravila od 2026-11-19; ostalih 290 kriterijuma je `manual_review`. Jelenina CSV potvrda izvornog teksta vodi se odvojeno. Izvor je ClinicalTrials.gov, datum preuzimanja 2026-11-16; pravni pregled nije urađen, a uslove korišćenja treba proveriti pre javnog objavljivanja.
 
 ## RAG retrieval — Faza 2
 
@@ -39,3 +62,7 @@ Ako query embedding ne uspe posle ograničenih pokušaja ili vrati nevalidan odg
 Retrieval bira samo studije; matcher dobija sve pregledane kriterijume izabranih studija. Odlomci retrieval-a utiču na kontekst, ne na presude. U kontekst uključeni studijski tekst ostaje nepouzdan, a postojeća serverska provera citata ostaje na snazi.
 
 Embeddings koristi samo `text-embedding-3-small`. Pri indeksiranju šalju se javni tekstovi studija (naslov, stanja, sažetak i criterion `sourceQuote`); pri pretrazi se šalju samo deterministički upitni aspekti izvedeni iz sintetičkog validiranog profila. API ključ ostaje u serverskom okruženju. Testovi/offline evaluator koriste deterministički lažni embedder. `index-build --estimate-only` prikazuje broj tekstova/tokena bez ključa, baze ili mrežnog poziva; stvarni `index:build` nije pokrenut.
+
+## Ograničenja i budući deployment
+
+`RunStore`, idempotency zapisi/lockovi i API rate limiter su process-local. Run stanje se briše pri restartu; rate limit i deduplikacija se ne dele između više procesa ili serverskih instanci. Ovo je prihvatljivo za lokalni demo, ali budući viš procesni deployment zahteva zajedničko skladište run-ova/idempotency ključeva i distribuirani rate limiter, kao i definisanu politiku isteka, privatnosti i oporavka. Trenutni limiti su 1.000 run zapisa sa istekom posle 30 minuta, 1.000 idempotency ključeva sa istekom posle 60 sekundi i process-local API limit od 20 zahteva u 60 sekundi po IP adresi (konfigurišu `RATE_LIMIT_MAX`/`RATE_LIMIT_WINDOW_MS`).

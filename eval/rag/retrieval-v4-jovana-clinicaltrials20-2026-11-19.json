@@ -1,0 +1,246 @@
+{
+  "schemaVersion": 2,
+  "datasetId": "rag-retrieval-v4-jovana-clinicaltrials20-2026-11-19",
+  "corpusSnapshotId": "rag-corpus-clinicaltrials-20-2026-11-19",
+  "annotationStatus": "adjudicated",
+  "annotationMethod": "Jovana's human relevance labels supplied on 2026-11-19 for the active 20-study clinicaltrials-20 corpus. Source and passage IDs were checked against the locally built corpus. This is retrieval relevance annotation only, not clinical review; no clinical review was performed for this batch. Previous retrieval dataset files remain unchanged.",
+  "corpus": [
+    {
+      "path": "data/rule_sets/studies_18_approved_REVIEWED/trials.json",
+      "version": "032daa7ce6291ade32aa8d45a9931ba9a1a961b850451b88c9010659f0c9c9d8+0d86f96da77e86d27fa0e257b6739ca262f91431ef5d6e27e50ab3fc9e6ee90b+139c829a7d76aaa77fa2316c5b1ee89bae2ac4888208645f7685d2790213192b+18eec5fcf0cd1d26c9b08001bc93ec41d031b495f274c7abc8179d8af82d3fc3+44dc82b17fbb00e3e37cffa97865ab87b125547b0a288743387e75f40a6b4d14+4512d9cfc983b32147966026e242b081795685f4d0ae05815f23f36019906a3d+456220a9f33560d3bf064f4542bf093a822ebdad5c4e375cac5f4a59f8db127f+509ab19399ab1858b3e0a8d0487010ab41a8ba122fce5cbee6e352eae718a987+58420abcf6dfdffc77a1806048a87d5166fd8ded1eb8ad85ec10021447cb66d7+6ba5539ea6ca952c6b4a00bd1f68c887c1fa05bacb374b872bb469c0cd99976a+7fd52f0c35992e1a7f2d686f4d1762a42019e888a9b6aa75b55974c07393caaf+901ead2f7f9a0ae8095947f59a17522ba96ce82067660310d8658c13f18a180d+a5a8a94ca54770003b77f2e27ef67beae5a6c6d4a4f02462912e7afb2f035421+cac140c84476d4d3054757214513e22060ef7855cebca3d7c4ca34dacbf33441+d7a3c1af4997f012e7691140076c22847d302301cc58fd29a408dd3dfc7c19a5+e28b40b639facab0a9e6af7ef46cacfb5bb6f871ae94e5cef545c7206dd4142a+e6482c12d8ff8b0f784dd772402b7b2620c14acc488adaf59f8b986d8d3db870+e7a9b42782c6e010d74d93c475c8fd3f53a40a894796a570573089d9b4226243",
+      "sha256": "9254abf8dc284506431ad482c698d1684f8b0f7b6c493323b40ca11b45f97360"
+    },
+    {
+      "path": "data/rule_sets/studies_2_approved_20261115_1539/trials.json",
+      "version": "28f5b20ee4ddeac77b80f221d13c363b7cafb98bae2fd2dbbe5c09015e98d5b8+d38da1b7386220914ec963285d6da423bf4cf52a7f65a35b49c0b6e3e2e514eb",
+      "sha256": "4b39b15a92b3ce20591c70ed54bb60e81a453c10b2c3a5dd2052b00ec3c8a2e5"
+    }
+  ],
+  "cases": [
+    {
+      "caseId": "J-RAG-01",
+      "language": "sr",
+      "profile": {
+        "stated_diagnoses": [
+          "dijabetes tip 2",
+          "gojaznost"
+        ]
+      },
+      "relevantTrialIds": [
+        "NCT07924436"
+      ],
+      "relevantPassageIds": [
+        "NCT07924436#inc-3",
+        "NCT07924436#inc-5"
+      ],
+      "rationale": "Studija NCT07924436 obuhvata gojaznost i dijabetes tipa 2 u naslovu i polju conditions; odlomak inc-3 definiše prag BMI od 30 kg/m² i više, a inc-5 navodi grupu sa dijabetesom tipa 2.",
+      "relevanceRule": "Relevantna je studija koja obuhvata gojaznost i dijabetes tipa 2 kao ciljnu populaciju ili grupu. Relevantni su odlomci koji neposredno potkrepljuju jedan od ovih pojmova u okviru relevantne studije; ovde je prag BMI >=30 u studiji o gojaznosti prihvaćen kao relevantan.",
+      "labelStatus": "confirmed",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-19T20:09:27.108Z",
+      "kind": "ranking",
+      "split": "dev"
+    },
+    {
+      "caseId": "J-RAG-02",
+      "language": "sr",
+      "profile": {
+        "stated_diagnoses": [
+          "dijabetes tip 2",
+          "bubrežna bolest",
+          "dijabetička nefropatija",
+          "eGFR"
+        ]
+      },
+      "relevantTrialIds": [
+        "NCT07409714",
+        "NCT07775846"
+      ],
+      "relevantPassageIds": [
+        "NCT07409714#exc-4",
+        "NCT07409714#exc-5",
+        "NCT07775846#inc-1",
+        "NCT07775846#inc-4",
+        "NCT07775846#inc-5",
+        "NCT07775846#exc-1",
+        "NCT07775846#exc-8"
+      ],
+      "rationale": "NCT07775846 se direktno bavi dijabetskom bolešću bubrega kod T2DM (inc-1, inc-4 za UACR, inc-5 za eGFR, exc-1 i exc-8 za bubrežna stanja), dok NCT07409714 obuhvata bubrežno i kardiovaskularno zdravlje kod T2D i navodi pragove za eGFR (exc-4) i albuminuriju (exc-5); ostale studije pominju eGFR samo kao opšti prag isključenja.",
+      "relevanceRule": "Relevantne su studije koje ciljaju dijabetes tipa 2 i bubrežnu bolest/funkciju kao populaciju ili fokus studije. Samo pominjanje eGFR-a kao opšteg praga isključenja nije dovoljno. Odlomci moraju biti među ID-jevima koje je pregledavač naveo.",
+      "labelStatus": "confirmed",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-19T20:09:27.108Z",
+      "kind": "ranking",
+      "split": "dev"
+    },
+    {
+      "caseId": "J-RAG-03",
+      "language": "sr",
+      "profile": {
+        "stated_diagnoses": [
+          "dijabetes tip 2",
+          "NAFLD",
+          "masna jetra",
+          "jetrena mast"
+        ]
+      },
+      "relevantTrialIds": [
+        "NCT05439226",
+        "NCT06449833"
+      ],
+      "relevantPassageIds": [
+        "NCT05439226#inc-1",
+        "NCT06449833#inc-1",
+        "NCT06449833#inc-5"
+      ],
+      "rationale": "Obe studije u naslovu, sažetku i uslovima ciljaju pacijente sa dijabetesom tipa 2 i NAFLD/masnom jetrom sa fokusom na smanjenje jetrene masti (NCT05439226#inc-1 navodi T2D i NAFLD; NCT06449833#inc-1 navodi T2D, a inc-5 NAFLD).",
+      "relevanceRule": "Relevantne su studije koje obuhvataju dijabetes tipa 2 uz NAFLD/masnu jetru i cilj vezan za jetrenu mast. Relevantni odlomci su navedeni kriterijumi koji direktno navode populaciju ili stanje.",
+      "labelStatus": "confirmed",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-19T20:09:27.108Z",
+      "kind": "ranking",
+      "split": "dev"
+    },
+    {
+      "caseId": "J-RAG-04",
+      "language": "sr",
+      "profile": {
+        "insulin_last_3_months": false,
+        "stated_diagnoses": [
+          "dijabetes tip 2",
+          "kontinuirano praćenje glukoze"
+        ]
+      },
+      "relevantTrialIds": [
+        "NCT07919236"
+      ],
+      "relevantPassageIds": [
+        "NCT07919236#inc-2",
+        "NCT07919236#inc-4",
+        "NCT07919236#exc-3",
+        "NCT07919236#exc-4"
+      ],
+      "rationale": "NCT07919236 se direktno odnosi na sisteme za kontinuirano praćenje glukoze (CGM) kod osoba sa dijabetesom tipa 2 koje nisu na insulinu (inc-2 za T2D, inc-4 za oralne lekove/GLP-1 RA/tirzepatid, exc-3 isključuje lečenje insulinom, exc-4 raniju upotrebu CGM-a).",
+      "relevanceRule": "Relevantna je studija o CGM-u kod osoba sa dijabetesom tipa 2 koje nisu na insulinu. Relevantni su navedeni odlomci o T2D, terapijama i kriterijumima za insulin/prethodni CGM.",
+      "labelStatus": "confirmed",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-19T20:09:27.108Z",
+      "kind": "ranking",
+      "split": "test"
+    },
+    {
+      "caseId": "J-RAG-05",
+      "language": "sr",
+      "profile": {
+        "age": 75,
+        "stated_diagnoses": [
+          "dijabetes tip 2",
+          "starija odrasla osoba"
+        ]
+      },
+      "relevantTrialIds": [
+        "NCT06296485"
+      ],
+      "relevantPassageIds": [
+        "NCT06296485#inc-1",
+        "NCT06296485#inc-2"
+      ],
+      "rationale": "NCT06296485 cilja starije odrasle osobe (uzrast 75 godina i više) sa dijabetesom tipa 2 (inc-1 i inc-2), mada se fokusira na bezbedno propisivanje insulina uz CGM edukaciju, dok ostale studije imaju samo šire starosne granice bez posebnog fokusa na bezbednost starijih.",
+      "relevanceRule": "Relevantna je studija čija ciljna populacija posebno uključuje starije odrasle osobe sa dijabetesom tipa 2 i čiji fokus obuhvata bezbednost u toj grupi; širi raspon godina sam po sebi nije dovoljan.",
+      "labelStatus": "confirmed",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-19T20:09:27.108Z",
+      "kind": "ranking",
+      "split": "test"
+    },
+    {
+      "caseId": "J-RAG-06",
+      "language": "sr",
+      "profile": {
+        "stated_diagnoses": [
+          "dijabetes tip 2",
+          "perioperativna kontrola glikemije",
+          "parenteralna ishrana"
+        ]
+      },
+      "relevantTrialIds": [
+        "NCT07121504"
+      ],
+      "relevantPassageIds": [
+        "NCT07121504#inc-2",
+        "NCT07121504#inc-3",
+        "NCT07121504#inc-4"
+      ],
+      "rationale": "NCT07121504 se eksplicitno bavi perioperativnom kontrolom glikemije kod pacijenata sa T2DM koji dobijaju parenteralnu ishranu (inc-2 navodi T2DM, hirurške procedure i očekivanu kratkotrajnu TPN u perioperativnom periodu, a inc-3 i inc-4 kriterijume glikemijske kontrole).",
+      "relevanceRule": "Relevantna je studija koja povezuje dijabetes tipa 2 sa perioperativnim okruženjem i parenteralnom ishranom radi kontrole glikemije; opšta T2D relevantnost nije dovoljna.",
+      "labelStatus": "confirmed",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-19T20:09:27.108Z",
+      "kind": "ranking",
+      "split": "test"
+    },
+    {
+      "caseId": "J-RAG-07",
+      "language": "sr",
+      "profile": {
+        "stated_diagnoses": [
+          "celijakija"
+        ]
+      },
+      "relevantTrialIds": [],
+      "relevantPassageIds": [],
+      "rationale": "Pregledano je svih 20 studija u aktivnom korpusu i nijedna nema celijakiju kao ciljnu dijagnozu ili stanje (NCT07350967#exc-12 pominje celijakiju samo kao isključenje kod bolesti tankog creva u studiji o T2DM i barijatrijskoj proceduri).",
+      "relevanceRule": "Relevantna bi bila studija koja cilja celijakiju kao stanje; samo pominjanje celijakije kao kriterijuma isključenja nije relevantno. Za ovaj korpus potvrđen je negativan rezultat bez relevantnih studija ili odlomaka.",
+      "labelStatus": "confirmed",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-19T20:09:27.108Z",
+      "kind": "negative",
+      "split": "test"
+    },
+    {
+      "caseId": "J-RAG-08",
+      "language": "sr",
+      "profile": {
+        "medications": [
+          "metformin"
+        ],
+        "stated_diagnoses": [
+          "novonastali dijabetes tip 2"
+        ]
+      },
+      "relevantTrialIds": [
+        "NCT06888050",
+        "NCT07676773"
+      ],
+      "relevantPassageIds": [
+        "NCT06888050#inc-2",
+        "NCT06888050#inc-4",
+        "NCT07676773#inc-2",
+        "NCT07676773#inc-4"
+      ],
+      "rationale": "NCT06888050 direktno ispituje novonastali/novodijagnostikovani T2DM (trajanje bolesti do 24 meseca u inc-2, bez prethodnih hipoglikemika u inc-4, uz metformin kao kontrolnu terapiju), dok NCT07676773 potvrđuje dijagnozu T2D u inc-2, a inc-4 navodi novodijagnostikovan dijabetes ili trajanje bolesti do pet godina.",
+      "relevanceRule": "Relevantne su studije koje ciljaju novonastali/nedavno dijagnostikovani dijabetes tipa 2 ili ga definišu trajanjem bolesti i prethodnom terapijom; relevantni su navedeni odlomci.",
+      "labelStatus": "confirmed",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-19T20:09:27.108Z",
+      "kind": "ranking",
+      "split": "test"
+    }
+  ],
+  "plannedPatterns": [
+    {
+      "pattern": "malicious_indexed_passage",
+      "kind": "injection",
+      "description": "Budući odvojeni slučaj za prompt injection u indeksiranom odlomku; nije deo ovih osam oznaka.",
+      "corpusVersionRequired": "corpus-v1",
+      "status": "description_only"
+    },
+    {
+      "pattern": "serbian_synonyms_and_cyrillic",
+      "kind": "language",
+      "description": "Budući odvojeni test sinonima, ćirilice i engleskog izvora; nije dodat kao gold oznaka ovde.",
+      "corpusVersionRequired": "corpus-v1",
+      "status": "description_only"
+    }
+  ]
+}
