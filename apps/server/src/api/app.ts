@@ -155,7 +155,14 @@ export function createApp(options: AppOptions = {}): FastifyInstance {
       );
   });
 
-  app.addHook("onReady", () => service.initialize());
+  app.addHook("onReady", async () => {
+    await service.initialize();
+    if (service.retrievalFallbackReason)
+      app.log.warn(
+        { reason: service.retrievalFallbackReason },
+        "RAG nije dostupan; koristi se lexical retrieval fallback.",
+      );
+  });
   app.options("/*", async (request, reply) =>
     request.headers.origin === config.WEB_ORIGIN
       ? reply.code(204).send()
@@ -165,6 +172,7 @@ export function createApp(options: AppOptions = {}): FastifyInstance {
     status: "ok",
     demoMode: config.DEMO_MODE,
     retrievalMode: service.retrievalMode,
+    retrievalFallbackReason: service.retrievalFallbackReason,
     providerId: service.adapter.providerId,
     modelId: service.adapter.modelId,
   }));

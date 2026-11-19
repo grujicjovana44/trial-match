@@ -334,6 +334,8 @@ export const MetaSchema = z
     toolCalls: z.number().int().nonnegative(),
     tokens: z.number().int().nonnegative().nullable(),
     demoMode: z.boolean(),
+    retrievalMode: z.enum(["hybrid", "lexical_fallback", "lexical_only"]),
+    retrievalFallbackReason: z.string().nullable(),
   })
   .strict();
 

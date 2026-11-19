@@ -34,6 +34,8 @@ export function metaOf(overrides: Partial<Meta> = {}): Meta {
     toolCalls: 0,
     tokens: null,
     demoMode: true,
+    retrievalMode: "lexical_only",
+    retrievalFallbackReason: null,
     ...overrides,
   };
 }

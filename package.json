@@ -9,6 +9,7 @@
   },
   "scripts": {
     "dev": "node scripts/dev.mjs",
+    "demo": "node scripts/dev.mjs --clinicaltrials-20",
     "build": "tsc -p tsconfig.build.json && vite build",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint": "eslint .",
