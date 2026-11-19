@@ -36,7 +36,7 @@ describe("budžeti API izvršavanja", () => {
     const hypothesis = await app.inject({
       method: "POST",
       url: `/api/runs/${runId}/hypothesis`,
-      payload: { profileText: "A šta ako je HbA1c 9,0%?" },
+      payload: { profileText: "A šta ako pacijent ima 70 godina?" },
     });
     expect(hypothesis.json()).toMatchObject({
       status: "error",
