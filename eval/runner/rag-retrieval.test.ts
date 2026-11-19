@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import retrievalDatasetV2 from "../rag/retrieval-v2.json" with { type: "json" };
+import retrievalDatasetV4 from "../rag/retrieval-v4-jovana-clinicaltrials20-2026-11-19.json" with { type: "json" };
 import retrievalProposalQueue from "../rag/retrieval-proposals-v1.json" with { type: "json" };
 import {
   aggregateRankingMetrics,
@@ -148,6 +149,27 @@ describe("RAG retrieval dataset v2", () => {
           pattern.status === "description_only",
       ),
     ).toBe(true);
+  });
+});
+
+describe("Jovanine oznake za aktivni 20-study korpus", () => {
+  const dataset = RetrievalDatasetSchema.parse(retrievalDatasetV4);
+
+  it("čuva osam potvrđenih relevance oznaka bez mešanja sa kliničkim pregledom", () => {
+    expect(dataset.annotationStatus).toBe("adjudicated");
+    expect(dataset.cases).toHaveLength(8);
+    expect(dataset.cases.filter((testCase) => testCase.kind === "ranking")).toHaveLength(7);
+    expect(dataset.cases.filter((testCase) => testCase.kind === "negative")).toMatchObject([
+      {
+        caseId: "J-RAG-07",
+        relevantTrialIds: [],
+        relevantPassageIds: [],
+        labelStatus: "confirmed",
+        reviewer: "Jovana",
+      },
+    ]);
+    expect(dataset.annotationMethod).toContain("not clinical review");
+    expect(dataset.cases.every((testCase) => testCase.reviewer === "Jovana")).toBe(true);
   });
 });
 

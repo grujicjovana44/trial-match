@@ -450,7 +450,7 @@ export async function runOfflineRagEvaluation(
       limitations: [
         "Hash embedder daje simulirane/noisy vektorske rezultate i nije dokaz semantičkog kvaliteta.",
         "Rezultati lažnog i stvarnog embedding režima moraju se posmatrati odvojeno.",
-        "Predložene oznake su razvojna dijagnostika, ne kvalitetom potvrđeni zaključci.",
+        "Rezultati su ograničeni obimom i statusom oznaka ovog skupa; nisu potvrda kvaliteta van njega.",
         "Kašnjenje meri lokalni offline proces i nije produkcioni SLO.",
         "RAGAS-style evaluator je heuristički; ovaj benchmark ne poziva generativni model.",
       ],

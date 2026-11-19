@@ -1,5 +1,7 @@
 # Jelena — RAG predlozi za ručni pregled
 
+Ovaj fajl beleži istorijske odluke za `rag-corpus-v0-dev` sa pet studija. Te oznake ostaju vezane za taj snapshot i ne predstavljaju adjudikaciju aktivnog `clinicaltrials-20` skupa. Jovana vodi nove retrieval relevance oznake; predlog osam novih slučajeva bez unapred popunjenih oznaka je u [review planu](./review-plan-jovana-v1.md). Jelenina potvrda izvornog sadržaja u CSV-u ostaje odvojena od retrieval oznaka i matcher odobrenja.
+
 Status: odluke su upisane (vidi tabelu), ali **ovaj dokument i dalje nije gold skup**. Odluke postaju gold tek kada se upišu u novu verzionisanu adjudikaciju; `rag-retrieval-v2` se ne menja. Do tada ostaju isključene iz zvaničnih metrika.
 
 Dozvoljene odluke: APPROVE, CORRECT, REJECT, UNCERTAIN.
