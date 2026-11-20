@@ -59,7 +59,7 @@ export function ResultPanel({
       )}
       {stale && <p className="stale-banner">{copy.processing.stale}</p>}
       {showSaved && !stale && <SavedNotice />}
-      {!stale && (
+      {!stale && counts.trials > 0 && (
         <p className="result-summary" aria-label="Sažetak rezultata">
           {copy.summary.sentence(
             counts.trials,
@@ -92,6 +92,13 @@ export function ResultPanel({
         result.status === "needs_clarification" ||
         result.status === "error") && (
         <p className="explanation">{result.explanation}</p>
+      )}
+      {result.status === "ok" && result.explanationSource !== undefined && (
+        <p className="explanation-source">
+          {result.explanationSource === "model"
+            ? copy.result.explanationModel
+            : copy.result.explanationTemplate}
+        </p>
       )}
       {result.status === "insufficient_evidence" &&
         result.reason === "no_matching_trial" && (

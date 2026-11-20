@@ -1,0 +1,23 @@
+{
+  "case_id": "EV-08",
+  "run_id": "5bba0283-fcbe-415c-845f-0d1fd5926b36",
+  "status": "passed",
+  "execution_mode": "real_model",
+  "model_id": "gemini-3.5-flash-lite",
+  "data_version": "synthetic-trials-v1",
+  "schema_version": "2.0.0",
+  "prompt_version": "phase2.v1",
+  "commit": "2ed092f1b02b46a781bc50162b632480efb77650",
+  "events": [
+    {
+      "step": "model",
+      "attempt": 1,
+      "durationMs": 819,
+      "inputTokens": 690,
+      "outputTokens": 73,
+      "outcome": "complete",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45"
+    }
+  ]
+}

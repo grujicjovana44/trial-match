@@ -1,7 +1,7 @@
 import type { z } from "zod";
 
 export type AdapterRequest = {
-  promptId: "extract_profile.v1" | "explain_results.v1";
+  promptId: "extract_profile.v1" | "explain_results.v1" | "explain_results.v2";
   instruction: string;
   input: unknown;
   schema: z.ZodType;

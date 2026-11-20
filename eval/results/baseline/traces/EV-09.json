@@ -1,0 +1,35 @@
+{
+  "case_id": "EV-09",
+  "run_id": "46bf60c0-36c5-477a-8758-2737f75c91de",
+  "status": "passed",
+  "execution_mode": "real_model",
+  "model_id": "gemini-3.5-flash-lite",
+  "data_version": "synthetic-trials-v1",
+  "schema_version": "2.0.0",
+  "prompt_version": "phase2.v1",
+  "commit": "57f904bbc6ef264f6f32ae6830b939046978a45f",
+  "events": [
+    {
+      "step": "model",
+      "attempt": 1,
+      "durationMs": 9010,
+      "inputTokens": 681,
+      "outputTokens": 41,
+      "outcome": "complete",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45",
+      "validation": "ok"
+    }
+  ],
+  "final": {
+    "status": "insufficient_evidence",
+    "stage": "completed",
+    "reason": "not_in_sources",
+    "profileFields": [],
+    "ambiguityFields": [],
+    "resultTrialIds": [],
+    "excludedTrialIds": [],
+    "modelCalls": 1,
+    "toolCalls": 0
+  }
+}

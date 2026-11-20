@@ -57,3 +57,66 @@ describe("minimalni tragovi", () => {
     expect(() => redactTrace({ case_id: "EV-11" })).toThrow();
   });
 });
+
+describe("polja validacije i završni sažetak", () => {
+  const base = {
+    case_id: "EV-04",
+    run_id: "run-1",
+    status: "failed",
+    execution_mode: "real_model",
+    model_id: "m",
+    data_version: "d",
+    schema_version: "2.0.0",
+    prompt_version: "p",
+    commit: "abc",
+  };
+  const final = {
+    status: "error",
+    stage: "failed",
+    errorCategory: "internal_contract_violation",
+    profileFields: ["age"],
+    ambiguityFields: [],
+    resultTrialIds: [],
+    excludedTrialIds: [],
+    modelCalls: 2,
+    toolCalls: 0,
+  };
+  it("prihvata dozvoljena polja", () => {
+    const trace = redactTrace({
+      ...base,
+      events: [
+        {
+          step: "model",
+          durationMs: 1,
+          outcome: "complete",
+          validation: "business_invalid",
+          validationCode: "value_not_in_input",
+          validationField: "hba1c",
+          invalidPaths: ["profile.hba1c.unit"],
+        },
+      ],
+      final,
+    });
+    expect(trace.final?.modelCalls).toBe(2);
+  });
+  it("odbija vrednosti u poljima validacije", () => {
+    for (const bad of [
+      { invalidPaths: ["hba1c = 9,5"] },
+      { validationCode: "Vrednost 9.5" },
+      { validationField: "tajna" },
+    ])
+      expect(() =>
+        redactTrace({
+          ...base,
+          events: [
+            { step: "model", durationMs: 1, outcome: "complete", ...bad },
+          ],
+        }),
+      ).toThrow();
+  });
+  it("odbija dodatni ključ u final", () => {
+    expect(() =>
+      redactTrace({ ...base, events: [], final: { ...final, profile: {} } }),
+    ).toThrow();
+  });
+});

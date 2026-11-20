@@ -255,3 +255,49 @@ describe("pregled studija", () => {
     );
   });
 });
+
+describe("red kriterijuma: vrsta uslova i tekst registra", () => {
+  const base = criterionOf("T-1", 1, "met", 8.1);
+  const renderRow = (criterion: typeof base) =>
+    render(
+      <ul>
+        <CriterionRow criterion={criterion} />
+      </ul>,
+    );
+
+  it("uslov isključenja: met znači da se ne odnosi", () => {
+    renderRow({ ...base, kind: "exclusion" });
+    expect(screen.getByText("Ne odnosi se")).toBeTruthy();
+    expect(screen.getByText("Uslov isključenja")).toBeTruthy();
+    expect(document.body.textContent).toContain(
+      "uslov isključenja nije prisutan prema dostupnim podacima",
+    );
+    expect(document.body.textContent).not.toContain("Ispunjen");
+  });
+  it("uslov isključenja: not_met znači da se odnosi", () => {
+    renderRow({ ...base, status: "not_met", kind: "exclusion" });
+    expect(screen.getByText("Odnosi se")).toBeTruthy();
+  });
+  it("uslov uključenja zadržava postojeće oznake", () => {
+    renderRow({ ...base, kind: "inclusion" });
+    expect(screen.getByText("Ispunjen")).toBeTruthy();
+    expect(screen.getByText("Uslov uključenja")).toBeTruthy();
+  });
+  it("bez kind-a nema oznake vrste i važe oznake uključenja", () => {
+    renderRow(base);
+    expect(screen.getByText("Ispunjen")).toBeTruthy();
+    expect(document.body.textContent).not.toContain("Uslov uključenja");
+    expect(document.body.textContent).not.toContain("Uslov isključenja");
+  });
+  it("prikazuje tekst registra bez markdown escape-ova", () => {
+    renderRow({
+      ...base,
+      kind: "exclusion",
+      text: "* HbA1c \\>10.0%",
+      citation: { sourceId: base.sourceId, quote: "* HbA1c \\>10.0% \\*" },
+    });
+    expect(document.body.textContent).toContain("* HbA1c >10.0%");
+    expect(document.body.textContent).not.toContain("\\");
+    expect(document.querySelector("q")?.textContent).toBe("* HbA1c >10.0% *");
+  });
+});

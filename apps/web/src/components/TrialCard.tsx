@@ -4,6 +4,8 @@ import {
   phaseLabel,
   recruitmentStatusLabel,
   type RegistryLabel,
+  criterionStatusShort,
+  displayRegistryText,
   trialAnchorId,
   trialRegistryUrl,
   verdictLabel,
@@ -116,9 +118,9 @@ export function TrialCard({
           {reasons.map((criterion) => (
             <li key={criterion.id}>
               <span className={`status-pill status-${criterion.status}`}>
-                {criterion.status === "not_met" ? "Nije ispunjen" : "Ispunjen"}
+                {criterionStatusShort(criterion.status, criterion.kind)}
               </span>{" "}
-              {criterion.text}
+              {displayRegistryText(criterion.text)}
             </li>
           ))}
         </ul>

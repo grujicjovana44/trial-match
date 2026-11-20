@@ -60,3 +60,12 @@ for (const id of allIds) {
     `| ${id} | ${oldResult?.status ?? "nema"} | ${newResult?.status ?? "nema"} | ${oldResult?.details ?? "—"} → ${newResult?.details ?? "—"} |`,
   );
 }
+const totals = (items: typeof before) =>
+  (["passed", "failed", "skipped"] as const)
+    .map(
+      (status) =>
+        `${status}=${items.filter((item) => item.status === status).length}`,
+    )
+    .join(", ");
+console.log("");
+console.log(`**Ukupno** — Pre: ${totals(before)}; Posle: ${totals(after)}`);

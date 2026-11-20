@@ -58,9 +58,20 @@ import {
 } from "../llm/mock-adapter.js";
 import { GeminiAdapter } from "../llm/gemini-adapter.js";
 import type { LlmAdapter } from "../llm/adapter.js";
-import { ModelSession } from "../llm/session.js";
+import { stripAnswerLabel } from "./answer-label.js";
+import { collectAllowedNumbers } from "../grounding/allowed-values.js";
+import { hasOnlyGroundedNumbers } from "../grounding/numeric.js";
+import { applyGlucoseGuard, mentionsGlucose } from "./glucose-guard.js";
+import { BusinessValidationError, ModelSession } from "../llm/session.js";
 import { ModelRequestError } from "../llm/generate-structured.js";
 import { RunBudgetError } from "../budget/run-budget.js";
+
+/** RangeError koji nosi samo naziv polja (za trag); ponašanje je isto kao RangeError. */
+class TechnicalRangeError extends RangeError {
+  constructor(readonly field: string) {
+    super("Vrednost je van tehničke granice unosa.");
+  }
+}
 
 export type ServiceOptions = {
   config: AppConfig;
@@ -367,7 +378,11 @@ export class TrialMatchService {
     if (!trials)
       throw new Error("Validirani skup studija nije učitan pri startu.");
     try {
-      const extraction = await this.extract(text, session);
+      const extraction = this.guardGlucose(
+        text,
+        await this.extract(text, session),
+        session,
+      );
       if (forbidden(extraction))
         return this.save(runId, {}, trials, 0, {
           status: "rejected",
@@ -460,9 +475,15 @@ export class TrialMatchService {
         "Ova radnja nije dostupna u trenutnom stanju provere.",
       );
     try {
+      const hypothesisSession = this.sessions.get(runId)!;
+      const explicitHypothesis = this.parseExplicitHypothesis(text);
       const extraction =
-        this.parseExplicitHypothesis(text) ??
-        (await this.extract(text, this.sessions.get(runId)!));
+        explicitHypothesis ??
+        this.guardGlucose(
+          text,
+          await this.extract(text, hypothesisSession),
+          hypothesisSession,
+        );
       if (forbidden(extraction))
         throw this.badRequest(
           "forbidden_intent",
@@ -544,6 +565,21 @@ export class TrialMatchService {
     return candidates.length === 1 ? candidates[0] : undefined;
   }
 
+  private guardGlucose(
+    text: string,
+    extraction: Extraction,
+    session: ModelSession,
+  ): Extraction {
+    const guarded = applyGlucoseGuard(text, extraction);
+    if (guarded.triggered)
+      session.events.push({
+        step: "guard",
+        durationMs: 0,
+        outcome: "hba1c_glucose_ambiguity",
+      });
+    return guarded.extraction;
+  }
+
   private async extract(
     text: string,
     session: ModelSession,
@@ -556,8 +592,17 @@ export class TrialMatchService {
         ExtractionSchema,
         (extraction) => {
           if (extraction.profile.provenance)
-            throw new Error("Model ne određuje poreklo.");
-          this.validateTechnicalRanges(extraction.profile);
+            throw new BusinessValidationError("provenance_forbidden");
+          try {
+            this.validateTechnicalRanges(extraction.profile);
+          } catch (error) {
+            if (error instanceof RangeError)
+              throw new BusinessValidationError(
+                "technical_range",
+                error instanceof TechnicalRangeError ? error.field : undefined,
+              );
+            throw error;
+          }
           // A model must not introduce a numeric fact absent from the supplied text.
           const numbers =
             text
@@ -600,7 +645,10 @@ export class TrialMatchService {
                 (value) => value === item.original || value === item.value,
               )
             )
-              throw new Error(`Vrednost nije u unosu: ${item.field}.`);
+              throw new BusinessValidationError(
+                "value_not_in_input",
+                item.field,
+              );
         },
       );
     } catch (error) {
@@ -688,6 +736,12 @@ export class TrialMatchService {
       });
     const retriever = this.retriever;
     if (!retriever) throw new Error("RAG retriever nije inicijalizovan.");
+    const excludeFields =
+      /(?:\bbez\b|\bne\s+(?:koristi|koriste|uključuje|ukljucuje|uključuju|ukljucuju|primenjuje|primenjuju)\b).{0,32}\b(?:bmi|indeks(?:a)?\s+telesne\s+mase)\b/iu.test(
+        inputText,
+      )
+        ? ["bmi"]
+        : [];
     const retrievalStartedAt = this.now();
     const retrieval = await retriever.retrieve(profile, trials, {
       maxCandidates: RAG_MAX_CANDIDATES,
@@ -723,6 +777,35 @@ export class TrialMatchService {
         derived,
         explanation: "Nema odgovarajućih izvora u dostupnom skupu.",
       });
+    // Ograničenje prikaza na zahtev korisnika ("bez BMI"), a ne odluka o podobnosti:
+    // studije sa kriterijumom nad izuzetim poljem se ne prikazuju; statusi ostalih se ne menjaju.
+    const shownTrials = excludeFields.length
+      ? retrieval.trials.filter(
+          (trial) =>
+            !trial.criteria.some(
+              (criterion) =>
+                criterion.field !== undefined &&
+                excludeFields.includes(criterion.field),
+            ),
+        )
+      : retrieval.trials;
+    if (excludeFields.length) {
+      session.events.push({
+        step: "filter",
+        durationMs: 0,
+        outcome: `exclude_fields:${excludeFields.join(",")}`,
+        selectedTrialIds: shownTrials.map((trial) => trial.trialId),
+      });
+      if (shownTrials.length === 0)
+        return this.save(runId, profile, trials, rounds, {
+          status: "insufficient_evidence",
+          stage: "completed",
+          reason: "no_matching_trial",
+          derived,
+          explanation:
+            "Nijedna studija ne zadovoljava traženo ograničenje prikaza.",
+        });
+    }
     const { TrialResultSchema, QuestionSchema } =
       await import("../../../../packages/shared/src/index.js");
     const evaluated = z
@@ -731,7 +814,7 @@ export class TrialMatchService {
       .parse(
         await invoke("evaluate_criteria", {
           profile,
-          trials: retrieval.trials,
+          trials: shownTrials,
           derived,
         }),
       ).results;
@@ -742,7 +825,7 @@ export class TrialMatchService {
     let question = QuestionSchema.nullable().parse(
       await invoke("select_next_question", {
         profile,
-        trials: retrieval.trials,
+        trials: shownTrials,
         results: evaluated,
         derived,
       }),
@@ -752,7 +835,7 @@ export class TrialMatchService {
       question = {
         field: field === "egfr" || field === "bmi" ? "creatinine" : field,
         text: "Navedite jasno vrednost i jedinicu traženog podatka.",
-        trialsResolved: retrieval.trials.map((t) => t.trialId),
+        trialsResolved: shownTrials.map((t) => t.trialId),
       };
     }
     if (question) {
@@ -794,15 +877,28 @@ export class TrialMatchService {
       );
     const fallback =
       "Ovo je preliminarna provera kriterijuma. Nepoznati i ručno proveravani uslovi zahtevaju procenu lekara.";
-    const allowed = new Map(
-      retrieval.sourceIds.map((id) => [id, retrieval.sourceTexts.get(id)!]),
+    // Posle ograničenja prikaza izvori sakrivenih studija ne smeju do modela ni do provere citata.
+    const shownSourceIds = new Set(
+      shownTrials.flatMap((trial) =>
+        trial.criteria.map((criterion) => criterion.sourceId),
+      ),
     );
-    let supported = false;
+    const belongsToShownTrial = (id: string) =>
+      shownSourceIds.has(id) ||
+      shownTrials.some((trial) => id.startsWith(`${trial.trialId}#`));
+    const allowed = new Map(
+      retrieval.sourceIds
+        .filter((id) => !excludeFields.length || belongsToShownTrial(id))
+        .map((id) => [id, retrieval.sourceTexts.get(id)!]),
+    );
+    let explanationText = fallback;
+    let explanationSource: "model" | "template" = "template";
+    let groundingOutcome = "fallback";
     if (this.adapter.providerId !== "mock") {
       try {
         const explanation = await session.generate(
           this.adapter,
-          "explain_results.v1",
+          "explain_results.v2",
           {
             results: evaluated.map((t) => ({
               trialId: t.trialId,
@@ -813,7 +909,7 @@ export class TrialMatchService {
           },
           ExplanationSchema,
         );
-        supported =
+        const citationsOk =
           explanation.references.length > 0 &&
           explanation.references.every(
             (ref) =>
@@ -824,20 +920,42 @@ export class TrialMatchService {
                 ),
               ) && verifyCitation(ref, allowed),
           );
+        // Brojevi iz izvora važe samo za odlomke koje objašnjenje samo navodi.
+        const citedSourceTexts = [
+          ...new Set(explanation.references.map((ref) => ref.sourceId)),
+        ].flatMap((id) => {
+          const text = allowed.get(id);
+          return text === undefined ? [] : [text];
+        });
+        const numbersOk = hasOnlyGroundedNumbers(
+          explanation.text,
+          collectAllowedNumbers({
+            profile,
+            derived,
+            results: evaluated,
+            trials: shownTrials,
+            sourceTexts: citedSourceTexts,
+          }),
+        );
+        if (!citationsOk) groundingOutcome = "fallback:citations";
+        else if (!numbersOk) groundingOutcome = "fallback:numbers";
+        else {
+          explanationText = explanation.text;
+          explanationSource = "model";
+          groundingOutcome = "model_explanation_shown";
+        }
       } catch {
         // The matcher result is complete; an unverified explanation is optional.
-        session.events.push({
-          step: "grounding",
-          durationMs: 0,
-          outcome: "fallback_after_explanation_error",
-        });
+        groundingOutcome = "fallback_after_explanation_error";
       }
     }
-    // Exact quotes do not establish semantic support: until human review, use the verified status template.
+    // Šablon zamenjuje samo objašnjenje koje ne prođe proveru citata ili brojeva.
+    // Tačni citati i poznati brojevi ne dokazuju semantičku podršku parafraze, pa
+    // objašnjenje ostaje pomoćni tekst: statuse kriterijuma i dalje određuje matcher.
     session.events.push({
       step: "grounding",
       durationMs: 0,
-      outcome: supported ? "semantic_review_required" : "fallback",
+      outcome: groundingOutcome,
       sourceIds: [...allowed.keys()],
     });
     return this.save(
@@ -850,7 +968,8 @@ export class TrialMatchService {
         stage: "completed",
         derived,
         results: evaluated,
-        explanation: fallback,
+        explanation: explanationText,
+        explanationSource,
       },
       retrieval.sourceTexts,
     );
@@ -1007,7 +1126,7 @@ export class TrialMatchService {
       provenance[field] = { origin: "answer", round };
     }
     const clarifiesGlucose =
-      question.field === "hba1c" && /\b(glukoza|šećer)\b/u.test(lower);
+      question.field === "hba1c" && mentionsGlucose(answer);
     const ambiguities = (profile.ambiguities ?? []).filter(
       (item) => item.field !== question.field,
     );
@@ -1029,7 +1148,8 @@ export class TrialMatchService {
     field: ProfileField,
     answer: string,
   ): { value: number; unit: string } | undefined {
-    const match = /^\s*(-?\d+(?:[.,]\d+)?)\s*([^\d\s].*?)?\s*$/u.exec(answer);
+    const stripped = stripAnswerLabel(field, answer);
+    const match = /^\s*(-?\d+(?:[.,]\d+)?)\s*([^\d\s].*?)?\s*$/u.exec(stripped);
     const number = match?.[1] ? parseLocalizedNumber(match[1]) : undefined;
     const rawUnit = match?.[2]?.trim();
     if (number === undefined || !rawUnit) return undefined;
@@ -1088,6 +1208,7 @@ export class TrialMatchService {
 
   private validateTechnicalRanges(profile: Profile): void {
     const measuredRanges: Array<{
+      field: string;
       value:
         | Profile["hba1c"]
         | Profile["creatinine"]
@@ -1100,24 +1221,28 @@ export class TrialMatchService {
       maximum: number;
     }> = [
       {
+        field: "hba1c",
         value: profile.hba1c,
         normalize: normalizeHba1c,
         minimum: 3,
         maximum: 20,
       },
       {
+        field: "creatinine",
         value: profile.creatinine,
         normalize: normalizeCreatinine,
         minimum: 0.1,
         maximum: 20,
       },
       {
+        field: "height",
         value: profile.height,
         normalize: normalizeHeight,
         minimum: 50,
         maximum: 250,
       },
       {
+        field: "weight",
         value: profile.weight,
         normalize: normalizeWeight,
         minimum: 2,
@@ -1131,7 +1256,7 @@ export class TrialMatchService {
         normalized.value < range.minimum ||
         normalized.value > range.maximum
       ) {
-        throw new RangeError("Vrednost je van tehničke granice unosa.");
+        throw new TechnicalRangeError(range.field);
       }
     }
   }

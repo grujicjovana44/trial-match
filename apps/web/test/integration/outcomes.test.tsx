@@ -160,10 +160,10 @@ describe("ishod ok", () => {
           gt: ">",
           gte: ">=",
         }[item.operator];
-        const matches = rows.filter(
-          (candidate) =>
-            candidate.querySelector(".criterion-text")?.textContent ===
-            `Age ${symbol} ${item.threshold} years.`,
+        const matches = rows.filter((candidate) =>
+          candidate
+            .querySelector(".criterion-text")
+            ?.textContent?.endsWith(`Age ${symbol} ${item.threshold} years.`),
         );
         const row = matches[item.kind === "inclusion" ? 0 : 1];
         expect(row).toBeDefined();
@@ -171,11 +171,11 @@ describe("ishod ok", () => {
           `${symbol} ${item.threshold}`,
         );
         expect(row!.querySelector(".criterion-status")?.textContent).toMatch(
-          /Ispunjen|Nije ispunjen/,
+          /Ispunjen|Nije ispunjen|Ne odnosi se|Odnosi se/,
         );
         expect(
           row!.querySelector(".criterion-evidence")?.textContent,
-        ).toContain("10 years");
+        ).toContain("10 godina");
         expect(criteria[index]!.sourceQuote).toBe(criteria[index]!.text);
         expect(row!.querySelector("blockquote")).toBeNull();
       }
