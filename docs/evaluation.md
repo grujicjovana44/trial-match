@@ -219,3 +219,49 @@ pnpm eval:compare eval/results/baseline eval/results/<oznaka>
 ```
 
 Runner pre pokretanja uvek zaključava fixture korpus, pa `.env` sme da sadrži i podešavanja za demo korpus.
+
+## RAG retrieval sa stvarnim embeddings-om (2026-11-20)
+
+Ovo je prvo merenje retrieval-a sa stvarnim embeddings-om nad korpusom od 20 studija. Prethodni RAG rezultati su koristili lažne (hash) embeddings i nisu dokaz semantičkog kvaliteta.
+
+### Uslovi
+
+- Skup: [`eval/rag/retrieval-v4-jovana-clinicaltrials20-2026-11-19.json`](../eval/rag/retrieval-v4-jovana-clinicaltrials20-2026-11-19.json), 8 slučajeva (7 ranking, 1 negativan), 20 studija i 350 RAG dokumenata. Oznake pregleda retrieval relevantnost; klinički pregled nije urađen.
+- Indeks: `data/index/rag-clinicaltrials-20-final.sqlite` (`text-embedding-3-small`, 1536 dimenzija). Pre pokretanja runner proverava da manifest indeksa odgovara zamrznutom korpusu.
+- Embeddings upita su stvarni (OpenAI). Upiti kojih nema u kešu indeksa šalju se provajderu; runner ne beleži broj tokena. Gemini i Cohere nisu pozivani.
+- Varijanta „hybrid+rerank“ koristi deterministički reranker, jedini koji ovaj runner podržava.
+- Commit `3039772`. Izveštaj: [`eval/results/rag/offline-real-2026-11-20T19-52-50.032Z/summary.json`](../eval/results/rag/offline-real-2026-11-20T19-52-50.032Z/summary.json). Za poređenje je isti skup pokrenut i sa lažnim embeddings-om: [`eval/results/rag/offline-fake-2026-11-20T19-53-20.097Z/summary.json`](../eval/results/rag/offline-fake-2026-11-20T19-53-20.097Z/summary.json). Raniji RAG izveštaji od 2026-11-19 nisu sačuvani u repozitorijumu.
+
+```sh
+pnpm build
+node --env-file=.env dist/eval/runner/rag-offline.js --dataset eval/rag/retrieval-v4-jovana-clinicaltrials20-2026-11-19.json --embedding-mode real --index data/index/rag-clinicaltrials-20-final.sqlite --summary
+```
+
+### Rezultati na nivou studija
+
+Proseci preko 7 ranking slučajeva (ukupno 10 relevantnih studija):
+
+| Varijanta | nDCG@5 | nDCG@10 | Recall@5 | Recall@10 | MRR@10 | Tačna prva studija |
+|---|---|---|---|---|---|---|
+| leksička (MiniSearch) | 0,416 | 0,485 | 0,500 | 0,714 | 0,409 | 2/7 |
+| vektorska | 0,653 | 0,653 | 0,929 | 0,929 | 0,576 | 3/7 |
+| **hibridna (RRF)** | **0,699** | **0,747** | 0,786 | 0,929 | **0,699** | **4/7** |
+| hibridna + deterministički reranker | 0,460 | 0,503 | 0,786 | 0,929 | 0,366 | 1/7 |
+
+Sa lažnim embeddings-om, nad istim skupom, vektorska varijanta ima nDCG@10 0,466 i Recall@10 0,571, a hibridna nDCG@10 0,681. Leksička varijanta je u oba režima ista jer ne koristi embeddings.
+
+Negativan slučaj J-RAG-07 (celijakija, nema relevantne studije) ni u jednoj varijanti ne vraća nijednu studiju, što je očekivan ishod.
+
+Na nivou odlomaka nDCG@5 je nizak u svim varijantama (0,12–0,20): odlomci koje je Jovana označila retko su među prvih pet. Matcher ocenjuje sve kriterijume odabranih studija, pa ovo ne menja statuse. Menja samo koji odlomci ulaze u kontekst.
+
+### Nalazi
+
+1. **Stvarni embeddings poboljšavaju vektorsku pretragu.** Prosečan Recall@10 vektorske varijante je 0,929, naspram 0,571 sa lažnim embeddings-om i 0,714 za leksičku pretragu.
+2. **Hibridna pretraga daje najbolji redosled.** U odnosu na samu leksičku pretragu, nDCG@10 raste sa 0,485 na 0,747, a MRR@10 sa 0,409 na 0,699.
+3. **Deterministički reranker pogoršava redosled.** nDCG@10 pada sa 0,747 na 0,503, a MRR@10 sa 0,699 na 0,366. Rezultat je lošiji u 4 od 7 slučajeva, bolji u jednom (J-RAG-06, +0,054), a u dva je isti. Isti obrazac postoji i sa lažnim embeddings-om, pa uzrok nije u embeddings-u.
+
+### Ograničenja i otvoreno pitanje
+
+- Sedam ranking slučajeva i deset relevantnih studija ne omogućavaju statistički zaključak; razlike pokazuju smer, ne veličinu efekta.
+- Oznake su oznake retrieval relevantnosti jedne osobe, bez kliničkog pregleda.
+- Cohere reranker nije meren. Lokalni live server u proveri uživo koristio je `RAG_RERANKER=cohere`, a `.env.example` podrazumevano postavlja `deterministic`. Pošto deterministički reranker na ovom skupu pogoršava redosled, podrazumevano podešavanje treba odlučiti posle merenja Cohere reranker-a; do tada nalaz 3 važi samo za deterministički reranker.
