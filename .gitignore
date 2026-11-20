@@ -21,6 +21,8 @@ eval/results/**
 !eval/results/final/**
 !eval/results/invalid/
 !eval/results/invalid/**
+!eval/results/release/
+!eval/results/release/**
 !eval/results/rag/
 !eval/results/rag/offline-real-2026-11-20T19-52-50.032Z/
 !eval/results/rag/offline-real-2026-11-20T19-52-50.032Z/**
