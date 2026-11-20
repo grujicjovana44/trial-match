@@ -26,6 +26,8 @@ eval/results/**
 !eval/results/rag/offline-real-2026-11-20T19-52-50.032Z/**
 !eval/results/rag/offline-fake-2026-11-20T19-53-20.097Z/
 !eval/results/rag/offline-fake-2026-11-20T19-53-20.097Z/**
+!eval/results/rag/offline-real-cohere-2026-11-20T19-58-49.352Z/
+!eval/results/rag/offline-real-cohere-2026-11-20T19-58-49.352Z/**
 eval/traces/**
 !eval/traces/.gitkeep
 data/index/
