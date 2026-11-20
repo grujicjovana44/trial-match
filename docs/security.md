@@ -26,6 +26,8 @@ Model izvlači profil, ali kod posle toga proverava dva rizična obrasca, nezavi
 
 Trace za svaki pokušaj modela beleži ishod validacije (`validation`, `invalidPaths`, `validationCode`, `validationField`) i vrstu greške provajdera (`errorKind`). Beleže se samo nazivi polja i šifre, nikada vrednosti ili tekst odgovora; strogu šemu sprovodi `apps/server/src/trace/redact.ts`. Ovi čuvari pokrivaju navedene obrasce, ne sve moguće dvosmislenosti unosa.
 
+**Objašnjenje modela.** Tekst modela prikazuje se samo kada sve reference prođu proveru citata (izvor tekućeg izvršavanja, tačan podniz) i kada svaki broj u tekstu postoji među vrednostima profila, izvedenim vrednostima, posmatranim vrednostima, pragovima pravila ili brojevima iz dozvoljenih izvora (`apps/server/src/grounding/`). U suprotnom se prikazuje šablon. Trace beleži ishod (`model_explanation_shown`, `fallback:citations`, `fallback:numbers`), a interfejs navodi poreklo objašnjenja. Preostali rizik je semantički netačna parafraza bez brojeva. Prompt `explain_results.v2` zato zabranjuje zbirove, a statusi i presude uvek dolaze od koda.
+
 ## Embeddings i lokalni vektorski indeks
 
 OpenAI se koristi samo za embeddings; adapter dozvoljava samo `text-embedding-3-small`. Timeout, 429/5xx i nevalidan odgovor imaju ograničene pokušaje; nakon toga trenutni retrieval nastavlja lexical-only uz označen trag, bez promene modela/provajdera. Ostali non-retryable HTTP statusi ostaju jasna greška adaptera, ali se ne ruše retrieval zahtevi. `OPENAI_API_KEY` se čita samo u serverskom procesu i nikad se ne ispisuje. `OPENAI_BASE_URL` je opcion i prihvata HTTPS (HTTP samo za loopback); pri njegovoj upotrebi korisnik je odgovoran za poverenje u odredište jer se njemu šalje ključ.

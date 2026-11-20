@@ -73,6 +73,10 @@ export const copy = {
   },
 
   result: {
+    explanationModel:
+      "Objašnjenje je sastavio jezički model. Kod je proverio citate i brojeve; statuse kriterijuma određuje kod, ne model.",
+    explanationTemplate:
+      "Objašnjenje iz šablona: tekst modela nije prošao proveru ili nije korišćen.",
     eyebrow: "Rezultat provere",
     eyebrowHypothesis: "Rezultat promene profila",
     excludedLabel: "Isključene studije",
@@ -172,7 +176,7 @@ export const copy = {
     } as Record<string, string>,
     verdict: {
       candidate: "Kandidat za dalju proveru",
-      pending: "Čeka dopunu podataka",
+      pending: "Čeka dopunu ili proveru lekara",
       excluded: "Ne ispunjava kriterijume",
     },
   },
@@ -196,6 +200,22 @@ export const copy = {
       unknown: "potrebna je dopuna ili ručna provera",
     },
     icon: { met: "✓", not_met: "✕", unknown: "?" },
+    // Kod uslova isključenja "met" znači da isključenje NE važi za pacijenta.
+    exclusionShort: {
+      met: "Ne odnosi se",
+      not_met: "Odnosi se",
+      unknown: "Nepoznato",
+    },
+    exclusionNote: {
+      met: "uslov isključenja nije prisutan prema dostupnim podacima",
+      not_met: "uslov isključenja je prisutan prema dostupnim podacima",
+      unknown: "potrebna je dopuna ili ručna provera",
+    },
+    kindTag: {
+      inclusion: "Uslov uključenja",
+      exclusion: "Uslov isključenja",
+    },
+    unitNames: { year: "godina", years: "godina" } as Record<string, string>,
     value: "Vrednost:",
     source: "Izvor:",
     missing: "nije uneto",

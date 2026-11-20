@@ -7,6 +7,7 @@ import {
   httpErrorBody,
   jsonResponse,
   metaOf,
+  clarificationResponse,
   okResponse,
   runErrorResponse,
 } from "../helpers/responses.js";
@@ -198,5 +199,55 @@ describe("režim i metapodaci", () => {
   it("prikazuje retrieval režim u tehničkim detaljima", () => {
     render(<ResultMeta meta={metaOf({ retrievalMode: "hybrid" })} />);
     expect(screen.getByText("Retrieval: hibridni")).toBeTruthy();
+  });
+});
+
+describe("izvor objašnjenja", () => {
+  async function shown(source: "model" | "template" | undefined) {
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn()
+        .mockResolvedValue(
+          jsonResponse(okResponse(source ? { explanationSource: source } : {})),
+        ),
+    );
+    render(<App />);
+    submitProfile();
+    await screen.findByRole("heading", { name: "Provera je završena" });
+    return document.body.textContent ?? "";
+  }
+  it("prikazuje napomenu za objašnjenje modela", async () => {
+    const text = await shown("model");
+    expect(text).toContain("Objašnjenje je sastavio jezički model.");
+    expect(text).not.toContain("Objašnjenje iz šablona");
+  });
+  it("prikazuje napomenu za šablon", async () => {
+    expect(await shown("template")).toContain("Objašnjenje iz šablona:");
+  });
+  it("bez izvora nema napomene", async () => {
+    const text = await shown(undefined);
+    expect(text).not.toContain("Objašnjenje iz šablona");
+    expect(text).not.toContain("sastavio jezički model");
+  });
+});
+
+describe("sažetak rezultata", () => {
+  async function summaryFor(response: unknown, heading: string) {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse(response)));
+    render(<App />);
+    submitProfile();
+    await screen.findByRole("heading", { name: heading });
+    return document.body.textContent ?? "";
+  }
+  it("skriva sažetak dok nijedna studija nije procenjena", async () => {
+    expect(
+      await summaryFor(clarificationResponse(), "Potrebna je dopuna"),
+    ).not.toContain("Provereno studija");
+  });
+  it("prikazuje sažetak kada postoje procenjene studije", async () => {
+    expect(await summaryFor(okResponse(), "Provera je završena")).toContain(
+      "Provereno studija",
+    );
   });
 });

@@ -284,6 +284,9 @@ Identifikatori FR-xxx u ovom dokumentu odnose se na funkcionalnost 002. Pozivanj
 - **FR-032**: Interfejs ne sme da prikaže interni naziv statusa, ishoda ili kategorije greške, niti internu logičku vrednost; svaka takva vrednost ima srpsku tekstualnu oznaku (dopunjuje FR-003 i FR-023).
 - **FR-033**: Pokret u interfejsu služi samo da objasni promenu stanja, ne odlaže prikaz rezultata i ne naglašava ishod studije; uz uključen smanjen pokret prikazane informacije su iste (001/FR-019).
 - **FR-034**: Izgrađeni interfejs ne sme da sadrži tajne ni ključeve; sva komunikacija sa modelom ide preko servera. Interfejs mora da radi i kada su interfejs i server na istoj adresi i kada su na različitim adresama, uz jedno dokumentovano podešavanje adrese servisa (dopunjuje FR-030).
+- **FR-035** *(dodato 2026-11-20, posle provere uživo nad 20 stvarnih studija)*: Interfejs mora da uz svaki kriterijum za koji odgovor navodi vrstu prikaže tekstualnu oznaku „Uslov uključenja“ ili „Uslov isključenja“. Status kriterijuma isključenja mora da se prikaže prema značenju za pacijenta: `met` kao „Ne odnosi se“ (uslov isključenja nije prisutan prema dostupnim podacima), `not_met` kao „Odnosi se“ (uslov isključenja je prisutan). Oznake „Ispunjen“ i „Nije ispunjen“ koriste se samo za uslove uključenja i za kriterijume bez navedene vrste. Isto važi u listi glavnih razloga na kartici studije. Razlog: oznaka „Ispunjen“ uz tekst „HbA1c >10.0%“ (NCT07919236#exc-2) navodila je na zaključak da pacijent ima HbA1c iznad 10%, iako je matcher ispravno utvrdio suprotno (dopunjuje FR-004 i FR-032).
+- **FR-036** *(dodato 2026-11-20)*: Tekst kriterijuma i citat iz registra prikazuju se bez obrnutih kosih crta kojima API ClinicalTrials.gov označava markdown znakove (`\>`, `\<`, `\*`). Ovo je samo prikaz: sačuvani citat ostaje doslovan, provera citata koristi izvorni tekst, a prikaz ostaje običan tekst (FR-017).
+- **FR-037** *(dodato 2026-11-20)*: Uz objašnjenje rezultata `ok` interfejs mora da navede njegovo poreklo kada ga server prijavi: objašnjenje jezičkog modela čije je citate i brojeve proverio kod, ili objašnjenje iz šablona. Statusi kriterijuma i presude uvek dolaze od koda, ne od modela (001/FR-005, 001/FR-012).
 
 ### Veza zahteva sa kriterijumima prihvatanja
 
@@ -307,6 +310,8 @@ Identifikatori FR-xxx u ovom dokumentu odnose se na funkcionalnost 002. Pozivanj
 | FR-029, FR-033 | AC-12 | Uski ekrani i smanjen pokret. |
 | FR-030, FR-031, FR-034 | AC-01, AC-10 | Ista ponašanja u izgrađenoj verziji i u oba režima; bez tajni u interfejsu; testovi ne pozivaju plaćeni model. |
 | FR-032 | AC-01, AC-12 | Statusi su reči, nikada interne oznake. |
+| FR-035, FR-036 | AC-01, AC-08, AC-12 | Status isključenja prikazan prema značenju za pacijenta; citat čitljiv i doslovan. |
+| FR-037 | AC-01, AC-08 | Jasno je šta je napisao model, a šta je odlučio kod. |
 
 ## Ključni entiteti
 

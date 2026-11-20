@@ -16,6 +16,11 @@ const HBA1C = new RegExp(
 export const GLUCOSE_AMBIGUITY_REASON =
   "Vrednost šećera može biti HbA1c ili glukoza.";
 
+/** Da li tekst pominje šećer/glukozu (uključujući padeže, glikemiju i ćirilicu). */
+export function mentionsGlucose(text: string): boolean {
+  return GLUCOSE.test(text);
+}
+
 export function hasGlucoseWithoutHba1c(text: string): boolean {
   return GLUCOSE.test(text) && !HBA1C.test(text);
 }
