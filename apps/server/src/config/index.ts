@@ -46,7 +46,7 @@ const ConfigSchema = z
       .enum(["fixtures", "clinicaltrials-20"])
       .default("fixtures"),
     RAG_INDEX_PATH: z.string().min(1).default("data/index/rag.sqlite"),
-    // Bez vrednosti: parseConfig bira "cohere" ako postoji COHERE_API_KEY, inače "disabled".
+    // Bez vrednosti: parseConfig bira "cohere" samo u LIVE režimu (DEMO_MODE=false) uz COHERE_API_KEY, inače "disabled".
     RAG_RERANKER: RerankerSetting.optional(),
     RAG_RERANK_TIMEOUT_MS: integerSetting(2000, 10000),
     MAX_INPUT_CHARS: integerSetting(4000),
@@ -86,7 +86,8 @@ export function parseConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   const config: AppConfig = {
     ...parsed,
     RAG_RERANKER:
-      parsed.RAG_RERANKER ?? (parsed.COHERE_API_KEY ? "cohere" : "disabled"),
+      parsed.RAG_RERANKER ??
+      (!parsed.DEMO_MODE && parsed.COHERE_API_KEY ? "cohere" : "disabled"),
   };
   if (!config.DEMO_MODE && !config.GEMINI_API_KEY)
     throw new Error(

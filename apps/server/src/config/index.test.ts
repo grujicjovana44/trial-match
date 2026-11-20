@@ -49,15 +49,26 @@ describe("konfiguracija", () => {
 
   describe("podrazumevani reranker", () => {
     const base = { DEMO_MODE: "true" };
+    const live = { DEMO_MODE: "false", GEMINI_API_KEY: "test-placeholder" };
 
     it("bez ključa i bez vrednosti bira disabled", () => {
       expect(parseConfig(base).RAG_RERANKER).toBe("disabled");
     });
 
-    it("sa Cohere ključem i bez vrednosti bira cohere", () => {
+    it("u DEMO režimu sa Cohere ključem i bez vrednosti bira disabled", () => {
       expect(
         parseConfig({ ...base, COHERE_API_KEY: "test-key" }).RAG_RERANKER,
+      ).toBe("disabled");
+    });
+
+    it("u LIVE režimu sa Cohere ključem i bez vrednosti bira cohere", () => {
+      expect(
+        parseConfig({ ...live, COHERE_API_KEY: "test-key" }).RAG_RERANKER,
       ).toBe("cohere");
+    });
+
+    it("u LIVE režimu bez Cohere ključa bira disabled", () => {
+      expect(parseConfig(live).RAG_RERANKER).toBe("disabled");
     });
 
     it("prazan ili razmaknut Cohere ključ važi kao odsutan", () => {
@@ -69,7 +80,7 @@ describe("konfiguracija", () => {
     });
 
     it("eksplicitna vrednost ima prednost nad ključem", () => {
-      for (const value of ["deterministic", "disabled"] as const) {
+      for (const value of ["deterministic", "disabled", "cohere"] as const) {
         expect(
           parseConfig({
             ...base,

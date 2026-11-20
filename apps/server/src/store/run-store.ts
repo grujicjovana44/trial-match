@@ -19,6 +19,8 @@ export type RunState = {
 
 export class RunStore {
   private readonly runs = new Map<string, RunState>();
+  // Ids uklonjeni internim čišćenjem, još neprijavljeni pozivaocu (prune/set).
+  private pendingRemoved: string[] = [];
 
   constructor(
     private readonly now: () => number = Date.now,
@@ -27,33 +29,43 @@ export class RunStore {
   ) {}
 
   get(runId: string): RunState | undefined {
-    this.prune();
+    this.sweep();
     return this.runs.get(runId);
   }
 
   set(state: RunState): string[] {
-    const removed = this.prune();
+    this.sweep();
     this.runs.delete(state.runId);
     this.runs.set(state.runId, state);
     while (this.runs.size > this.maxRuns) {
       const oldest = this.runs.keys().next().value;
       if (oldest === undefined) break;
       this.runs.delete(oldest);
-      removed.push(oldest);
+      this.pendingRemoved.push(oldest);
     }
+    return this.drainRemoved();
+  }
+
+  /** Vraća sve ids uklonjene od prethodnog prune()/set() poziva, svaki samo jednom. */
+  prune(): string[] {
+    this.sweep();
+    return this.drainRemoved();
+  }
+
+  private drainRemoved(): string[] {
+    const removed = this.pendingRemoved;
+    this.pendingRemoved = [];
     return removed;
   }
 
-  prune(): string[] {
-    const removed: string[] = [];
+  private sweep(): void {
     const now = this.now();
     for (const [runId, state] of this.runs) {
       if (now - state.createdAt >= this.retentionMs) {
         this.runs.delete(runId);
-        removed.push(runId);
+        this.pendingRemoved.push(runId);
       }
     }
-    return removed;
   }
 
   delete(runId: string): boolean {
@@ -61,7 +73,7 @@ export class RunStore {
   }
 
   get size(): number {
-    this.prune();
+    this.sweep();
     return this.runs.size;
   }
 }

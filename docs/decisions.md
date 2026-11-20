@@ -187,7 +187,7 @@ Preostali rizik: kod ne može da dokaže da je parafraza semantički tačna. Pro
 
 ### Podrazumevani reranker
 
-Odluka: ako `RAG_RERANKER` nije podešen, aplikacija koristi Cohere reranker (`rerank-v5.0-fast`) kada postoji `COHERE_API_KEY`, a inače radi bez reranker-a (`disabled`). Eksplicitno podešena vrednost (`cohere`, `deterministic`, `gemini`, `disabled`) i dalje važi.
+Odluka: ako `RAG_RERANKER` nije podešen, aplikacija u LIVE režimu koristi Cohere reranker (`rerank-v5.0-fast`) kada postoji `COHERE_API_KEY`, a inače radi bez reranker-a (`disabled`). U DEMO režimu podrazumevano je uvek `disabled`, da demonstracija ne poziva Cohere samo zato što je ključ prisutan (dopuna posle bezbednosnog audita, TM-03). Eksplicitno podešena vrednost (`cohere`, `deterministic`, `gemini`, `disabled`) i dalje važi.
 
 Razlog: merenje sa stvarnim embeddings-om nad Jovaninim skupom od 8 slučajeva (`docs/evaluation.md`) dalo je nDCG@10 0,892 sa Cohere-om, 0,747 bez reranker-a i 0,503 sa determinističkim reranker-om, koji je do tada bio podrazumevan. Razmatrana alternativa: uvek `disabled`. Odbačena je jer Cohere na istom skupu nijedan slučaj ne pogoršava, a dva poboljšava.
 

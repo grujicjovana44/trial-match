@@ -45,7 +45,11 @@ export class Operations {
       .update(JSON.stringify({ path, body }))
       .digest("hex");
     if (identity) {
-      const previous = this.entries.get(identity);
+      let previous = this.entries.get(identity);
+      if (previous && !previous.active && previous.expires <= this.now()) {
+        this.entries.delete(identity);
+        previous = undefined;
+      }
       if (previous) {
         if (previous.signature !== signature) throw invalid("invalid_request");
         return previous.pending.then((response) => structuredClone(response));
