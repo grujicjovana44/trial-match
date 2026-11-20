@@ -374,6 +374,19 @@ export class TrialMatchService {
     const runId = randomUUID();
     const session = new ModelSession(this.now(), this.config, this.now);
     this.sessions.set(runId, session);
+    try {
+      return await this.startRun(runId, text);
+    } catch (error) {
+      // No run record was saved, so pruning will never release this state.
+      if (!this.store.get(runId)) {
+        this.sessions.delete(runId);
+        this.caches.delete(runId);
+      }
+      throw error;
+    }
+  }
+  private async startRun(runId: string, text: string): Promise<RunResponse> {
+    const session = this.sessions.get(runId)!;
     const trials = this.trials;
     if (!trials)
       throw new Error("Validirani skup studija nije učitan pri startu.");

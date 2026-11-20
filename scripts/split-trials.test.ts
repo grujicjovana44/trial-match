@@ -1,9 +1,9 @@
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import path, { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { prepareRaw } from "./prepare-trials.js";
-import { parseSplitArgs, splitTrials } from "./split-trials.js";
+import { insidePath, parseSplitArgs, splitTrials } from "./split-trials.js";
 
 const tempDirs: string[] = [];
 
@@ -290,5 +290,23 @@ describe("data:split", () => {
     expect(
       parseSplitArgs(["--input", "in.json", "--output", "out.json"]).selection,
     ).toBe("first");
+  });
+});
+
+describe("insidePath", () => {
+  it("razlikuje isti direktorijum, potomka i brata", () => {
+    expect(insidePath("/a/raw", "/a/raw", path.posix)).toBe(true);
+    expect(insidePath("/a/raw", "/a/raw/x/y.json", path.posix)).toBe(true);
+    expect(insidePath("/a/raw", "/a/other/y.json", path.posix)).toBe(false);
+    expect(insidePath("/a/raw", "/a/raw2/y.json", path.posix)).toBe(false);
+  });
+  it("win32: putanja na drugom disku nije unutar roditelja", () => {
+    const raw = String.raw`D:\repo\data\raw`;
+    const win = path.win32;
+    expect(insidePath(raw, String.raw`C:\tmp\out.json`, win)).toBe(false);
+    expect(insidePath(raw, String.raw`D:\repo\data\raw\o.json`, win)).toBe(
+      true,
+    );
+    expect(insidePath(raw, String.raw`D:\repo\data\x.json`, win)).toBe(false);
   });
 });

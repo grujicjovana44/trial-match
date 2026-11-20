@@ -58,8 +58,30 @@ describe("memorijsko skladište izvršavanja", () => {
     now = 100;
     expect(store.get("expired")).toBeUndefined();
     expect(store.get("current")?.runId).toBe("current");
-    expect(store.prune()).toEqual([]);
+    expect(store.prune()).toEqual(["expired"]);
     expect(store.size).toBe(1);
+  });
+
+  it("prijavljuje run uklonjen preko get() drugog id-ja u sledećem prune(), samo jednom", () => {
+    let now = 0;
+    const store = new RunStore(() => now, 100, 10);
+    store.set(state("expired", 0));
+    store.set(state("current", 50));
+
+    now = 100;
+    expect(store.get("current")?.runId).toBe("current");
+    expect(store.prune()).toEqual(["expired"]);
+    expect(store.prune()).toEqual([]);
+  });
+
+  it("set() prijavljuje prethodno interno uklonjene id-jeve bez dupliranja", () => {
+    let now = 0;
+    const store = new RunStore(() => now, 100, 10);
+    store.set(state("expired", 0));
+    now = 100;
+    expect(store.get("other")).toBeUndefined();
+    expect(store.set(state("fresh", 100))).toEqual(["expired"]);
+    expect(store.prune()).toEqual([]);
   });
 
   it("izbacuje najstariji zapis kada dostigne kapacitet", () => {

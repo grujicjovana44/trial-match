@@ -318,3 +318,60 @@ describe("objašnjenje modela", () => {
     );
   });
 });
+
+describe("čišćenje sesije kada start ne uspe", () => {
+  it("ne ostavlja ModelSession u mapi nakon odbijenog unosa", async () => {
+    const trials = TrialSchema.array().parse(
+      JSON.parse(await readFile("data/fixtures/trials.json", "utf8")),
+    );
+    const manifest = DatasetManifestSchema.parse(
+      JSON.parse(await readFile("data/manifest.json", "utf8")),
+    );
+    const service = new TrialMatchService({
+      config: parseConfig({
+        NODE_ENV: "test",
+        DEMO_MODE: "true",
+        DATASET_PROFILE: "fixtures",
+        DATA_DIR: "data/fixtures",
+      }),
+      trials,
+      manifest,
+    });
+    const before = service.sessions.size;
+    await expect(
+      service.start({ profileText: "Muškarac, 62 godine, HbA1c abc." }),
+    ).rejects.toMatchObject({ statusCode: 400 });
+    expect(service.sessions.size).toBe(before);
+  });
+
+  it("uklanja ModelSession isteklog izvršavanja i kada ga je store očistio preko get()", async () => {
+    const trials = TrialSchema.array().parse(
+      JSON.parse(await readFile("data/fixtures/trials.json", "utf8")),
+    );
+    const manifest = DatasetManifestSchema.parse(
+      JSON.parse(await readFile("data/manifest.json", "utf8")),
+    );
+    let now = 1_000_000;
+    const service = new TrialMatchService({
+      config: parseConfig({
+        NODE_ENV: "test",
+        DEMO_MODE: "true",
+        DATASET_PROFILE: "fixtures",
+        DATA_DIR: "data/fixtures",
+      }),
+      trials,
+      manifest,
+      now: () => now,
+    });
+    const response = await service.start({ profileText: base });
+    expect(service.sessions.has(response.runId)).toBe(true);
+
+    now += 31 * 60 * 1000;
+    // Interno čišćenje preko get() ne sme da izgubi id isteklog izvršavanja.
+    expect(service.store.get("nepoznat")).toBeUndefined();
+    await expect(
+      service.answer(response.runId, { answer: "da" }),
+    ).rejects.toMatchObject({ statusCode: 404 });
+    expect(service.sessions.has(response.runId)).toBe(false);
+  });
+});

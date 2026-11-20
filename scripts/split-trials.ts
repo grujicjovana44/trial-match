@@ -1,6 +1,6 @@
 import { readFile, lstat } from "node:fs/promises";
 import { createHash } from "node:crypto";
-import { relative, resolve, sep } from "node:path";
+import nodePath, { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { z } from "zod";
 import { TrialSchema } from "../packages/shared/src/index.js";
@@ -585,9 +585,20 @@ export function createReviewDraft(
   });
 }
 
-function insidePath(parent: string, child: string): boolean {
-  const path = relative(parent, child);
-  return path === "" || (!path.startsWith(`..${sep}`) && path !== "..");
+export function insidePath(
+  parent: string,
+  child: string,
+  pathModule: Pick<
+    typeof nodePath,
+    "relative" | "isAbsolute" | "sep"
+  > = nodePath,
+): boolean {
+  const path = pathModule.relative(parent, child);
+  // Different Windows drives yield an absolute relative path: not inside.
+  if (pathModule.isAbsolute(path)) return false;
+  return (
+    path === "" || (!path.startsWith(`..${pathModule.sep}`) && path !== "..")
+  );
 }
 
 async function protectOutputPath(
