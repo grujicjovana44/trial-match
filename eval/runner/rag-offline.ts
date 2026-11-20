@@ -12,7 +12,12 @@ import {
   type Embedder,
 } from "../../apps/server/src/retrieval/embeddings.js";
 import {
+  COHERE_RERANK_MODEL,
+  CohereCandidateReranker,
+} from "../../apps/server/src/retrieval/cohere-reranker.js";
+import {
   HybridTrialRetriever,
+  type CandidateReranker,
   type HybridRetrievalOptions,
   validateIndexDocuments,
 } from "../../apps/server/src/retrieval/hybrid-retrieve.js";
@@ -47,13 +52,79 @@ export type RagOfflineOptions = {
   caseIds?: string[];
   indexPath?: string;
   datasetPath?: string;
+  reranker?: "deterministic" | "cohere";
+  /** Izričita potvrda da stvarni (plaćeni) mrežni pozivi smeju da se izvrše. */
+  confirmLive?: boolean;
 };
 
-function commandOptions(args: string[]): RagOfflineOptions {
+const DEFAULT_RERANK_TIMEOUT_MS = 2000;
+const MAX_RERANK_TIMEOUT_MS = 10000;
+
+export function validateRerankerOptions(options: RagOfflineOptions): void {
+  if (
+    options.reranker !== undefined &&
+    options.reranker !== "deterministic" &&
+    options.reranker !== "cohere"
+  )
+    throw new Error("--reranker mora biti deterministic ili cohere.");
+  if (options.reranker === "cohere" && options.embeddingMode !== "real")
+    throw new Error(
+      "--reranker cohere zahteva --embedding-mode real; lažni režim ostaje bez mrežnih poziva.",
+    );
+  const embeddingMode = options.embeddingMode ?? "fake";
+  if (options.confirmLive && embeddingMode !== "real")
+    throw new Error(
+      "--confirm-live nema smisla u lažnom embedding režimu; lažni režim ostaje bez mrežnih poziva.",
+    );
+  if (embeddingMode === "real" && !options.confirmLive)
+    throw new Error(
+      "--embedding-mode real (plaćeni OpenAI embeddings, a uz --reranker cohere i Cohere pozivi) zahteva izričito --confirm-live.",
+    );
+}
+
+function rerankTimeoutMs(env: NodeJS.ProcessEnv): number {
+  const raw = env.RAG_RERANK_TIMEOUT_MS;
+  if (raw === undefined || raw.trim() === "") return DEFAULT_RERANK_TIMEOUT_MS;
+  const value = Number(raw);
+  if (!Number.isInteger(value) || value <= 0 || value > MAX_RERANK_TIMEOUT_MS)
+    throw new Error(
+      `RAG_RERANK_TIMEOUT_MS mora biti pozitivan ceo broj do ${MAX_RERANK_TIMEOUT_MS}.`,
+    );
+  return value;
+}
+
+function createCohereReranker(env: NodeJS.ProcessEnv): {
+  reranker: CandidateReranker;
+  timeoutMs: number;
+} {
+  const apiKey = env.COHERE_API_KEY;
+  if (!apiKey?.trim())
+    throw new Error(
+      "--reranker cohere zahteva COHERE_API_KEY u okruženju (vrednost se nikada ne ispisuje).",
+    );
+  const timeoutMs = rerankTimeoutMs(env);
+  return {
+    reranker: new CohereCandidateReranker(
+      apiKey,
+      COHERE_RERANK_MODEL,
+      fetch,
+      timeoutMs,
+    ),
+    timeoutMs,
+  };
+}
+
+export function commandOptions(args: string[]): RagOfflineOptions {
   const options: RagOfflineOptions = {};
   for (let index = 0; index < args.length; index += 1) {
     const [flag, inlineValue] = args[index]!.split("=", 2);
     if (flag === "--" || flag === "--summary") continue;
+    if (flag === "--confirm-live") {
+      if (inlineValue !== undefined)
+        throw new Error("--confirm-live je zastavica bez vrednosti.");
+      options.confirmLive = true;
+      continue;
+    }
     if (flag === "--embedding-mode") {
       const value = inlineValue ?? args[++index];
       if (value !== "fake" && value !== "real")
@@ -71,10 +142,16 @@ function commandOptions(args: string[]): RagOfflineOptions {
       const value = inlineValue ?? args[++index];
       if (!value?.trim()) throw new Error("--dataset zahteva putanju.");
       options.datasetPath = value;
+    } else if (flag === "--reranker") {
+      const value = inlineValue ?? args[++index];
+      if (value !== "deterministic" && value !== "cohere")
+        throw new Error("--reranker mora biti deterministic ili cohere.");
+      options.reranker = value;
     } else {
       throw new Error(`Nepoznata opcija eval:rag:offline: ${flag}`);
     }
   }
+  validateRerankerOptions(options);
   return options;
 }
 
@@ -158,13 +235,70 @@ async function openParityStore(): Promise<VectorStore> {
   return openSQLiteVectorStore(":memory:");
 }
 
+export type LiveCallEstimate = {
+  confirmed: true;
+  selectedCases: number;
+  totalQueryTexts: number;
+  uncachedQueryTexts: number;
+  maxEmbeddingRequests: number;
+  maxCohereCalls: number;
+};
+
+/**
+ * Gornja granica plaćenih poziva. Keš embeddings-a indeksa se čita pre prvog
+ * mrežnog poziva; upiti koji su u kešu ne troše embedding zahtev. Embedding
+ * zahtev se šalje najviše jednom po slučaju (batch nedostajućih upita), a
+ * keš se popunjava tokom prve varijante, pa kasnije varijante ne šalju nove.
+ */
+export function estimateLiveCalls(
+  cases: ReadonlyArray<{
+    profile: Parameters<typeof buildRetrievalQueries>[0];
+  }>,
+  store: Pick<PersistentVectorStore, "getCachedEmbedding">,
+  embeddingModel: string,
+  useCohere: boolean,
+): LiveCallEstimate {
+  const seenUncached = new Set<string>();
+  let total = 0;
+  let maxEmbeddingRequests = 0;
+  let casesWithQueries = 0;
+  for (const testCase of cases) {
+    const queryTexts = buildRetrievalQueries(testCase.profile)
+      .text.split(";")
+      .map((query) => query.trim())
+      .filter(Boolean);
+    total += queryTexts.length;
+    if (queryTexts.length > 0) casesWithQueries += 1;
+    const missing = queryTexts.filter(
+      (query) => !store.getCachedEmbedding(embeddingModel, hashText(query)),
+    );
+    for (const query of missing) seenUncached.add(query);
+    if (missing.length > 0) maxEmbeddingRequests += 1;
+  }
+  return {
+    confirmed: true,
+    selectedCases: cases.length,
+    totalQueryTexts: total,
+    uncachedQueryTexts: seenUncached.size,
+    maxEmbeddingRequests,
+    maxCohereCalls: useCohere ? casesWithQueries : 0,
+  };
+}
+
 export async function runOfflineRagEvaluation(
   options: RagOfflineOptions = {},
 ): Promise<Record<string, unknown>> {
+  validateRerankerOptions(options);
   const root = process.cwd();
+  const rerankerId = options.reranker ?? "deterministic";
+  const cohere =
+    rerankerId === "cohere" ? createCohereReranker(process.env) : undefined;
   const dataset = RetrievalDatasetSchema.parse(
     JSON.parse(
-      await readFile(resolve(root, options.datasetPath ?? "eval/rag/retrieval-v2.json"), "utf8"),
+      await readFile(
+        resolve(root, options.datasetPath ?? "eval/rag/retrieval-v2.json"),
+        "utf8",
+      ),
     ),
   );
   const trials: Trial[] = [];
@@ -202,6 +336,7 @@ export async function runOfflineRagEvaluation(
   let memoryStore: InMemoryVectorStore | undefined;
   let parityStore: VectorStore | undefined;
   let indexPath: string | undefined;
+  let liveCalls: LiveCallEstimate | undefined;
   if (embeddingMode === "fake") {
     embedder = new DeterministicHashEmbedder();
     memoryStore = new InMemoryVectorStore();
@@ -241,6 +376,20 @@ export async function runOfflineRagEvaluation(
       vectorStore.close();
       throw error;
     }
+    liveCalls = estimateLiveCalls(
+      selectedCases,
+      vectorStore,
+      embedder.model,
+      rerankerId === "cohere",
+    );
+    console.error(
+      `Procena plaćenih poziva (--confirm-live potvrđen): ${selectedCases.length} slučajeva; ` +
+        `najviše ${liveCalls.maxEmbeddingRequests} embedding zahteva za ${liveCalls.uncachedQueryTexts} jedinstvenih upita koji nisu u kešu indeksa ` +
+        `(od ${liveCalls.totalQueryTexts} ukupno); ` +
+        (rerankerId === "cohere"
+          ? `najviše ${liveCalls.maxCohereCalls} Cohere poziva (jedan po slučaju u hybrid+rerank varijanti).`
+          : "bez Cohere poziva."),
+    );
   }
 
   try {
@@ -283,7 +432,12 @@ export async function runOfflineRagEvaluation(
         );
       });
     }
-    const retriever = new HybridTrialRetriever(vectorStore, embedder, trials);
+    const retriever = new HybridTrialRetriever(
+      vectorStore,
+      embedder,
+      trials,
+      cohere?.reranker,
+    );
     const retrievalOptions: HybridRetrievalOptions = {
       maxCandidates: Math.min(10, trials.length),
       maxSnippets: 5,
@@ -359,6 +513,39 @@ export async function runOfflineRagEvaluation(
 
     const hybrid = results.hybrid ?? [];
     const reranked = results["hybrid+rerank"] ?? [];
+    const rerankedTraces = reranked.map(
+      (entry) =>
+        (
+          entry as {
+            retrievalTrace?: {
+              appliedReranker?: string;
+              rerankerFallbackReason?: string;
+            };
+          }
+        ).retrievalTrace,
+    );
+    const rerankerSummary = {
+      id: rerankerId,
+      model: cohere ? COHERE_RERANK_MODEL : null,
+      timeoutMs: cohere?.timeoutMs ?? null,
+      hybridRerankVariant: {
+        cases: reranked.length,
+        appliedSelectedReranker: rerankedTraces.filter(
+          (trace) => trace?.appliedReranker === rerankerId,
+        ).length,
+        fallbackRrf: rerankedTraces.filter(
+          (trace) => trace?.appliedReranker === "fallback-rrf",
+        ).length,
+        otherApplied: rerankedTraces.filter(
+          (trace) =>
+            trace?.appliedReranker !== rerankerId &&
+            trace?.appliedReranker !== "fallback-rrf",
+        ).length,
+        fallbackReasons: rerankedTraces.flatMap((trace) =>
+          trace?.rerankerFallbackReason ? [trace.rerankerFallbackReason] : [],
+        ),
+      },
+    };
     const pairedComparison = selectedCases.map((testCase, index) => {
       const base = hybrid[index] as
         | {
@@ -414,7 +601,9 @@ export async function runOfflineRagEvaluation(
         dimensions: VECTOR_DIMENSIONS,
         indexPath: indexPath ?? null,
         caseIds: selectedCases.map(({ caseId }) => caseId),
+        liveCalls: liveCalls ?? null,
       },
+      reranker: rerankerSummary,
       variants: results,
       pairedHybridVsRerank: pairedComparison,
       vectorStore:
@@ -458,7 +647,7 @@ export async function runOfflineRagEvaluation(
     const reportDirectory = resolve(
       root,
       "eval/results/rag",
-      `offline-${embeddingMode}-${new Date().toISOString().replaceAll(":", "-")}`,
+      `offline-${embeddingMode}${rerankerId === "cohere" ? "-cohere" : ""}-${new Date().toISOString().replaceAll(":", "-")}`,
     );
     await mkdir(resolve(root, "eval/results/rag"), { recursive: true });
     await mkdir(reportDirectory, { recursive: false });
@@ -485,6 +674,7 @@ export async function runOfflineRagEvaluation(
             corpusSnapshotId: report.corpusSnapshotId,
             annotationStatus: report.annotationStatus,
             embeddingEvaluation: report.embeddingEvaluation,
+            reranker: report.reranker,
             cases: Object.fromEntries(
               Object.entries(results).map(([variant, entries]) => [
                 variant,

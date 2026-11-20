@@ -1,0 +1,12 @@
+{
+  "case_id": "EV-12",
+  "run_id": "offline-EV-12",
+  "status": "passed",
+  "execution_mode": "simulated_fault",
+  "model_id": "offline",
+  "data_version": "synthetic-trials-v1",
+  "schema_version": "2.0.0",
+  "prompt_version": "none",
+  "commit": "54c00c7cf3cc192aaa1f9513b7030c9af19e944e",
+  "events": []
+}

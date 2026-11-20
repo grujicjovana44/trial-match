@@ -114,12 +114,37 @@ export function verdictLabel(verdict: TrialVerdict): string {
   return copy.trial.verdict[verdict];
 }
 
-export function criterionStatusShort(status: CriterionStatus): string {
-  return copy.criterion.short[status];
+export type CriterionKind = CriterionResult["kind"];
+
+export function criterionStatusShort(
+  status: CriterionStatus,
+  kind?: CriterionKind,
+): string {
+  return kind === "exclusion"
+    ? copy.criterion.exclusionShort[status]
+    : copy.criterion.short[status];
 }
 
-export function criterionStatusNote(status: CriterionStatus): string {
-  return copy.criterion.note[status];
+export function criterionStatusNote(
+  status: CriterionStatus,
+  kind?: CriterionKind,
+): string {
+  return kind === "exclusion"
+    ? copy.criterion.exclusionNote[status]
+    : copy.criterion.note[status];
+}
+
+export function criterionKindTag(kind: CriterionKind): string | null {
+  return kind === undefined ? null : copy.criterion.kindTag[kind];
+}
+
+/**
+ * Samo za prikaz: ClinicalTrials.gov tekst sadrži CommonMark escape-ove (`\>`, `\*`).
+ * Sačuvani citat ostaje doslovan; ovde se samo poništava escape-ovanje registra.
+ * Prikaz je običan tekst, bez HTML/markdown renderovanja (FR-017).
+ */
+export function displayRegistryText(text: string): string {
+  return text.replace(/\\([!-/:-@[-`{-~])/gu, "$1");
 }
 
 export function criterionStatusIcon(status: CriterionStatus): string {
@@ -164,7 +189,10 @@ export function phaseLabel(
 export function formatUnit(unit: string | null): string {
   const trimmed = unit?.trim() ?? "";
   if (trimmed.length === 0) return "";
-  return trimmed === "%" ? "%" : ` ${trimmed}`;
+  if (trimmed === "%") return "%";
+  // Samo engleske reči se prevode; medicinske jedinice ostaju kakve jesu.
+  const translated = copy.criterion.unitNames[trimmed.toLowerCase()];
+  return ` ${translated ?? trimmed}`;
 }
 
 export function formatNumber(value: number): string {

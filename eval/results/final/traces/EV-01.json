@@ -1,0 +1,106 @@
+{
+  "case_id": "EV-01",
+  "run_id": "98cd8f59-afae-4353-bc2c-426d236cd70e",
+  "status": "passed",
+  "execution_mode": "real_model",
+  "model_id": "gemini-3.5-flash-lite",
+  "data_version": "synthetic-trials-v1",
+  "schema_version": "2.0.0",
+  "prompt_version": "phase2.v1",
+  "commit": "ed7f7628516677dfb88a6ac553ef29f72b15ea4b",
+  "events": [
+    {
+      "step": "model",
+      "attempt": 1,
+      "durationMs": 8468,
+      "inputTokens": 713,
+      "outputTokens": 86,
+      "outcome": "complete",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45",
+      "validation": "ok"
+    },
+    {
+      "step": "tool",
+      "tool": "compute_egfr",
+      "durationMs": 2,
+      "outcome": "complete"
+    },
+    {
+      "step": "tool",
+      "tool": "compute_bmi",
+      "durationMs": 1,
+      "outcome": "complete"
+    },
+    {
+      "step": "retrieval",
+      "durationMs": 20,
+      "outcome": "not_needed:disabled",
+      "untranslatedTerms": [],
+      "retrievalMode": "lexical_only",
+      "vectorHitCount": 0,
+      "selectedTrialIds": [
+        "T-A",
+        "T-B",
+        "T-C"
+      ]
+    },
+    {
+      "step": "tool",
+      "tool": "evaluate_criteria",
+      "durationMs": 4,
+      "outcome": "complete"
+    },
+    {
+      "step": "tool",
+      "tool": "select_next_question",
+      "durationMs": 2,
+      "outcome": "complete"
+    },
+    {
+      "step": "model",
+      "attempt": 2,
+      "durationMs": 9375,
+      "inputTokens": 1092,
+      "outputTokens": 291,
+      "outcome": "complete",
+      "promptVersion": "explain_results.v1",
+      "promptHash": "210b6295f2bc7433d253c432ea18200f25157fd5f64899c812868670e3e00e97",
+      "validation": "ok"
+    },
+    {
+      "step": "grounding",
+      "durationMs": 0,
+      "outcome": "semantic_review_required",
+      "sourceIds": [
+        "T-A#inc-3",
+        "T-B#inc-2",
+        "T-C#inc-2",
+        "T-A#inc-2",
+        "T-B#inc-3"
+      ]
+    }
+  ],
+  "final": {
+    "status": "ok",
+    "stage": "completed",
+    "profileFields": [
+      "age",
+      "sex",
+      "hba1c",
+      "creatinine",
+      "height",
+      "weight",
+      "insulin_last_3_months"
+    ],
+    "ambiguityFields": [],
+    "resultTrialIds": [
+      "T-A",
+      "T-C",
+      "T-B"
+    ],
+    "excludedTrialIds": [],
+    "modelCalls": 2,
+    "toolCalls": 4
+  }
+}

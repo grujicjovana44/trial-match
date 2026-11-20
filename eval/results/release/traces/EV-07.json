@@ -1,0 +1,47 @@
+{
+  "case_id": "EV-07",
+  "run_id": "9370b04a-0fab-47e7-9d53-f4ea22ca8f4c",
+  "status": "passed",
+  "execution_mode": "real_model",
+  "model_id": "gemini-3.5-flash-lite",
+  "data_version": "synthetic-trials-v1",
+  "schema_version": "2.0.0",
+  "prompt_version": "extract_profile.v1",
+  "commit": "54c00c7cf3cc192aaa1f9513b7030c9af19e944e",
+  "events": [
+    {
+      "step": "model",
+      "attempt": 1,
+      "durationMs": 779,
+      "inputTokens": 691,
+      "outputTokens": 87,
+      "outcome": "complete",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45",
+      "validation": "ok"
+    },
+    {
+      "step": "guard",
+      "durationMs": 0,
+      "outcome": "hba1c_glucose_ambiguity"
+    }
+  ],
+  "final": {
+    "status": "needs_clarification",
+    "stage": "awaiting_input",
+    "questionField": "hba1c",
+    "profileFields": [
+      "age",
+      "sex",
+      "creatinine"
+    ],
+    "ambiguityFields": [
+      "hba1c",
+      "creatinine"
+    ],
+    "resultTrialIds": [],
+    "excludedTrialIds": [],
+    "modelCalls": 1,
+    "toolCalls": 0
+  }
+}

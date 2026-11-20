@@ -346,6 +346,8 @@ const ResponseBaseSchema = z.object({
   results: z.array(TrialResultSchema),
   excludedTrials: z.array(TrialResultSchema),
   explanation: z.string().min(1),
+  // Izvor teksta objašnjenja; izostavljen kod fiksnih sistemskih poruka.
+  explanationSource: z.enum(["model", "template"]).optional(),
   meta: MetaSchema,
 });
 

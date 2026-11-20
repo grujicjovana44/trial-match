@@ -25,7 +25,39 @@ export type ExecutionEvent = {
   fallbackReason?: string;
   vectorHitCount?: number;
   selectedTrialIds?: string[];
+  validation?: "ok" | "no_candidate" | "schema_invalid" | "business_invalid";
+  invalidPaths?: string[];
+  validationCode?: string;
+  validationField?: string;
+  errorKind?:
+    "timeout" | "http_429" | "http_5xx" | "http_4xx" | "network" | "other";
 };
+
+function errorKindOf(error: unknown): NonNullable<ExecutionEvent["errorKind"]> {
+  if (!(error instanceof ModelRequestError)) return "other";
+  if (error.timedOut) return "timeout";
+  const code = error.statusCode;
+  if (code === undefined) return "network";
+  if (code === 429) return "http_429";
+  if (code >= 500 && code <= 599) return "http_5xx";
+  if (code >= 400 && code <= 499) return "http_4xx";
+  return "other";
+}
+
+/** Poslovna greška validacije: nosi samo šifru i naziv polja, nikada vrednosti. */
+export class BusinessValidationError extends Error {
+  constructor(
+    readonly code: string,
+    readonly field?: string,
+  ) {
+    super(`Poslovna validacija nije prošla: ${code}.`);
+    this.name = "BusinessValidationError";
+  }
+}
+
+const SAFE_CODE = /^[a-z_]+$/u;
+const SAFE_SEGMENT = (segment: PropertyKey) =>
+  String(segment).replace(/[^A-Za-z0-9_]/gu, "_");
 export class ModelSession {
   calls = 0;
   attempts = 0;
@@ -57,6 +89,7 @@ export class ModelSession {
         throw new RunBudgetError("model_call_limit");
       this.calls++;
       let candidate: unknown;
+      let attemptEvent: ExecutionEvent | undefined;
       for (let retry = 0; ; retry++) {
         this.assertTime();
         const controller = new AbortController();
@@ -113,9 +146,11 @@ export class ModelSession {
           }
           event.outcome = result.finish;
           candidate = result.finish === "complete" ? result.candidate : null;
+          attemptEvent = event;
           break;
         } catch (error) {
           event.outcome = "failed";
+          event.errorKind = errorKindOf(error);
           this.tokens = null;
           const retryable =
             error instanceof ModelRequestError &&
@@ -135,12 +170,36 @@ export class ModelSession {
         }
       }
       const parsed = schema.safeParse(candidate);
-      if (parsed.success) {
+      if (!parsed.success) {
+        if (attemptEvent && (candidate === null || candidate === undefined))
+          attemptEvent.validation = "no_candidate";
+        else if (attemptEvent) {
+          attemptEvent.validation = "schema_invalid";
+          const paths = new Set<string>();
+          for (const issue of parsed.error.issues) {
+            const path = issue.path.map(SAFE_SEGMENT).join(".").slice(0, 100);
+            if (path) paths.add(path);
+            if (paths.size >= 10) break;
+          }
+          attemptEvent.invalidPaths = [...paths];
+        }
+      } else {
         try {
           validate?.(parsed.data);
+          if (attemptEvent) attemptEvent.validation = "ok";
           return parsed.data;
-        } catch {
+        } catch (error) {
           /* Business validation participates in the single repair budget. */
+          if (attemptEvent) {
+            attemptEvent.validation = "business_invalid";
+            if (
+              error instanceof BusinessValidationError &&
+              SAFE_CODE.test(error.code)
+            ) {
+              attemptEvent.validationCode = error.code;
+              if (error.field) attemptEvent.validationField = error.field;
+            } else attemptEvent.validationCode = "business_rule";
+          }
         }
       }
     }

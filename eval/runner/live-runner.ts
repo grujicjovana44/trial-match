@@ -4,14 +4,21 @@ import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import { z } from "zod";
 import { runOfflineCase } from "./offline-suite.js";
-import { validateLiveRun } from "./live.js";
+import {
+  buildLiveSummary,
+  distinctPromptVersions,
+  tracePromptVersion,
+  traceTotals,
+  type CaseRecord,
+} from "./live-summary.js";
+import { liveEvalConfig, liveResultsDir, validateLiveRun } from "./live.js";
 import { TrialMatchService } from "../../apps/server/src/service/trialmatch.js";
 import { GeminiAdapter } from "../../apps/server/src/llm/gemini-adapter.js";
+import { retrieveTrials } from "../../apps/server/src/retrieval/retrieve.js";
 import {
-  configEnvironment,
-  parseConfig,
-} from "../../apps/server/src/config/index.js";
-import { SafeTraceSchema } from "../../apps/server/src/trace/redact.js";
+  SafeTraceSchema,
+  type SafeTrace,
+} from "../../apps/server/src/trace/redact.js";
 import {
   ToolExecutionError,
   ToolExecutor,
@@ -27,7 +34,7 @@ import {
   type Trial,
 } from "../../packages/shared/src/index.js";
 
-const baseline = resolve("eval/results/baseline");
+const SCHEMA_VERSION = "2.0.0";
 const json = (value: unknown) => JSON.stringify(value);
 const ids = (response: {
   results: Array<{ trialId: string; verdict: string }>;
@@ -68,6 +75,7 @@ export async function runLive(
     JSON.parse(await readFile("data/fixtures/trials.json", "utf8")),
   );
   // Complete local validation before reserving the immutable directory or creating transport.
+  const baseline = liveResultsDir(validated.label);
   await mkdir(baseline);
   const resultsPath = resolve(baseline, "results.jsonl");
   const tracesDir = resolve(baseline, "traces");
@@ -79,6 +87,8 @@ export async function runLive(
     provider: "gemini",
     model: "gemini-3.5-flash-lite",
     dataset: "fixtures",
+    datasetProfile: "fixtures",
+    retrieval: "lexical-injected",
     caseSetHash: validated.caseSetHash,
     caseCount: validated.cases.length,
     commit,
@@ -104,10 +114,26 @@ export async function runLive(
     flag: "wx",
   });
   await writeFile(resultsPath, "", { flag: "wx" });
+  const allowedTrialIds = new Set(trials.map((trial) => trial.trialId));
+  const outsideCorpus = (response: {
+    results: Array<{ trialId: string }>;
+    excludedTrials: Array<{ trialId: string }>;
+  }) =>
+    [...response.results, ...response.excludedTrials].some(
+      (trial) => !allowedTrialIds.has(trial.trialId),
+    );
+  class CorpusMismatchError extends Error {}
+  let aborted: "corpus_mismatch" | null = null;
+  const caseRecords: CaseRecord[] = [];
+  const promptVersionsUsed: string[] = [];
+  let modelEvents = 0,
+    toolEvents = 0,
+    modelDurationMs = 0;
   let attempts = 0,
+    attemptsWithoutUsage = 0,
     inputBytes = 0,
-    inputTokens: number | null = 0,
-    outputTokens: number | null = 0,
+    inputTokens = 0,
+    outputTokens = 0,
     outputBudgetUsed = 0,
     interrupted = false,
     completed = 0,
@@ -127,18 +153,13 @@ export async function runLive(
       let details = "Prekinuto pre izvršavanja; nema PASS.";
       let runId = `offline-${item.case_id}`;
       let events: unknown[] = [];
+      let finalSummary: SafeTrace["final"];
       try {
         if (item.execution_mode !== "real_model") {
           details = await runOfflineCase(item.case_id);
           outcome = "passed";
         } else {
-          const config = parseConfig({
-            ...configEnvironment(env),
-            DEMO_MODE: "false",
-            MAX_MODEL_CALLS_PER_RUN: "4",
-            MAX_TOOL_CALLS_PER_RUN: "10",
-            MAX_RETRIES: "2",
-          });
+          const config = liveEvalConfig(env);
           const adapter = new GeminiAdapter(config.GEMINI_API_KEY!);
           const bounded = {
             providerId: adapter.providerId,
@@ -174,8 +195,9 @@ export async function runLive(
                 validated.maxOutputTokens - outputBudgetUsed,
               );
               outputBudgetUsed += reservedOutput;
+              let result: Awaited<ReturnType<typeof adapter.generate>>;
               try {
-                const result = await adapter.generate(request, {
+                result = await adapter.generate(request, {
                   ...context,
                   signal: AbortSignal.any([
                     context.signal,
@@ -183,29 +205,23 @@ export async function runLive(
                   ]),
                   maxOutputTokens: reservedOutput,
                 });
-                if (!result.usage) {
-                  inputTokens = null;
-                  outputTokens = null;
-                  throw new Error(
-                    "Provider usage metadata is unavailable; stopping to preserve token caps.",
-                  );
-                }
-                if (result.usage.outputTokens > reservedOutput) {
-                  inputTokens = null;
-                  outputTokens = null;
-                  throw new Error("Provider output exceeded the approved cap.");
-                }
-                outputBudgetUsed -= reservedOutput - result.usage.outputTokens;
-                if (inputTokens !== null)
-                  inputTokens += result.usage.inputTokens;
-                if (outputTokens !== null)
-                  outputTokens += result.usage.outputTokens;
-                return result;
               } catch (error) {
-                inputTokens = null;
-                outputTokens = null;
+                // Greška bez vraćenog usage-a: broji se, ali ne poništava zbir tokena.
+                attemptsWithoutUsage++;
                 throw error;
               }
+              if (!result.usage) {
+                attemptsWithoutUsage++;
+                throw new Error(
+                  "Provider usage metadata is unavailable; stopping to preserve token caps.",
+                );
+              }
+              inputTokens += result.usage.inputTokens;
+              outputTokens += result.usage.outputTokens;
+              if (result.usage.outputTokens > reservedOutput)
+                throw new Error("Provider output exceeded the approved cap.");
+              outputBudgetUsed -= reservedOutput - result.usage.outputTokens;
+              return result;
             },
           };
           const makeService = (caseTrials: Trial[]) =>
@@ -214,6 +230,11 @@ export async function runLive(
               adapter: bounded,
               trials: caseTrials,
               manifest: manifestData,
+              // Deterministički leksički retriever: bez SQLite indeksa i embeddings poziva.
+              retriever: {
+                retrieve: async (profile, corpus, options) =>
+                  retrieveTrials(profile, corpus, options),
+              },
             });
           const service = makeService(trials);
           let final = await service.start({ profileText: item.input });
@@ -246,6 +267,8 @@ export async function runLive(
               profileText: item.input,
             });
             if (interrupted) throw new Error("Evaluation interrupted.");
+            if (outsideCorpus(clean) || outsideCorpus(attacked))
+              throw new CorpusMismatchError();
             events = [
               ...(service.sessions.get(clean.runId)?.events ?? []),
               ...(attackService.sessions.get(attacked.runId)?.events ?? []),
@@ -297,6 +320,25 @@ export async function runLive(
                 : "Hostile source changed matcher output.";
             final = attacked;
           }
+          // Samo nazivi polja i ID-jevi studija; nikada vrednosti profila.
+          finalSummary = {
+            status: final.status,
+            stage: final.stage,
+            ...(final.reason ? { reason: final.reason } : {}),
+            ...(final.error ? { errorCategory: final.error.category } : {}),
+            ...(final.question ? { questionField: final.question.field } : {}),
+            profileFields: Object.keys(final.profile ?? {}).filter(
+              (key) => key !== "provenance" && key !== "ambiguities",
+            ),
+            ambiguityFields: (final.profile?.ambiguities ?? []).map(
+              (item) => item.field,
+            ),
+            resultTrialIds: final.results.map((t) => t.trialId),
+            excludedTrialIds: final.excludedTrials.map((t) => t.trialId),
+            modelCalls: final.meta.modelCalls,
+            toolCalls: final.meta.toolCalls,
+          };
+          if (outsideCorpus(final)) throw new CorpusMismatchError();
           if (!events.length && service.sessions.has(runId))
             events = service.sessions.get(runId)?.events ?? [];
           const expected = item.expected_properties;
@@ -423,12 +465,18 @@ export async function runLive(
             outcome = checks.every(Boolean) ? "passed" : "failed";
           if (checks.some((value) => !value))
             details = `Očekivane provere nisu sve ispunjene (${checks.filter(Boolean).length}/${checks.length}).`;
+          else if (checks.length)
+            details = `Sve provere ispunjene (${checks.length}/${checks.length}).`;
           if (!checks.length) outcome = "skipped";
           details += ` Logical calls=${final.meta.modelCalls}; attempts=${final.meta.modelAttempts}; tokens=${final.meta.tokens ?? "unknown"}.`;
           runId = final.runId;
         }
       } catch (error) {
-        if (interrupted) {
+        if (error instanceof CorpusMismatchError) {
+          aborted = "corpus_mismatch";
+          outcome = "failed";
+          details = "Evaluacija nije koristila fixture korpus.";
+        } else if (interrupted) {
           outcome = "skipped";
           details = "Prekinuto tokom slučaja; nema PASS ishoda.";
         } else {
@@ -451,10 +499,31 @@ export async function runLive(
             ? "gemini-3.5-flash-lite"
             : "offline",
         data_version: item.versions.data,
-        schema_version: "2.0.0",
-        prompt_version: "phase2.v1",
+        schema_version: SCHEMA_VERSION,
+        prompt_version: tracePromptVersion(
+          (events as Array<{ promptVersion?: unknown }>).flatMap((event) =>
+            typeof event === "object" &&
+            event !== null &&
+            typeof event.promptVersion === "string"
+              ? [{ promptVersion: event.promptVersion }]
+              : [],
+          ),
+        ),
         commit,
         events,
+        ...(finalSummary ? { final: finalSummary } : {}),
+      });
+      for (const version of distinctPromptVersions(trace.events))
+        if (!promptVersionsUsed.includes(version))
+          promptVersionsUsed.push(version);
+      const totals = traceTotals(trace.events);
+      modelEvents += totals.modelEvents;
+      toolEvents += totals.toolEvents;
+      modelDurationMs += totals.modelDurationMs;
+      caseRecords.push({
+        caseId: item.case_id,
+        status: outcome,
+        executionMode: item.execution_mode,
       });
       await writeFile(
         resolve(tracesDir, `${item.case_id}.json`),
@@ -482,14 +551,17 @@ export async function runLive(
             failed,
             skipped: completed - passed - failed,
             attempts,
+            attemptsWithoutUsage,
             inputBytes,
             inputTokens,
             outputTokens,
+            ...(aborted ? { aborted } : {}),
           },
           null,
           2,
         ),
       );
+      if (aborted) break;
     }
   } finally {
     process.removeListener("SIGINT", abort);
@@ -508,13 +580,49 @@ export async function runLive(
           failed,
           skipped: validated.cases.length - completed,
           attempts,
+          attemptsWithoutUsage,
           inputBytes,
           inputTokens,
           outputTokens,
+          ...(aborted ? { aborted } : {}),
         },
         null,
         2,
       ),
+    );
+    await writeFile(
+      resolve(baseline, "summary.json"),
+      JSON.stringify(
+        buildLiveSummary({
+          label: validated.label,
+          commit,
+          dirty,
+          caseSetHash: validated.caseSetHash,
+          provider: manifest.provider,
+          model: manifest.model,
+          dataVersion: manifestData.version,
+          dataName: manifestData.name,
+          schemaVersion: SCHEMA_VERSION,
+          status:
+            interrupted || completed < validated.cases.length
+              ? "interrupted"
+              : "completed",
+          startedAt: manifest.startedAt,
+          finishedAt: new Date().toISOString(),
+          aborted,
+          limits: {
+            requested: manifest.requestedLimits,
+            approval: manifest.approval,
+          },
+          records: caseRecords,
+          promptVersions: promptVersionsUsed,
+          usage: { attempts, attemptsWithoutUsage, inputTokens, outputTokens },
+          totals: { modelEvents, toolEvents, modelDurationMs },
+        }),
+        null,
+        2,
+      ),
+      { flag: "wx" },
     );
   }
 }

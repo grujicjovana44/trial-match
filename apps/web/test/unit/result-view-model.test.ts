@@ -66,7 +66,7 @@ describe("prikaz statusa i nedostajućih polja", () => {
 describe("oznake i formatiranje rezultata", () => {
   it("prikazuje oznake ishoda i statusa kriterijuma iz zajedničkog teksta", () => {
     expect(verdictLabel("candidate")).toBe("Kandidat za dalju proveru");
-    expect(verdictLabel("pending")).toBe("Čeka dopunu podataka");
+    expect(verdictLabel("pending")).toBe("Čeka dopunu ili proveru lekara");
     expect(verdictLabel("excluded")).toBe("Ne ispunjava kriterijume");
     expect(criterionStatusShort("met")).toBe("Ispunjen");
     expect(criterionStatusNote("unknown")).toBe(
@@ -227,6 +227,10 @@ describe("oznake registra i jedinice (T220, T221)", () => {
     expect(formatUnit("%")).toBe("%");
     expect(formatUnit("kg")).toBe(" kg");
     expect(formatUnit(null)).toBe("");
+    expect(formatUnit("years")).toBe(" godina");
+    expect(formatUnit("Year")).toBe(" godina");
+    expect(formatUnit("mg/dL")).toBe(" mg/dL");
+    expect(formatUnit("mL/min/1.73 m²")).toBe(" mL/min/1.73 m²");
     expect(formatUnit("  ")).toBe("");
   });
 });

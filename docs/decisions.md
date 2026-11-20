@@ -164,3 +164,49 @@ Za rad sa ručno dostavljenim snimkom, komanda `data:split` koristi postojeći C
 Odabir `first` prati validirane zapise u redosledu ulaza; `random` koristi obavezni seed za ponovljiv izbor. Izbor se vrši među studijama koje je postojeći importer prihvatio, dok se greške svih raw redova prijavljuju u izveštaju. Duplikati odbijaju generisanje jer bi NCT ID i kriterijumi bili dvosmisleni. Ove odluke zadržavaju izvorne greške vidljivim bez mešanja problematičnog reda sa uspešno validiranim studijama.
 
 Razmotrena alternativa je da se proširi produkcioni `TrialSchema` i postojeći kriterijum odmah označi kao odobrenog porekla. Umesto toga draft koristi uski `raw_extracted` oblik sa sopstvenim `pending_review` stanjem; to izbegava semantičko mešanje sirovog izvoda, ručno pregledanog pravila i paketa za matcher. Cena je da čovek posle pregleda pravi zaseban tipizirani rule-draft za postojeći approval/compiler tok.
+
+## Faza 3 i provera uživo — 2026-11-20
+
+### Live evaluacija uvek koristi fixture korpus
+
+Odluka: `eval:live` zaključava `DATASET_PROFILE=fixtures`, `DATA_DIR=data/fixtures` i deterministički leksički retriever, bez obzira na okruženje, i prekida run ako se u odgovoru pojavi studija van fixture skupa. Razmatrana alternativa: oslanjati se na uputstvo da se ne učitava ceo `.env`. Ta alternativa je već jednom zakazala (nevažeći run od 2026-11-20), pa granicu sprovodi kod. Posledica: live evaluacija ne meri retrieval nad stvarnim korpusom; on se meri odvojeno (RAG evaluacija).
+
+### Deterministički čuvar za „šećer“
+
+Odluka: kada unos pominje šećer ili glukozu bez eksplicitnog HbA1c, kod odbacuje vrednost `hba1c` koju je model izvukao i traži dopunu. Razmatrana alternativa: pojačati prompt. Odbačena je jer je baseline pokazao da model dvosmislenost ne prijavljuje pouzdano, a ovo je bezbednosna granica. Posledica: retka ispravna formulacija („šećer 8,1%“ kada je mišljen HbA1c) dobija jedno pitanje više.
+
+### Prikaz kriterijuma isključenja
+
+Odluka: interfejs prikazuje status kriterijuma isključenja prema značenju za pacijenta („Ne odnosi se“ / „Odnosi se“), uz oznaku vrste kriterijuma. Matcher semantika (`met` znači da se isključenje ne odnosi na pacijenta) ostaje ista. Razlog: provera uživo nad 20 stvarnih studija pokazala je da oznaka „Ispunjen“ uz tekst „HbA1c >10.0%“ navodi na pogrešan zaključak. Fixture studije nemaju kriterijume isključenja, pa ovo ranije nije bilo vidljivo.
+
+### Prikaz objašnjenja modela
+
+Odluka: objašnjenje modela se prikazuje kada sve reference prođu proveru citata (dozvoljen izvor tekućeg izvršavanja, tačan podniz) i kada svaki broj u tekstu postoji među dozvoljenim vrednostima (vrednosti profila, izvedene vrednosti, posmatrane vrednosti, pragovi pravila, brojevi iz odlomaka koje objašnjenje citira; vidi „Numeričko uzemljenje i brojevi iz citiranih odlomaka“). U suprotnom se prikazuje šablon. Odgovor nosi `explanationSource` (`model` ili `template`), a interfejs to navodi uz objašnjenje. Ovim se kod usklađuje sa odlukom iz odeljka o objašnjenju i sa opisom projekta. Ranije je kod uvek prikazivao šablon, iako je plaćao poziv modela.
+
+Preostali rizik: kod ne može da dokaže da je parafraza semantički tačna. Provera uživo je pokazala objašnjenje sa pogrešnim brojem ispunjenih kriterijuma, napisanim rečima. Prompt `explain_results.v2` zato zabranjuje navođenje broja studija i kriterijuma (zbirove prikazuje kod) i traži opis najviše tri konkretna kriterijuma. Interfejs uz objašnjenje navodi da statuse određuje kod, ne model.
+
+### Podrazumevani reranker
+
+Odluka: ako `RAG_RERANKER` nije podešen, aplikacija koristi Cohere reranker (`rerank-v5.0-fast`) kada postoji `COHERE_API_KEY`, a inače radi bez reranker-a (`disabled`). Eksplicitno podešena vrednost (`cohere`, `deterministic`, `gemini`, `disabled`) i dalje važi.
+
+Razlog: merenje sa stvarnim embeddings-om nad Jovaninim skupom od 8 slučajeva (`docs/evaluation.md`) dalo je nDCG@10 0,892 sa Cohere-om, 0,747 bez reranker-a i 0,503 sa determinističkim reranker-om, koji je do tada bio podrazumevan. Razmatrana alternativa: uvek `disabled`. Odbačena je jer Cohere na istom skupu nijedan slučaj ne pogoršava, a dva poboljšava.
+
+Posledice: kada je ključ podešen, svaka pretraga šalje Cohere-u upit izveden iz validiranog profila i do 20 javnih tekstova studija (vidi `docs/security.md` i `docs/data-map.md`). Greška ili istek roka vraća RRF redosled. Uzorak od 7 ranking slučajeva pokazuje smer, ne pouzdanu veličinu efekta.
+
+Odnos prema planu: `docs/project-brief.md` §8, tačka 4, predviđao je deterministički reranker kao podrazumevan. Odstupanje je odobrio vlasnik projekta 2026-11-20, posle merenja, a opis projekta je dopunjen napomenom koja upućuje na ovu odluku.
+
+### Faza 3: više ciljanih izmena kada baseline pokaže više nezavisnih problema
+
+Odluka: Faza 3 sme da obuhvati više ciljanih izmena kada baseline pokaže više nezavisnih problema koji su pogrešni ili nedovoljno dobri. Za svaku izmenu se i dalje beleže problem, pogođeni EV slučajevi, baseline, događaj u trace-u, hipoteza, commit, poređenje na istom skupu i provera regresije.
+
+Razlog: baseline je pokazao dva nezavisna pada sa različitim uzrocima. EV-07 je bezbednosni propust (vrednost šećera je postajala HbA1c), a EV-03 neispunjen zahtev iz opisa projekta. Sa jednom izmenom jedan od njih bi svesno ostao u isporučenoj verziji. Razmatrana alternativa: jedna izmena po run-u, radi jasnog pripisivanja efekta. Odbačena je jer izmene diraju odvojene slučajeve, a pripisivanje se vidi iz zapisa po izmeni.
+
+Posledice: ne može se dokazati da jedna izmena nije uticala na slučaj druge; to se uz jedno pokretanje po verziji ne bi videlo ni sa jednom izmenom. Odnos prema planu: `docs/project-brief.md` §17 traži „jednu ciljanu izmenu“; vlasnik projekta je 2026-11-20 odlučio da se to pravilo ne prati kada postoji više pogrešnih ili nedovoljno dobrih stvari.
+
+### Numeričko uzemljenje i brojevi iz citiranih odlomaka
+
+Odluka: broj u objašnjenju modela dozvoljen je ako postoji u izračunatim rezultatima (vrednosti profila kako su date i normalizovane, izvedene vrednosti, posmatrane vrednosti, pragovi pravila prikazanih studija) ili u odlomku koji to isto objašnjenje citira. Broj iz odlomka koji objašnjenje ne citira odbacuje objašnjenje, pa se prikazuje šablon.
+
+Razlog: objašnjenje opisuje kriterijume, a tekst kriterijuma sadrži brojeve koji nisu rezultat računanja (trajanja, intervali, pragovi zapisani u tekstu, npr. „u poslednja 3 meseca“). Po doslovnom pravilu iz opisa projekta takva objašnjenja bi uvek padala na šablon. Broj iz citiranog odlomka nije izmišljen: korisnik ga vidi u citatu koji se prikazuje kao dokaz. Razmatrane alternative: (1) doslovno pravilo, samo izračunati rezultati, odbačeno jer bi objašnjenje modela retko bilo prikazano; (2) brojevi iz bilo kog dozvoljenog odlomka izvršavanja, kako je bilo do ove odluke, odbačeno jer model tako može da pripiše tačan broj pogrešnoj tvrdnji.
+
+Posledice: model i dalje može da poveže broj iz citiranog odlomka sa pogrešnom tvrdnjom unutar istog odlomka; to provera brojeva ne hvata. Koliko često bi doslovno pravilo vraćalo šablon nije mereno. Odnos prema planu: `docs/project-brief.md` §8 („svaki broj ... mora postojati u izračunatim rezultatima“); odstupanje je odobrio vlasnik projekta 2026-11-20, a opis projekta je dopunjen napomenom.

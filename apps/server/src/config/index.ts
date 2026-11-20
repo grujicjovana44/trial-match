@@ -3,6 +3,13 @@ import { z } from "zod";
 const integerSetting = (fallback: number, maximum = Number.MAX_SAFE_INTEGER) =>
   z.coerce.number().int().positive().max(maximum).default(fallback);
 
+const RerankerSetting = z.enum([
+  "deterministic",
+  "gemini",
+  "cohere",
+  "disabled",
+]);
+
 const ConfigSchema = z
   .object({
     NODE_ENV: z
@@ -27,16 +34,20 @@ const ConfigSchema = z
       .literal("gemini-3.5-flash-lite")
       .default("gemini-3.5-flash-lite"),
     GEMINI_API_KEY: z.string().min(1).optional(),
-    COHERE_API_KEY: z.string().min(1).optional(),
+    // Prazan ili razmaknut ključ (npr. `COHERE_API_KEY=` iz .env.example) znači "nije podešen".
+    COHERE_API_KEY: z.preprocess(
+      (value) =>
+        typeof value === "string" && value.trim() === "" ? undefined : value,
+      z.string().min(1).optional(),
+    ),
     COHERE_RERANK_MODEL: z.literal("rerank-v5.0-fast").default("rerank-v5.0-fast"),
     DATA_DIR: z.string().min(1).default("data/fixtures"),
     DATASET_PROFILE: z
       .enum(["fixtures", "clinicaltrials-20"])
       .default("fixtures"),
     RAG_INDEX_PATH: z.string().min(1).default("data/index/rag.sqlite"),
-    RAG_RERANKER: z
-      .enum(["deterministic", "gemini", "cohere", "disabled"])
-      .default("deterministic"),
+    // Bez vrednosti: parseConfig bira "cohere" ako postoji COHERE_API_KEY, inače "disabled".
+    RAG_RERANKER: RerankerSetting.optional(),
     RAG_RERANK_TIMEOUT_MS: integerSetting(2000, 10000),
     MAX_INPUT_CHARS: integerSetting(4000),
     MAX_CONTEXT_CHARS: integerSetting(12000),
@@ -52,7 +63,9 @@ const ConfigSchema = z
   })
   .strict();
 
-export type AppConfig = z.infer<typeof ConfigSchema>;
+export type AppConfig = Omit<z.infer<typeof ConfigSchema>, "RAG_RERANKER"> & {
+  RAG_RERANKER: z.infer<typeof RerankerSetting>;
+};
 
 export function configEnvironment(
   env: NodeJS.ProcessEnv = process.env,
@@ -69,7 +82,12 @@ export function parseConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     env === process.env ||
     ["PATH", "HOME", "PWD", "SHELL"].some((key) => Object.hasOwn(env, key));
   const source = isProcessEnvironment ? configEnvironment(env) : env;
-  const config = ConfigSchema.parse(source);
+  const parsed = ConfigSchema.parse(source);
+  const config: AppConfig = {
+    ...parsed,
+    RAG_RERANKER:
+      parsed.RAG_RERANKER ?? (parsed.COHERE_API_KEY ? "cohere" : "disabled"),
+  };
   if (!config.DEMO_MODE && !config.GEMINI_API_KEY)
     throw new Error(
       "Stvarni model zahteva GEMINI_API_KEY u serverskom okruženju.",

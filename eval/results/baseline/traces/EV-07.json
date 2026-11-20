@@ -1,0 +1,106 @@
+{
+  "case_id": "EV-07",
+  "run_id": "5aaddd5c-7d53-4d54-b0ef-2a52e208b11f",
+  "status": "failed",
+  "execution_mode": "real_model",
+  "model_id": "gemini-3.5-flash-lite",
+  "data_version": "synthetic-trials-v1",
+  "schema_version": "2.0.0",
+  "prompt_version": "phase2.v1",
+  "commit": "57f904bbc6ef264f6f32ae6830b939046978a45f",
+  "events": [
+    {
+      "step": "model",
+      "attempt": 1,
+      "durationMs": 6671,
+      "outcome": "failed",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45"
+    },
+    {
+      "step": "model",
+      "attempt": 2,
+      "durationMs": 2603,
+      "inputTokens": 691,
+      "outputTokens": 48,
+      "outcome": "complete",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45",
+      "validation": "schema_invalid",
+      "invalidPaths": [
+        "profile.hba1c.unit",
+        "profile.creatinine.unit"
+      ]
+    },
+    {
+      "step": "model",
+      "attempt": 3,
+      "durationMs": 1735,
+      "outcome": "failed",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45"
+    },
+    {
+      "step": "model",
+      "attempt": 4,
+      "durationMs": 3407,
+      "inputTokens": 705,
+      "outputTokens": 66,
+      "outcome": "complete",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45",
+      "validation": "ok"
+    },
+    {
+      "step": "tool",
+      "tool": "compute_egfr",
+      "durationMs": 0,
+      "outcome": "complete"
+    },
+    {
+      "step": "retrieval",
+      "durationMs": 0,
+      "outcome": "not_needed:disabled",
+      "untranslatedTerms": [],
+      "retrievalMode": "lexical_only",
+      "vectorHitCount": 0,
+      "selectedTrialIds": [
+        "T-A",
+        "T-B",
+        "T-C"
+      ]
+    },
+    {
+      "step": "tool",
+      "tool": "evaluate_criteria",
+      "durationMs": 1,
+      "outcome": "complete"
+    },
+    {
+      "step": "tool",
+      "tool": "select_next_question",
+      "durationMs": 0,
+      "outcome": "complete"
+    }
+  ],
+  "final": {
+    "status": "needs_clarification",
+    "stage": "awaiting_input",
+    "questionField": "height",
+    "profileFields": [
+      "age",
+      "sex",
+      "hba1c",
+      "creatinine"
+    ],
+    "ambiguityFields": [],
+    "resultTrialIds": [
+      "T-A",
+      "T-C",
+      "T-B"
+    ],
+    "excludedTrialIds": [],
+    "modelCalls": 2,
+    "toolCalls": 3
+  }
+}
