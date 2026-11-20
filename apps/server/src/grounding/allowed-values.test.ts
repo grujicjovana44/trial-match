@@ -25,6 +25,17 @@ describe("dozvoljeni brojevi objašnjenja", () => {
       hasOnlyGroundedNumbers("Pacijent ima 62 godine; prag 10,0%.", allowed),
     ).toBe(true);
   });
+  it("uzima brojeve samo iz prosleđenih (navedenih) izvora", () => {
+    const allowed = collectAllowedNumbers({
+      ...base,
+      sourceTexts: ["Uzrast od 18 do 75 godina."],
+    });
+    expect(allowed).toEqual(expect.arrayContaining([18, 75]));
+    expect(allowed).not.toContain(10);
+    expect(collectAllowedNumbers({ ...base, sourceTexts: [] })).not.toContain(
+      18,
+    );
+  });
   it("odbija izmišljen broj", () => {
     expect(
       hasOnlyGroundedNumbers("HbA1c 12,3%", collectAllowedNumbers(base)),

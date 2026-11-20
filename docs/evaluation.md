@@ -180,6 +180,8 @@ Ograničenje u završnom runu: posle filtera „bez BMI“ kontekst za objašnje
 
 Izmene za EV-07 i EV-03 se zadržavaju. EV-07 zatvara bezbednosni propust: vrednost šećera više ne može da postane HbA1c bez potvrde korisnika. EV-03 ispunjava zahtev koji je ranije bio samo delimično ostvaren. Ispravka EV-06 se zadržava jer slučaj usklađuje sa opisom projekta.
 
+Odstupanje od plana: opis projekta (§17) za Fazu 3 predviđa jednu ciljanu izmenu, a urađene su dve izmene aplikacije i ispravka jednog slučaja. Baseline je pokazao dva nezavisna problema, od kojih je jedan bezbednosni, pa bi jedna izmena svesno ostavila drugi u isporučenoj verziji. Izmene diraju odvojene slučajeve, a za svaku je zapisan problem, trace, hipoteza i rezultat. Ne može se dokazati da jedna izmena nije uticala na slučaj druge. Odluku je odobrio vlasnik projekta 2026-11-20 (`docs/decisions.md`).
+
 ### Provera uživo kroz interfejs (2026-11-20, posle završnog runa)
 
 Posle završnog runa ceo tok je proveren u pregledaču, sa pravim modelom nad 20 stvarnih studija. Server je radio u live režimu (`demoMode: false`, `retrievalMode: hybrid`, `gemini-3.5-flash-lite`), a interfejs na `http://127.0.0.1:5173`. Proveru je vodio Claude u ugrađenom pregledaču aplikacije Claude, uz odobrenje Alekse Durutovića za plaćene pozive. Ovo je ručna provera, ne EV evaluacija; rezultati nisu sačuvani kao run.
@@ -220,6 +222,8 @@ pnpm eval:compare eval/results/baseline eval/results/<oznaka>
 
 Runner pre pokretanja uvek zaključava fixture korpus, pa `.env` sme da sadrži i podešavanja za demo korpus.
 
+Od 2026-11-20 runner pored `manifest.json` (stanje tokom pokretanja) piše i `summary.json`, kako traži opis projekta (§11). Sažetak prikazuje odvojeno funkcionalne slučajeve EV-01–EV-09, bezbednosni EV-10 i determinističke/fault provere EV-11–EV-16 (samo izvršeni slučajevi ulaze u brojilac i imenilac), uz verzije podataka, šeme i stvarno korišćenih promptova, limite, tokene, trajanje i broj poziva modela i alata. Zaglavlje trace-a sada navodi stvarne verzije promptova tog slučaja (npr. `extract_profile.v1+explain_results.v2`) umesto fiksne oznake `phase2.v1`. Direktorijumi `baseline/` i `final/` nastali su pre ove izmene i nemaju `summary.json`; ne menjaju se.
+
 ## RAG retrieval sa stvarnim embeddings-om (2026-11-20)
 
 Ovo je prvo merenje retrieval-a sa stvarnim embeddings-om nad korpusom od 20 studija. Prethodni RAG rezultati su koristili lažne (hash) embeddings i nisu dokaz semantičkog kvaliteta.
@@ -231,11 +235,12 @@ Ovo je prvo merenje retrieval-a sa stvarnim embeddings-om nad korpusom od 20 stu
 - Embeddings upita su stvarni (OpenAI). Upiti kojih nema u kešu indeksa šalju se provajderu; runner ne beleži broj tokena. Gemini i Cohere nisu pozivani.
 - Varijanta „hybrid+rerank“ je merena dva puta: sa determinističkim reranker-om i sa Cohere reranker-om (`rerank-v5.0-fast`, rok 2.000 ms, isti kao u aplikaciji). Runner bira reranker opcijom `--reranker deterministic|cohere`; Cohere je dozvoljen samo uz `--embedding-mode real`. Izveštaj u polju `reranker` beleži u koliko slučajeva je izabrani reranker stvarno primenjen i koliko puta je došlo do RRF fallback-a. U Cohere runu reranker je primenjen u svih 8 slučajeva, bez fallback-a; Cohere je pozvan 7 puta, jer J-RAG-07 nema kandidata. Ostale tri varijante su u oba runa dale identične redoslede.
 - Izveštaj sa determinističkim reranker-om (commit `3039772`): [`eval/results/rag/offline-real-2026-11-20T19-52-50.032Z/summary.json`](../eval/results/rag/offline-real-2026-11-20T19-52-50.032Z/summary.json). Izveštaj sa Cohere reranker-om: [`eval/results/rag/offline-real-cohere-2026-11-20T19-58-49.352Z/summary.json`](../eval/results/rag/offline-real-cohere-2026-11-20T19-58-49.352Z/summary.json). Za poređenje je isti skup pokrenut i sa lažnim embeddings-om: [`eval/results/rag/offline-fake-2026-11-20T19-53-20.097Z/summary.json`](../eval/results/rag/offline-fake-2026-11-20T19-53-20.097Z/summary.json). Raniji RAG izveštaji od 2026-11-19 nisu sačuvani u repozitorijumu.
+- Ova dva plaćena runa pokrenuta su pre nego što je runner počeo da traži potvrdu. Sada plaćeni režimi rade samo uz `--confirm-live` i pre prvog poziva prikazuju najveći broj poziva (vidi spec 004, US4); komande ispod su u tom obliku.
 
 ```sh
 pnpm build
-node --env-file=.env dist/eval/runner/rag-offline.js --dataset eval/rag/retrieval-v4-jovana-clinicaltrials20-2026-11-19.json --embedding-mode real --index data/index/rag-clinicaltrials-20-final.sqlite --summary
-node --env-file=.env dist/eval/runner/rag-offline.js --dataset eval/rag/retrieval-v4-jovana-clinicaltrials20-2026-11-19.json --embedding-mode real --index data/index/rag-clinicaltrials-20-final.sqlite --reranker cohere --summary
+node --env-file=.env dist/eval/runner/rag-offline.js --dataset eval/rag/retrieval-v4-jovana-clinicaltrials20-2026-11-19.json --embedding-mode real --index data/index/rag-clinicaltrials-20-final.sqlite --confirm-live --summary
+node --env-file=.env dist/eval/runner/rag-offline.js --dataset eval/rag/retrieval-v4-jovana-clinicaltrials20-2026-11-19.json --embedding-mode real --index data/index/rag-clinicaltrials-20-final.sqlite --reranker cohere --confirm-live --summary
 ```
 
 ### Rezultati na nivou studija
@@ -268,4 +273,4 @@ Na nivou odlomaka nDCG@5 je nizak u svim varijantama (0,12–0,20): odlomci koje
 - Sedam ranking slučajeva i deset relevantnih studija ne omogućavaju statistički zaključak; razlike pokazuju smer, ne veličinu efekta.
 - Oznake su oznake retrieval relevantnosti jedne osobe, bez kliničkog pregleda.
 - Cohere je meren samo nad ovim skupom i samo sa rokom od 2.000 ms. Rang Cohere-a zavisi od spoljnog servisa i verzije modela, pa ponovljeni run može malo da odstupi.
-- Lokalni live server u proveri uživo koristio je `RAG_RERANKER=cohere`, a `.env.example` i šema konfiguracije podrazumevano postavljaju `deterministic`. Na ovom skupu deterministički reranker je lošiji i od hibridne pretrage bez reranker-a, a Cohere je najbolji. Podrazumevano podešavanje još nije promenjeno.
+- Lokalni live server u proveri uživo koristio je `RAG_RERANKER=cohere`, a šema konfiguracije je tada podrazumevano postavljala `deterministic`. Na ovom skupu deterministički reranker je lošiji i od hibridne pretrage bez reranker-a, a Cohere je najbolji. Zato je podrazumevana vrednost promenjena: bez podešenog `RAG_RERANKER` koristi se `cohere` kada postoji `COHERE_API_KEY`, a inače `disabled` (`docs/decisions.md`).
