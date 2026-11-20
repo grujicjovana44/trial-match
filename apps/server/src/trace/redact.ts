@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+  ErrorCategorySchema,
+  ProfileFieldSchema,
+} from "../../../../packages/shared/src/index.js";
 
 const TraceEventSchema = z
   .object({
@@ -34,6 +38,43 @@ const TraceEventSchema = z
       .optional(),
     vectorHitCount: z.number().int().nonnegative().optional(),
     selectedTrialIds: z.array(z.string().max(100)).optional(),
+    validation: z
+      .enum(["ok", "no_candidate", "schema_invalid", "business_invalid"])
+      .optional(),
+    invalidPaths: z
+      .array(
+        z
+          .string()
+          .max(100)
+          .regex(/^[A-Za-z0-9_.]+$/u),
+      )
+      .max(10)
+      .optional(),
+    validationCode: z
+      .string()
+      .max(64)
+      .regex(/^[a-z_]+$/u)
+      .optional(),
+    validationField: ProfileFieldSchema.optional(),
+  })
+  .strict();
+
+const TrialIdSchema = z.string().min(1).max(100);
+
+// Samo nazivi polja i ID-jevi studija; nikada vrednosti profila ni tekst.
+const FinalSummarySchema = z
+  .object({
+    status: z.string().min(1).max(40),
+    stage: z.string().min(1).max(40),
+    reason: z.string().min(1).max(40).optional(),
+    errorCategory: ErrorCategorySchema.optional(),
+    questionField: z.string().min(1).max(40).optional(),
+    profileFields: z.array(z.string().min(1).max(40)),
+    ambiguityFields: z.array(z.string().min(1).max(40)),
+    resultTrialIds: z.array(TrialIdSchema),
+    excludedTrialIds: z.array(TrialIdSchema),
+    modelCalls: z.number().int().nonnegative(),
+    toolCalls: z.number().int().nonnegative(),
   })
   .strict();
 
@@ -49,6 +90,7 @@ export const SafeTraceSchema = z
     prompt_version: z.string().min(1),
     commit: z.string().min(1),
     events: z.array(TraceEventSchema).default([]),
+    final: FinalSummarySchema.optional(),
   })
   .strict();
 
@@ -68,5 +110,6 @@ export function redactTrace(input: unknown): SafeTrace {
     prompt_version: parsed.prompt_version,
     commit: parsed.commit,
     events: parsed.events,
+    ...(parsed.final ? { final: parsed.final } : {}),
   });
 }
