@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 import { z } from "zod";
 import { loadCases } from "./cases.js";
 import {
@@ -25,6 +26,29 @@ const ApprovalSchema = z
     costUnavailableAcknowledged: z.boolean(),
   })
   .strict();
+const RESERVED_LABELS = new Set(["invalid", "rag"]);
+
+// Konfiguracija live evaluacije: fixture korpus i budžeti se nikada ne preuzimaju iz okruženja.
+export function liveEvalConfig(env: NodeJS.ProcessEnv) {
+  return parseConfig({
+    ...configEnvironment(env),
+    DEMO_MODE: "false",
+    DATASET_PROFILE: "fixtures",
+    DATA_DIR: "data/fixtures",
+    MAX_MODEL_CALLS_PER_RUN: "4",
+    MAX_TOOL_CALLS_PER_RUN: "10",
+    MAX_RETRIES: "2",
+  });
+}
+
+export function liveResultsDir(label: string): string {
+  if (!/^[a-z0-9][a-z0-9._-]{0,63}$/i.test(label))
+    throw new Error("Neispravna oznaka pokretanja.");
+  if (RESERVED_LABELS.has(label.toLowerCase()))
+    throw new Error(`Oznaka "${label}" je rezervisana i ne sme se koristiti.`);
+  return resolve("eval/results", label);
+}
+
 export async function validateLiveRun(
   args: string[],
   env: NodeJS.ProcessEnv = process.env,
@@ -55,6 +79,7 @@ export async function validateLiveRun(
   const label = values.get("--label");
   if (!label || !/^[a-z0-9][a-z0-9._-]{0,63}$/i.test(label))
     throw new Error("Neispravna oznaka pokretanja.");
+  liveResultsDir(label);
   const limits = [
     "--max-model-attempts",
     "--max-input-tokens",
@@ -65,7 +90,7 @@ export async function validateLiveRun(
       throw new Error(`Nedostaje validno ograničenje ${flag}.`);
   const approvalPath = values.get("--approval");
   if (!approvalPath) throw new Error("Nedostaje approval fajl.");
-  const config = parseConfig({ ...configEnvironment(env), DEMO_MODE: "false" });
+  const config = liveEvalConfig(env);
   if (approvalPath.endsWith(".env") || approvalPath.endsWith(".env.local"))
     throw new Error("Approval zapis nije putanja ka environment fajlu.");
   const cases = await loadCases();

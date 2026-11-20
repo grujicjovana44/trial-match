@@ -58,9 +58,16 @@ import {
 } from "../llm/mock-adapter.js";
 import { GeminiAdapter } from "../llm/gemini-adapter.js";
 import type { LlmAdapter } from "../llm/adapter.js";
-import { ModelSession } from "../llm/session.js";
+import { BusinessValidationError, ModelSession } from "../llm/session.js";
 import { ModelRequestError } from "../llm/generate-structured.js";
 import { RunBudgetError } from "../budget/run-budget.js";
+
+/** RangeError koji nosi samo naziv polja (za trag); ponašanje je isto kao RangeError. */
+class TechnicalRangeError extends RangeError {
+  constructor(readonly field: string) {
+    super("Vrednost je van tehničke granice unosa.");
+  }
+}
 
 export type ServiceOptions = {
   config: AppConfig;
@@ -556,8 +563,17 @@ export class TrialMatchService {
         ExtractionSchema,
         (extraction) => {
           if (extraction.profile.provenance)
-            throw new Error("Model ne određuje poreklo.");
-          this.validateTechnicalRanges(extraction.profile);
+            throw new BusinessValidationError("provenance_forbidden");
+          try {
+            this.validateTechnicalRanges(extraction.profile);
+          } catch (error) {
+            if (error instanceof RangeError)
+              throw new BusinessValidationError(
+                "technical_range",
+                error instanceof TechnicalRangeError ? error.field : undefined,
+              );
+            throw error;
+          }
           // A model must not introduce a numeric fact absent from the supplied text.
           const numbers =
             text
@@ -600,7 +616,10 @@ export class TrialMatchService {
                 (value) => value === item.original || value === item.value,
               )
             )
-              throw new Error(`Vrednost nije u unosu: ${item.field}.`);
+              throw new BusinessValidationError(
+                "value_not_in_input",
+                item.field,
+              );
         },
       );
     } catch (error) {
@@ -1088,6 +1107,7 @@ export class TrialMatchService {
 
   private validateTechnicalRanges(profile: Profile): void {
     const measuredRanges: Array<{
+      field: string;
       value:
         | Profile["hba1c"]
         | Profile["creatinine"]
@@ -1100,24 +1120,28 @@ export class TrialMatchService {
       maximum: number;
     }> = [
       {
+        field: "hba1c",
         value: profile.hba1c,
         normalize: normalizeHba1c,
         minimum: 3,
         maximum: 20,
       },
       {
+        field: "creatinine",
         value: profile.creatinine,
         normalize: normalizeCreatinine,
         minimum: 0.1,
         maximum: 20,
       },
       {
+        field: "height",
         value: profile.height,
         normalize: normalizeHeight,
         minimum: 50,
         maximum: 250,
       },
       {
+        field: "weight",
         value: profile.weight,
         normalize: normalizeWeight,
         minimum: 2,
@@ -1131,7 +1155,7 @@ export class TrialMatchService {
         normalized.value < range.minimum ||
         normalized.value > range.maximum
       ) {
-        throw new RangeError("Vrednost je van tehničke granice unosa.");
+        throw new TechnicalRangeError(range.field);
       }
     }
   }
