@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import { parseConfig } from "../config/index.js";
 import type { AdapterResult, LlmAdapter } from "./adapter.js";
+import { ModelRequestError } from "./generate-structured.js";
 import { BusinessValidationError, ModelSession } from "./session.js";
 
 const config = parseConfig({ DEMO_MODE: "true", NODE_ENV: "test" });
@@ -86,5 +87,30 @@ describe("validacija u ModelSession tragu", () => {
       ),
     ).rejects.toThrow();
     expect(session.events[0]?.validationCode).toBe("business_rule");
+  });
+});
+
+describe("errorKind u tragu", () => {
+  it("beleži http_429 pa uspeh", async () => {
+    const session = new ModelSession(Date.now(), config);
+    let calls = 0;
+    const adapter: LlmAdapter = {
+      modelId: "fake",
+      providerId: "fake",
+      generate: async () => {
+        if (++calls === 1) throw new ModelRequestError(429);
+        return {
+          candidate: good,
+          usage: { inputTokens: 1, outputTokens: 1 },
+          finish: "complete",
+        };
+      },
+    };
+    await session.generate(adapter, "extract_profile.v1", {}, schema);
+    expect(session.events[0]).toMatchObject({
+      outcome: "failed",
+      errorKind: "http_429",
+    });
+    expect(session.events[1]?.errorKind).toBeUndefined();
   });
 });

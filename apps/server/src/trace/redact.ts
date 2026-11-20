@@ -6,7 +6,14 @@ import {
 
 const TraceEventSchema = z
   .object({
-    step: z.enum(["model", "tool", "grounding", "retrieval"]),
+    step: z.enum([
+      "model",
+      "tool",
+      "grounding",
+      "retrieval",
+      "guard",
+      "filter",
+    ]),
     attempt: z.number().int().positive().optional(),
     tool: z
       .enum([
@@ -56,6 +63,9 @@ const TraceEventSchema = z
       .regex(/^[a-z_]+$/u)
       .optional(),
     validationField: ProfileFieldSchema.optional(),
+    errorKind: z
+      .enum(["timeout", "http_429", "http_5xx", "http_4xx", "network", "other"])
+      .optional(),
   })
   .strict();
 
