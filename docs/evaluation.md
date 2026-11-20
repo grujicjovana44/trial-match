@@ -174,11 +174,39 @@ Ove izmene ne menjaju ponašanje aplikacije; menjaju samo merenje i trace.
 
 Nijedan slučaj koji je prošao u baseline-u nije pao u završnom runu (`pnpm eval:compare eval/results/baseline eval/results/final`). Svaka verzija je pokrenuta po jednom. Model nije deterministički: u nevažećem runu EV-04 je pao, a u oba važeća prošao. Rezultat 16/16 zato važi za jedno pokretanje i nije statistička procena pouzdanosti. U oba runa provajder je povremeno vraćao grešku (u završnom npr. `http_5xx`); ograničeni ponovni pokušaji su je svaki put prevazišli. U završnom runu objašnjenje za EV-03 nije prošlo proveru uzemljenja, pa je zamenjeno objašnjenjem iz šablona (`grounding: fallback`); to je predviđeno ponašanje, ne pad slučaja.
 
-Poznato ograničenje: posle filtera „bez BMI“ kontekst za objašnjenje još može sadržati odlomak skrivene studije koji se ne odnosi na BMI. U EV-03 grounding događaj navodi `T-C#inc-3`. Matcher presude i prikazane studije to ne menja.
+Ograničenje u završnom runu: posle filtera „bez BMI“ kontekst za objašnjenje još je sadržao odlomak skrivene studije koji se ne odnosi na BMI. U EV-03 grounding događaj navodi `T-C#inc-3`. Matcher presude i prikazane studije to nije menjalo, a objašnjenje se tada nije prikazivalo. Pošto se objašnjenje modela sada prikazuje (vidi „Provera uživo kroz interfejs“), izvori za objašnjenje su posle završnog runa suženi na prikazane studije.
 
 ### Odluka
 
 Izmene za EV-07 i EV-03 se zadržavaju. EV-07 zatvara bezbednosni propust: vrednost šećera više ne može da postane HbA1c bez potvrde korisnika. EV-03 ispunjava zahtev koji je ranije bio samo delimično ostvaren. Ispravka EV-06 se zadržava jer slučaj usklađuje sa opisom projekta.
+
+### Provera uživo kroz interfejs (2026-11-20, posle završnog runa)
+
+Posle završnog runa ceo tok je proveren u pregledaču, sa pravim modelom nad 20 stvarnih studija. Server je radio u live režimu (`demoMode: false`, `retrievalMode: hybrid`, `gemini-3.5-flash-lite`), a interfejs na `http://127.0.0.1:5173`. Proveru je vodio Claude u ugrađenom pregledaču aplikacije Claude, uz odobrenje Alekse Durutovića za plaćene pozive. Ovo je ručna provera, ne EV evaluacija; rezultati nisu sačuvani kao run.
+
+Ispravno su radili:
+
+- glavni tok (unos, 10 studija, citati u originalu, eGFR 62,11, BMI 29,04);
+- „Šta ako je HbA1c 10,5%?“ pod istim `runId`, uz sačuvana ostala polja (NCT07919236 tada ispada zbog svog kriterijuma isključenja HbA1c > 10%);
+- „šećer 8,1“, koji dobija pitanje HbA1c/glukoza bez poziva alata;
+- odbijen zahtev za dijagnozu i lek;
+- `not_in_sources`;
+- instrukcija za zaobilaženje pravila u unosu, koja ne menja tok.
+
+Provera je otkrila šest problema. Nijedan nije bio vidljiv u testovima ni u EV evaluaciji, jer fixture studije nemaju kriterijume isključenja, a EV slučajevi ne proveravaju tekst objašnjenja. Svi su ispravljeni posle commit-a `ed7f762`:
+
+| Nalaz | Posledica | Ispravka |
+|---|---|---|
+| Kriterijum isključenja sa statusom `met` prikazan je kao „Ispunjen“ (npr. „HbA1c >10.0%“ uz HbA1c 8,1%) | Lekar može da pomisli da isključenje važi | Oznake „Ne odnosi se“ / „Odnosi se“ i vrsta kriterijuma (FR-035) |
+| Odgovor „HbA1c 8,1%“ na pitanje HbA1c/glukoza nije prihvaćen; „šećer“ nije prepoznat kao glukoza | Provera ostaje zaglavljena na istom pitanju | Parser odgovora prihvata oznaku polja ispred broja; prepoznavanje glukoze koristi Unicode granice |
+| Objašnjenje modela se nikada nije prikazivalo, iako je poziv plaćen | AI objašnjenje nevidljivo, suprotno odluci i opisu projekta | Prikazuje se kada prođe proveru citata i brojeva; inače šablon; poreklo je navedeno u interfejsu (FR-037) |
+| Provera brojeva je u „NCT06449833“ prepoznavala broj 6449833 | Svako objašnjenje koje pominje studiju bilo je odbačeno | Jedinstven tokenizer brojeva za objašnjenje i izvore |
+| Objašnjenje modela navelo je pogrešan broj ispunjenih kriterijuma, rečima | Netačna tvrdnja u tekstu modela | Prompt `explain_results.v2` zabranjuje navođenje zbirova; zbirove prikazuje kod |
+| Escape iz registra (`\>`), „62 years“ i zbirni red sa nulama pre provere | Slabija čitljivost | Prikaz bez escape-a (FR-036), jedinica „godina“, zbir se skriva dok nema provere |
+
+Posle ispravki, dva uzastopna poziva sa istim profilom dala su objašnjenje modela koje je prošlo proveru (`model_explanation_shown`). Tekst opisuje dva ili tri konkretna kriterijuma sa oznakom studije i ne navodi zbirove.
+
+Uticaj na evaluaciju: završni run (`ed7f762`) prethodi ovim izmenama. EV provere ne obuhvataju tekst objašnjenja ni prikaz u interfejsu. Prompt objašnjenja je promenjen (v1 → v2), a kod koji odlučuje statuse, pitanja i presude nije. Posle izmena prolaze `pnpm eval:offline` (6/6), `pnpm smoke` i svi testovi osim 14 poznatih padova zbog CRLF-a i privremenog direktorijuma na drugom disku. Novi live EV run nije pokrenut.
 
 ### Ponavljanje
 

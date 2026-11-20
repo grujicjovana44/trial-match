@@ -58,7 +58,10 @@ import {
 } from "../llm/mock-adapter.js";
 import { GeminiAdapter } from "../llm/gemini-adapter.js";
 import type { LlmAdapter } from "../llm/adapter.js";
-import { applyGlucoseGuard } from "./glucose-guard.js";
+import { stripAnswerLabel } from "./answer-label.js";
+import { collectAllowedNumbers } from "../grounding/allowed-values.js";
+import { hasOnlyGroundedNumbers } from "../grounding/numeric.js";
+import { applyGlucoseGuard, mentionsGlucose } from "./glucose-guard.js";
 import { BusinessValidationError, ModelSession } from "../llm/session.js";
 import { ModelRequestError } from "../llm/generate-structured.js";
 import { RunBudgetError } from "../budget/run-budget.js";
@@ -874,15 +877,28 @@ export class TrialMatchService {
       );
     const fallback =
       "Ovo je preliminarna provera kriterijuma. Nepoznati i ručno proveravani uslovi zahtevaju procenu lekara.";
-    const allowed = new Map(
-      retrieval.sourceIds.map((id) => [id, retrieval.sourceTexts.get(id)!]),
+    // Posle ograničenja prikaza izvori sakrivenih studija ne smeju do modela ni do provere citata.
+    const shownSourceIds = new Set(
+      shownTrials.flatMap((trial) =>
+        trial.criteria.map((criterion) => criterion.sourceId),
+      ),
     );
-    let supported = false;
+    const belongsToShownTrial = (id: string) =>
+      shownSourceIds.has(id) ||
+      shownTrials.some((trial) => id.startsWith(`${trial.trialId}#`));
+    const allowed = new Map(
+      retrieval.sourceIds
+        .filter((id) => !excludeFields.length || belongsToShownTrial(id))
+        .map((id) => [id, retrieval.sourceTexts.get(id)!]),
+    );
+    let explanationText = fallback;
+    let explanationSource: "model" | "template" = "template";
+    let groundingOutcome = "fallback";
     if (this.adapter.providerId !== "mock") {
       try {
         const explanation = await session.generate(
           this.adapter,
-          "explain_results.v1",
+          "explain_results.v2",
           {
             results: evaluated.map((t) => ({
               trialId: t.trialId,
@@ -893,7 +909,7 @@ export class TrialMatchService {
           },
           ExplanationSchema,
         );
-        supported =
+        const citationsOk =
           explanation.references.length > 0 &&
           explanation.references.every(
             (ref) =>
@@ -904,20 +920,35 @@ export class TrialMatchService {
                 ),
               ) && verifyCitation(ref, allowed),
           );
+        const numbersOk = hasOnlyGroundedNumbers(
+          explanation.text,
+          collectAllowedNumbers({
+            profile,
+            derived,
+            results: evaluated,
+            trials: shownTrials,
+            sourceTexts: allowed.values(),
+          }),
+        );
+        if (!citationsOk) groundingOutcome = "fallback:citations";
+        else if (!numbersOk) groundingOutcome = "fallback:numbers";
+        else {
+          explanationText = explanation.text;
+          explanationSource = "model";
+          groundingOutcome = "model_explanation_shown";
+        }
       } catch {
         // The matcher result is complete; an unverified explanation is optional.
-        session.events.push({
-          step: "grounding",
-          durationMs: 0,
-          outcome: "fallback_after_explanation_error",
-        });
+        groundingOutcome = "fallback_after_explanation_error";
       }
     }
-    // Exact quotes do not establish semantic support: until human review, use the verified status template.
+    // Šablon zamenjuje samo objašnjenje koje ne prođe proveru citata ili brojeva.
+    // Tačni citati i poznati brojevi ne dokazuju semantičku podršku parafraze, pa
+    // objašnjenje ostaje pomoćni tekst: statuse kriterijuma i dalje određuje matcher.
     session.events.push({
       step: "grounding",
       durationMs: 0,
-      outcome: supported ? "semantic_review_required" : "fallback",
+      outcome: groundingOutcome,
       sourceIds: [...allowed.keys()],
     });
     return this.save(
@@ -930,7 +961,8 @@ export class TrialMatchService {
         stage: "completed",
         derived,
         results: evaluated,
-        explanation: fallback,
+        explanation: explanationText,
+        explanationSource,
       },
       retrieval.sourceTexts,
     );
@@ -1087,7 +1119,7 @@ export class TrialMatchService {
       provenance[field] = { origin: "answer", round };
     }
     const clarifiesGlucose =
-      question.field === "hba1c" && /\b(glukoza|šećer)\b/u.test(lower);
+      question.field === "hba1c" && mentionsGlucose(answer);
     const ambiguities = (profile.ambiguities ?? []).filter(
       (item) => item.field !== question.field,
     );
@@ -1109,7 +1141,8 @@ export class TrialMatchService {
     field: ProfileField,
     answer: string,
   ): { value: number; unit: string } | undefined {
-    const match = /^\s*(-?\d+(?:[.,]\d+)?)\s*([^\d\s].*?)?\s*$/u.exec(answer);
+    const stripped = stripAnswerLabel(field, answer);
+    const match = /^\s*(-?\d+(?:[.,]\d+)?)\s*([^\d\s].*?)?\s*$/u.exec(stripped);
     const number = match?.[1] ? parseLocalizedNumber(match[1]) : undefined;
     const rawUnit = match?.[2]?.trim();
     if (number === undefined || !rawUnit) return undefined;

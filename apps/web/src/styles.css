@@ -394,6 +394,7 @@ textarea {
   max-width: 68ch;
 }
 .outcome-detail,
+.explanation-source,
 .system-explanation {
   color: var(--ink-muted);
   font-size: 0.85rem;
@@ -639,6 +640,10 @@ textarea[aria-invalid="true"] {
 }
 .criterion-main p {
   margin: 0;
+}
+.criterion-kind {
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 .status-pill {
   display: inline-flex;
