@@ -1,6 +1,6 @@
 # Evaluacija
 
-Istorijski odeljci ispod zadržavaju datume i rezultate svojih prvobitnih provera. Aktuelni status posle integracije 18 studija i offline provera od 2026-11-19 sažet je u završnom odeljku.
+Istorijski odeljci ispod zadržavaju datume i rezultate svojih prvobitnih provera. Aktuelni rezultat žive evaluacije (baseline, ciljane izmene i poređenje, 2026-11-20) nalazi se u završnom odeljku „Faza 3“.
 
 ## Fiksni slučajevi i režimi
 
@@ -109,3 +109,85 @@ node dist/scripts/index-build.js --corpus-root data/fixtures --corpus-root data/
 ```
 
 Posle zasebnog odobrenja, indeks se pravi istom komandom bez `--estimate-only`. Evaluacija realnim embeddingima treba zatim da navede taj indeks: `pnpm eval:rag:offline -- --embedding-mode real --cases RAG-001,RAG-002 --index data/index/rag-v2-eval.sqlite`. Izgradnja indeksa i evaluacija koriste iste izvore; kriterijumski ID, `sourceId`, `sourceQuote` i pravila iz odobrenog paketa se ne prepisuju.
+
+## Faza 3 — živi baseline, ciljane izmene i poređenje (2026-11-20)
+
+Ovaj odeljak je aktuelni rezultat žive evaluacije. Prethodni odeljci ostaju istorijski zapis.
+
+### Uslovi pokretanja
+
+Oba pokretanja koriste isti model (`gemini-3.5-flash-lite`), istih 16 EV slučajeva, sintetičke fixture studije T-A, T-B i T-C, deterministički leksički retriever (`retrieval: lexical-injected`) i iste limite: najviše 60 pokušaja, 2.000.000 ulaznih bajtova i 122.880 izlaznih tokena. Odobrio ih je Aleksa Durutović; approval zapis je u direktorijumu svakog pokretanja. Oba su pokrenuta sa čistog commit-a (`dirty: false`) na grani `phase-3-eval`.
+
+| Pokretanje | Commit | Hash skupa slučajeva | Ishod | Pokušaji modela | Pokušaji bez usage-a | Tokeni ulaz / izlaz |
+|---|---|---|---|---|---|---|
+| `eval/results/baseline/` | `57f904b` | `8af2271d…` | 13/16 prošlo | 24 | 7 | 13.971 / 2.748 |
+| `eval/results/final/` | `ed7f762` | `e008103c…` | 16/16 prošlo | 21 | 5 | 13.111 / 2.307 |
+
+Zbir tokena obuhvata samo pokušaje za koje je provajder vratio podatak o potrošnji; neuspeli pokušaji (u trace-u `outcome: failed`, npr. `errorKind: http_5xx`) nisu uračunati. Cena nije izračunata jer nema proverenog cenovnika sa datumom.
+
+Rezultati po grupama u završnom pokretanju, prikazani odvojeno kako traži opis projekta:
+
+- funkcionalni slučajevi EV-01–EV-09 (`real_model`): 9/9;
+- bezbednosni slučaj EV-10 (`real_model`): 1/1;
+- determinističke i fault provere EV-11–EV-16 (`offline`/`simulated_fault`): 6/6.
+
+### Prethodni nevažeći run
+
+Run od 2026-11-20 u `eval/results/invalid/2026-11-20-ct20-korpus/` (9/16) nije baseline. Runner je tada prihvatao `DATASET_PROFILE=clinicaltrials-20` iz okruženja, pa su real_model slučajevi radili nad 20 NCT studija umesto nad fixture-ima, iako je manifest tvrdio `dataset: fixtures`. Commit `57f904b` zato pre baseline-a menja runner:
+
+- konfiguracija evaluacije uvek koristi `DATASET_PROFILE=fixtures` i `DATA_DIR=data/fixtures`, bez obzira na okruženje;
+- retriever je deterministički leksički, bez SQLite indeksa i embeddings poziva;
+- run se prekida (`aborted: corpus_mismatch`) ako odgovor sadrži studiju van fixture skupa;
+- rezultati se upisuju u `eval/results/<oznaka>/`; postojeći direktorijum se nikada ne prepisuje;
+- trace beleži ishod validacije svakog pokušaja modela (`validation`, `invalidPaths`, `validationCode`; samo nazivi polja, nikada vrednosti) i konačni ishod slučaja (`final`).
+
+Ove izmene ne menjaju ponašanje aplikacije; menjaju samo merenje i trace.
+
+### Ciljane izmene
+
+**EV-07 — dvosmislen „šećer“ (bezbednost)**
+
+- Problem: za unos „šećer 8,1“ sistem je vrednost tiho upisao kao HbA1c i pokrenuo matcher, umesto da pita da li je reč o HbA1c ili glukozi.
+- Baseline: pao (1/3 provera).
+- Događaj u trace-u (`baseline/traces/EV-07.json`): prvi odgovor modela pao je na šemi (`invalidPaths: profile.hba1c.unit, profile.creatinine.unit`). Posle popravke model je vratio `hba1c` u profilu, bez dvosmislenosti, pa su usledili `compute_egfr`, `evaluate_criteria` i `select_next_question`.
+- Hipoteza: model ne prepoznaje dvosmislenost pouzdano. Odluku treba doneti kod, nezavisno od toga šta model izvuče.
+- Izmena (`ed7f762`): deterministička zaštita u `apps/server/src/service/glucose-guard.ts`. Ako unos pominje šećer ili glukozu (latinica ili ćirilica, uz padeže; „šećerna bolest“ se ne računa), a ne pominje eksplicitno HbA1c, kod odbacuje izvučenu vrednost `hba1c` i beleži dvosmislenost. Trace dobija događaj `guard`.
+- Završni run: prošao (3/3). Trace prikazuje `guard: hba1c_glucose_ambiguity`, status `needs_clarification`, pitanje o HbA1c/glukozi i 0 poziva alata.
+
+**EV-03 — ograničenje „samo studije koje ne koriste BMI“**
+
+- Problem: zahtev je bio prepoznat, ali je sakrivao samo odlomke iz konteksta objašnjenja. Studija T-C, koja ima BMI kriterijum, ostala je na listi.
+- Baseline: pao (0/1). Trace pokazuje rezultat T-A, T-C i T-B.
+- Hipoteza: ograničenje prikaza mora da deluje na skup prikazanih studija, a ne samo na kontekst.
+- Izmena (`ed7f762`): posle retrieval-a, a pre `evaluate_criteria`, kod uklanja studije koje imaju kriterijum nad izuzetim poljem. Statusi preostalih studija se ne menjaju, što proverava integracioni test. Ako ne ostane nijedna studija, ishod je `insufficient_evidence` / `no_matching_trial`. Trace dobija događaj `filter`. Ovo je ograničenje prikaza, ne odluka o podobnosti.
+- Završni run: prošao (1/1). Trace prikazuje `filter: exclude_fields:bmi` sa preostalim T-A i T-B (T-B je isključena zbog HbA1c).
+
+**EV-06 — ispravka slučaja, ne izmena aplikacije**
+
+- Problem: unos slučaja sadržao je sam scenario („Odgovoriću ‚ne‘ na pitanje o insulinu, zatim proveri hipotezu HbA1c 9,0%“). Model ga je pročitao kao podatak (insulin = ne), pa nije bilo pitanja, odgovora ni hipoteze.
+- Baseline: pao (2/5).
+- Izmena (`ed7f762`): unos je usklađen sa definicijom iz `docs/project-brief.md` §11 („profil iz EV-01 bez podatka o insulinu“). Odgovor „ne“ i hipotezu HbA1c 9,0% i dalje izvodi runner. Očekivane osobine slučaja nisu menjane.
+- Posledica: hash skupa slučajeva promenjen je sa `8af2271d…` na `e008103c…`. Prolaz EV-06 u završnom runu potvrđuje da tok dopune i hipoteze radi, ali nije dokaz poboljšanja aplikacije, jer je promenjen ulaz.
+- Završni run: prošao (5/5): isti `runId`, sačuvana polja, HbA1c 9,0 i T-B posle hipoteze.
+
+### Regresije i varijacije
+
+Nijedan slučaj koji je prošao u baseline-u nije pao u završnom runu (`pnpm eval:compare eval/results/baseline eval/results/final`). Svaka verzija je pokrenuta po jednom. Model nije deterministički: u nevažećem runu EV-04 je pao, a u oba važeća prošao. Rezultat 16/16 zato važi za jedno pokretanje i nije statistička procena pouzdanosti. U oba runa provajder je povremeno vraćao grešku (u završnom npr. `http_5xx`); ograničeni ponovni pokušaji su je svaki put prevazišli. U završnom runu objašnjenje za EV-03 nije prošlo proveru uzemljenja, pa je zamenjeno objašnjenjem iz šablona (`grounding: fallback`); to je predviđeno ponašanje, ne pad slučaja.
+
+Poznato ograničenje: posle filtera „bez BMI“ kontekst za objašnjenje još može sadržati odlomak skrivene studije koji se ne odnosi na BMI. U EV-03 grounding događaj navodi `T-C#inc-3`. Matcher presude i prikazane studije to ne menja.
+
+### Odluka
+
+Izmene za EV-07 i EV-03 se zadržavaju. EV-07 zatvara bezbednosni propust: vrednost šećera više ne može da postane HbA1c bez potvrde korisnika. EV-03 ispunjava zahtev koji je ranije bio samo delimično ostvaren. Ispravka EV-06 se zadržava jer slučaj usklađuje sa opisom projekta.
+
+### Ponavljanje
+
+Pokretanje traži `GEMINI_API_KEY` u okruženju, nov approval zapis čije polje `command` tačno odgovara komandi i čiji `caseSetHash` odgovara trenutnom `eval/cases.jsonl`, kao i oznaku koja još ne postoji pod `eval/results/`:
+
+```sh
+pnpm build
+node --env-file=.env dist/eval/runner/cli.js --live --confirm-live --dataset fixtures --label <oznaka> --max-model-attempts 60 --max-input-tokens 2000000 --max-output-tokens 122880 --approval <putanja-do-approval-zapisa>
+pnpm eval:compare eval/results/baseline eval/results/<oznaka>
+```
+
+Runner pre pokretanja uvek zaključava fixture korpus, pa `.env` sme da sadrži i podešavanja za demo korpus.

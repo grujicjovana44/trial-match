@@ -1,0 +1,195 @@
+{
+  "case_id": "EV-10",
+  "run_id": "b7c45166-ccdc-4487-9918-554ab413532e",
+  "status": "passed",
+  "execution_mode": "real_model",
+  "model_id": "gemini-3.5-flash-lite",
+  "data_version": "synthetic-trials-v1",
+  "schema_version": "2.0.0",
+  "prompt_version": "phase2.v1",
+  "commit": "2ed092f1b02b46a781bc50162b632480efb77650",
+  "events": [
+    {
+      "step": "model",
+      "attempt": 1,
+      "durationMs": 1616,
+      "inputTokens": 719,
+      "outputTokens": 192,
+      "outcome": "complete",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45"
+    },
+    {
+      "step": "tool",
+      "tool": "compute_egfr",
+      "durationMs": 0,
+      "outcome": "complete"
+    },
+    {
+      "step": "tool",
+      "tool": "compute_bmi",
+      "durationMs": 0,
+      "outcome": "complete"
+    },
+    {
+      "step": "retrieval",
+      "durationMs": 357,
+      "outcome": "used:cohere",
+      "untranslatedTerms": [],
+      "retrievalMode": "hybrid",
+      "vectorHitCount": 92,
+      "selectedTrialIds": [
+        "NCT07574138",
+        "NCT07919236",
+        "NCT07775846",
+        "NCT06888050",
+        "NCT07409714",
+        "NCT05838287",
+        "NCT06296485",
+        "NCT06875193",
+        "NCT06449833",
+        "NCT07350967"
+      ]
+    },
+    {
+      "step": "tool",
+      "tool": "evaluate_criteria",
+      "durationMs": 6,
+      "outcome": "complete"
+    },
+    {
+      "step": "tool",
+      "tool": "select_next_question",
+      "durationMs": 8,
+      "outcome": "complete"
+    },
+    {
+      "step": "model",
+      "attempt": 2,
+      "durationMs": 1038,
+      "inputTokens": 17613,
+      "outputTokens": 44,
+      "outcome": "complete",
+      "promptVersion": "explain_results.v1",
+      "promptHash": "210b6295f2bc7433d253c432ea18200f25157fd5f64899c812868670e3e00e97"
+    },
+    {
+      "step": "grounding",
+      "durationMs": 0,
+      "outcome": "fallback",
+      "sourceIds": [
+        "NCT06888050#unsplit-1",
+        "NCT07574138#unsplit-1",
+        "NCT07350967#unsplit-1",
+        "NCT06875193#unsplit-1"
+      ]
+    },
+    {
+      "step": "model",
+      "attempt": 1,
+      "durationMs": 652,
+      "outcome": "failed",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45"
+    },
+    {
+      "step": "model",
+      "attempt": 2,
+      "durationMs": 1679,
+      "outcome": "failed",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45"
+    },
+    {
+      "step": "model",
+      "attempt": 3,
+      "durationMs": 1141,
+      "inputTokens": 719,
+      "outputTokens": 192,
+      "outcome": "complete",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45"
+    },
+    {
+      "step": "tool",
+      "tool": "compute_egfr",
+      "durationMs": 0,
+      "outcome": "complete"
+    },
+    {
+      "step": "tool",
+      "tool": "compute_bmi",
+      "durationMs": 0,
+      "outcome": "complete"
+    },
+    {
+      "step": "retrieval",
+      "durationMs": 673,
+      "outcome": "used:cohere",
+      "untranslatedTerms": [],
+      "retrievalMode": "hybrid",
+      "vectorHitCount": 92,
+      "selectedTrialIds": [
+        "NCT07574138",
+        "NCT07919236",
+        "NCT07775846",
+        "NCT06888050",
+        "NCT07409714",
+        "NCT05838287",
+        "NCT06296485",
+        "NCT06875193",
+        "NCT06449833",
+        "NCT07350967"
+      ]
+    },
+    {
+      "step": "tool",
+      "tool": "evaluate_criteria",
+      "durationMs": 5,
+      "outcome": "complete"
+    },
+    {
+      "step": "tool",
+      "tool": "select_next_question",
+      "durationMs": 7,
+      "outcome": "complete"
+    },
+    {
+      "step": "model",
+      "attempt": 4,
+      "durationMs": 740,
+      "outcome": "failed",
+      "promptVersion": "explain_results.v1",
+      "promptHash": "210b6295f2bc7433d253c432ea18200f25157fd5f64899c812868670e3e00e97"
+    },
+    {
+      "step": "model",
+      "attempt": 5,
+      "durationMs": 1734,
+      "outcome": "failed",
+      "promptVersion": "explain_results.v1",
+      "promptHash": "210b6295f2bc7433d253c432ea18200f25157fd5f64899c812868670e3e00e97"
+    },
+    {
+      "step": "model",
+      "attempt": 6,
+      "durationMs": 876,
+      "inputTokens": 17613,
+      "outputTokens": 56,
+      "outcome": "complete",
+      "promptVersion": "explain_results.v1",
+      "promptHash": "210b6295f2bc7433d253c432ea18200f25157fd5f64899c812868670e3e00e97"
+    },
+    {
+      "step": "grounding",
+      "durationMs": 0,
+      "outcome": "fallback",
+      "sourceIds": [
+        "NCT06888050#unsplit-1",
+        "NCT07574138#unsplit-1",
+        "NCT07350967#unsplit-1",
+        "NCT06875193#unsplit-1"
+      ]
+    }
+  ]
+}

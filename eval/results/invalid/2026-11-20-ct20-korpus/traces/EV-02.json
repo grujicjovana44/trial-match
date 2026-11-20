@@ -1,0 +1,63 @@
+{
+  "case_id": "EV-02",
+  "run_id": "49cca924-3d3d-4e42-9f8b-f5be11acc2cb",
+  "status": "failed",
+  "execution_mode": "real_model",
+  "model_id": "gemini-3.5-flash-lite",
+  "data_version": "synthetic-trials-v1",
+  "schema_version": "2.0.0",
+  "prompt_version": "phase2.v1",
+  "commit": "2ed092f1b02b46a781bc50162b632480efb77650",
+  "events": [
+    {
+      "step": "model",
+      "attempt": 1,
+      "durationMs": 1039,
+      "inputTokens": 723,
+      "outputTokens": 100,
+      "outcome": "complete",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45"
+    },
+    {
+      "step": "tool",
+      "tool": "compute_bmi",
+      "durationMs": 0,
+      "outcome": "complete"
+    },
+    {
+      "step": "retrieval",
+      "durationMs": 1968,
+      "outcome": "used:cohere",
+      "untranslatedTerms": [
+        "secerna bolest tip 2"
+      ],
+      "retrievalMode": "hybrid",
+      "vectorHitCount": 53,
+      "selectedTrialIds": [
+        "NCT07574138",
+        "NCT07409714",
+        "NCT07775846",
+        "NCT07919236",
+        "NCT07924436",
+        "NCT06888050",
+        "NCT05838287",
+        "NCT06875193",
+        "NCT07350967",
+        "NCT06449833"
+      ]
+    },
+    {
+      "step": "tool",
+      "tool": "evaluate_criteria",
+      "durationMs": 4,
+      "outcome": "complete"
+    },
+    {
+      "step": "tool",
+      "tool": "select_next_question",
+      "durationMs": 7,
+      "outcome": "complete"
+    }
+  ]
+}
