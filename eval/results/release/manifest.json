@@ -1,0 +1,38 @@
+{
+  "status": "completed",
+  "label": "release",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "dataset": "fixtures",
+  "datasetProfile": "fixtures",
+  "retrieval": "lexical-injected",
+  "caseSetHash": "e008103c557623ea25e095848e5c9c9f1f615ae9ddedbb24bed5ab74b1d57e0d",
+  "caseCount": 16,
+  "commit": "54c00c7cf3cc192aaa1f9513b7030c9af19e944e",
+  "dirty": true,
+  "diffHash": "bd5b06ba3287b98042342a62f369dd8b3e599556b9e851703d56e054604323ed",
+  "startedAt": "2026-11-20T20:49:46.810Z",
+  "approval": {
+    "reviewer": "Aleksa Durutović",
+    "approvedAt": "2026-11-20T20:49:39.332Z",
+    "maxAttempts": 60,
+    "maxInputTokens": 2000000,
+    "maxOutputTokens": 122880,
+    "maxCost": null,
+    "currency": null
+  },
+  "requestedLimits": {
+    "maxAttempts": 60,
+    "maxInputTokens": 2000000,
+    "maxOutputTokens": 122880
+  },
+  "completed": 16,
+  "passed": 16,
+  "failed": 0,
+  "skipped": 0,
+  "attempts": 22,
+  "attemptsWithoutUsage": 5,
+  "inputBytes": 105377,
+  "inputTokens": 14814,
+  "outputTokens": 2488
+}

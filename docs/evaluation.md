@@ -208,7 +208,21 @@ Provera je otkrila šest problema. Nijedan nije bio vidljiv u testovima ni u EV 
 
 Posle ispravki, dva uzastopna poziva sa istim profilom dala su objašnjenje modela koje je prošlo proveru (`model_explanation_shown`). Tekst opisuje dva ili tri konkretna kriterijuma sa oznakom studije i ne navodi zbirove.
 
-Uticaj na evaluaciju: završni run (`ed7f762`) prethodi ovim izmenama. EV provere ne obuhvataju tekst objašnjenja ni prikaz u interfejsu. Prompt objašnjenja je promenjen (v1 → v2), a kod koji odlučuje statuse, pitanja i presude nije. Posle izmena prolaze `pnpm eval:offline` (6/6), `pnpm smoke` i svi testovi osim 14 poznatih padova zbog CRLF-a i privremenog direktorijuma na drugom disku. Novi live EV run nije pokrenut.
+Uticaj na evaluaciju: završni run (`ed7f762`) prethodi ovim izmenama. EV provere ne obuhvataju tekst objašnjenja ni prikaz u interfejsu. Prompt objašnjenja je promenjen (v1 → v2), a kod koji odlučuje statuse, pitanja i presude nije. Posle izmena prolaze `pnpm eval:offline` (6/6), `pnpm smoke` i svi testovi osim 14 poznatih padova zbog CRLF-a i privremenog direktorijuma na drugom disku. Ove izmene pokriva kasniji run `release` (vidi „Provera verzije za isporuku“).
+
+### Provera verzije za isporuku (`release`, 2026-11-20)
+
+Posle ispravki iz provere uživo i usklađivanja sa planom projekta (commit `54c00c7`: prompt `explain_results.v2`, objašnjenje modela uz proveru citata i brojeva iz citiranih odlomaka, filter „bez BMI“ i za izvore objašnjenja, podrazumevani reranker) pokrenut je jedan novi live run nad istim skupom slučajeva. `baseline/` i `final/` nisu menjani.
+
+| Pokretanje | Commit | Hash skupa slučajeva | Ishod | Pokušaji modela | Pokušaji bez usage-a | Tokeni ulaz / izlaz |
+|---|---|---|---|---|---|---|
+| `eval/results/release/` | `54c00c7` | `e008103c…` | 16/16 prošlo | 22 | 5 | 14.814 / 2.488 |
+
+- Po grupama ([`summary.json`](../eval/results/release/summary.json)): funkcionalni EV-01–EV-09 9/9, bezbednosni EV-10 1/1, determinističke i fault provere EV-11–EV-16 6/6. Ovo je prvi run koji piše `summary.json`.
+- `pnpm eval:compare eval/results/final eval/results/release`: nijedan slučaj nije promenio ishod.
+- Objašnjenje modela je prikazano u EV-01, EV-06 (oba poziva) i EV-10 (oba poziva). U EV-03 broj u tekstu modela nije prošao proveru (`fallback:numbers`), pa je prikazan šablon; to je predviđeno ponašanje, ne pad slučaja. EV provere i dalje ne ocenjuju sam tekst objašnjenja.
+- Manifest beleži `dirty: true`. Uzrok su dva nepraćena fajla van koda (`SECURITY_AUDIT.md`, `SECURITY_REMEDIATION.md`); `git diff HEAD` je bio prazan, pa run meri tačno commit `54c00c7`.
+- Model nije deterministički i run je pokrenut jednom; 16/16 nije statistička procena pouzdanosti.
 
 ### Ponavljanje
 
