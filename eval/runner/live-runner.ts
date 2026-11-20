@@ -4,6 +4,13 @@ import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import { z } from "zod";
 import { runOfflineCase } from "./offline-suite.js";
+import {
+  buildLiveSummary,
+  distinctPromptVersions,
+  tracePromptVersion,
+  traceTotals,
+  type CaseRecord,
+} from "./live-summary.js";
 import { liveEvalConfig, liveResultsDir, validateLiveRun } from "./live.js";
 import { TrialMatchService } from "../../apps/server/src/service/trialmatch.js";
 import { GeminiAdapter } from "../../apps/server/src/llm/gemini-adapter.js";
@@ -27,6 +34,7 @@ import {
   type Trial,
 } from "../../packages/shared/src/index.js";
 
+const SCHEMA_VERSION = "2.0.0";
 const json = (value: unknown) => JSON.stringify(value);
 const ids = (response: {
   results: Array<{ trialId: string; verdict: string }>;
@@ -116,6 +124,11 @@ export async function runLive(
     );
   class CorpusMismatchError extends Error {}
   let aborted: "corpus_mismatch" | null = null;
+  const caseRecords: CaseRecord[] = [];
+  const promptVersionsUsed: string[] = [];
+  let modelEvents = 0,
+    toolEvents = 0,
+    modelDurationMs = 0;
   let attempts = 0,
     attemptsWithoutUsage = 0,
     inputBytes = 0,
@@ -486,11 +499,31 @@ export async function runLive(
             ? "gemini-3.5-flash-lite"
             : "offline",
         data_version: item.versions.data,
-        schema_version: "2.0.0",
-        prompt_version: "phase2.v1",
+        schema_version: SCHEMA_VERSION,
+        prompt_version: tracePromptVersion(
+          (events as Array<{ promptVersion?: unknown }>).flatMap((event) =>
+            typeof event === "object" &&
+            event !== null &&
+            typeof event.promptVersion === "string"
+              ? [{ promptVersion: event.promptVersion }]
+              : [],
+          ),
+        ),
         commit,
         events,
         ...(finalSummary ? { final: finalSummary } : {}),
+      });
+      for (const version of distinctPromptVersions(trace.events))
+        if (!promptVersionsUsed.includes(version))
+          promptVersionsUsed.push(version);
+      const totals = traceTotals(trace.events);
+      modelEvents += totals.modelEvents;
+      toolEvents += totals.toolEvents;
+      modelDurationMs += totals.modelDurationMs;
+      caseRecords.push({
+        caseId: item.case_id,
+        status: outcome,
+        executionMode: item.execution_mode,
       });
       await writeFile(
         resolve(tracesDir, `${item.case_id}.json`),
@@ -556,6 +589,40 @@ export async function runLive(
         null,
         2,
       ),
+    );
+    await writeFile(
+      resolve(baseline, "summary.json"),
+      JSON.stringify(
+        buildLiveSummary({
+          label: validated.label,
+          commit,
+          dirty,
+          caseSetHash: validated.caseSetHash,
+          provider: manifest.provider,
+          model: manifest.model,
+          dataVersion: manifestData.version,
+          dataName: manifestData.name,
+          schemaVersion: SCHEMA_VERSION,
+          status:
+            interrupted || completed < validated.cases.length
+              ? "interrupted"
+              : "completed",
+          startedAt: manifest.startedAt,
+          finishedAt: new Date().toISOString(),
+          aborted,
+          limits: {
+            requested: manifest.requestedLimits,
+            approval: manifest.approval,
+          },
+          records: caseRecords,
+          promptVersions: promptVersionsUsed,
+          usage: { attempts, attemptsWithoutUsage, inputTokens, outputTokens },
+          totals: { modelEvents, toolEvents, modelDurationMs },
+        }),
+        null,
+        2,
+      ),
+      { flag: "wx" },
     );
   }
 }

@@ -21,7 +21,8 @@ function flatten(value: unknown): number[] {
 /**
  * Brojevi koje objašnjenje sme da navede: vrednosti profila (kako su date i
  * normalizovane), izvedene vrednosti, posmatrane vrednosti kriterijuma, pragovi
- * pravila i svi brojevi iz dozvoljenih izvornih tekstova.
+ * pravila i brojevi iz izvornih tekstova (`sourceTexts`); pozivalac prosleđuje
+ * samo odlomke koje objašnjenje samo navodi, ne sve dozvoljene izvore.
  */
 export function collectAllowedNumbers(input: {
   profile: Profile;

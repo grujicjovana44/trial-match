@@ -53,6 +53,8 @@ export type RagOfflineOptions = {
   indexPath?: string;
   datasetPath?: string;
   reranker?: "deterministic" | "cohere";
+  /** Izričita potvrda da stvarni (plaćeni) mrežni pozivi smeju da se izvrše. */
+  confirmLive?: boolean;
 };
 
 const DEFAULT_RERANK_TIMEOUT_MS = 2000;
@@ -69,17 +71,22 @@ export function validateRerankerOptions(options: RagOfflineOptions): void {
     throw new Error(
       "--reranker cohere zahteva --embedding-mode real; lažni režim ostaje bez mrežnih poziva.",
     );
+  const embeddingMode = options.embeddingMode ?? "fake";
+  if (options.confirmLive && embeddingMode !== "real")
+    throw new Error(
+      "--confirm-live nema smisla u lažnom embedding režimu; lažni režim ostaje bez mrežnih poziva.",
+    );
+  if (embeddingMode === "real" && !options.confirmLive)
+    throw new Error(
+      "--embedding-mode real (plaćeni OpenAI embeddings, a uz --reranker cohere i Cohere pozivi) zahteva izričito --confirm-live.",
+    );
 }
 
 function rerankTimeoutMs(env: NodeJS.ProcessEnv): number {
   const raw = env.RAG_RERANK_TIMEOUT_MS;
   if (raw === undefined || raw.trim() === "") return DEFAULT_RERANK_TIMEOUT_MS;
   const value = Number(raw);
-  if (
-    !Number.isInteger(value) ||
-    value <= 0 ||
-    value > MAX_RERANK_TIMEOUT_MS
-  )
+  if (!Number.isInteger(value) || value <= 0 || value > MAX_RERANK_TIMEOUT_MS)
     throw new Error(
       `RAG_RERANK_TIMEOUT_MS mora biti pozitivan ceo broj do ${MAX_RERANK_TIMEOUT_MS}.`,
     );
@@ -112,6 +119,12 @@ export function commandOptions(args: string[]): RagOfflineOptions {
   for (let index = 0; index < args.length; index += 1) {
     const [flag, inlineValue] = args[index]!.split("=", 2);
     if (flag === "--" || flag === "--summary") continue;
+    if (flag === "--confirm-live") {
+      if (inlineValue !== undefined)
+        throw new Error("--confirm-live je zastavica bez vrednosti.");
+      options.confirmLive = true;
+      continue;
+    }
     if (flag === "--embedding-mode") {
       const value = inlineValue ?? args[++index];
       if (value !== "fake" && value !== "real")
@@ -222,6 +235,56 @@ async function openParityStore(): Promise<VectorStore> {
   return openSQLiteVectorStore(":memory:");
 }
 
+export type LiveCallEstimate = {
+  confirmed: true;
+  selectedCases: number;
+  totalQueryTexts: number;
+  uncachedQueryTexts: number;
+  maxEmbeddingRequests: number;
+  maxCohereCalls: number;
+};
+
+/**
+ * Gornja granica plaćenih poziva. Keš embeddings-a indeksa se čita pre prvog
+ * mrežnog poziva; upiti koji su u kešu ne troše embedding zahtev. Embedding
+ * zahtev se šalje najviše jednom po slučaju (batch nedostajućih upita), a
+ * keš se popunjava tokom prve varijante, pa kasnije varijante ne šalju nove.
+ */
+export function estimateLiveCalls(
+  cases: ReadonlyArray<{
+    profile: Parameters<typeof buildRetrievalQueries>[0];
+  }>,
+  store: Pick<PersistentVectorStore, "getCachedEmbedding">,
+  embeddingModel: string,
+  useCohere: boolean,
+): LiveCallEstimate {
+  const seenUncached = new Set<string>();
+  let total = 0;
+  let maxEmbeddingRequests = 0;
+  let casesWithQueries = 0;
+  for (const testCase of cases) {
+    const queryTexts = buildRetrievalQueries(testCase.profile)
+      .text.split(";")
+      .map((query) => query.trim())
+      .filter(Boolean);
+    total += queryTexts.length;
+    if (queryTexts.length > 0) casesWithQueries += 1;
+    const missing = queryTexts.filter(
+      (query) => !store.getCachedEmbedding(embeddingModel, hashText(query)),
+    );
+    for (const query of missing) seenUncached.add(query);
+    if (missing.length > 0) maxEmbeddingRequests += 1;
+  }
+  return {
+    confirmed: true,
+    selectedCases: cases.length,
+    totalQueryTexts: total,
+    uncachedQueryTexts: seenUncached.size,
+    maxEmbeddingRequests,
+    maxCohereCalls: useCohere ? casesWithQueries : 0,
+  };
+}
+
 export async function runOfflineRagEvaluation(
   options: RagOfflineOptions = {},
 ): Promise<Record<string, unknown>> {
@@ -232,7 +295,10 @@ export async function runOfflineRagEvaluation(
     rerankerId === "cohere" ? createCohereReranker(process.env) : undefined;
   const dataset = RetrievalDatasetSchema.parse(
     JSON.parse(
-      await readFile(resolve(root, options.datasetPath ?? "eval/rag/retrieval-v2.json"), "utf8"),
+      await readFile(
+        resolve(root, options.datasetPath ?? "eval/rag/retrieval-v2.json"),
+        "utf8",
+      ),
     ),
   );
   const trials: Trial[] = [];
@@ -270,6 +336,7 @@ export async function runOfflineRagEvaluation(
   let memoryStore: InMemoryVectorStore | undefined;
   let parityStore: VectorStore | undefined;
   let indexPath: string | undefined;
+  let liveCalls: LiveCallEstimate | undefined;
   if (embeddingMode === "fake") {
     embedder = new DeterministicHashEmbedder();
     memoryStore = new InMemoryVectorStore();
@@ -309,6 +376,20 @@ export async function runOfflineRagEvaluation(
       vectorStore.close();
       throw error;
     }
+    liveCalls = estimateLiveCalls(
+      selectedCases,
+      vectorStore,
+      embedder.model,
+      rerankerId === "cohere",
+    );
+    console.error(
+      `Procena plaćenih poziva (--confirm-live potvrđen): ${selectedCases.length} slučajeva; ` +
+        `najviše ${liveCalls.maxEmbeddingRequests} embedding zahteva za ${liveCalls.uncachedQueryTexts} jedinstvenih upita koji nisu u kešu indeksa ` +
+        `(od ${liveCalls.totalQueryTexts} ukupno); ` +
+        (rerankerId === "cohere"
+          ? `najviše ${liveCalls.maxCohereCalls} Cohere poziva (jedan po slučaju u hybrid+rerank varijanti).`
+          : "bez Cohere poziva."),
+    );
   }
 
   try {
@@ -520,6 +601,7 @@ export async function runOfflineRagEvaluation(
         dimensions: VECTOR_DIMENSIONS,
         indexPath: indexPath ?? null,
         caseIds: selectedCases.map(({ caseId }) => caseId),
+        liveCalls: liveCalls ?? null,
       },
       reranker: rerankerSummary,
       variants: results,

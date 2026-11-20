@@ -46,4 +46,42 @@ describe("konfiguracija", () => {
       }),
     ).toThrow();
   });
+
+  describe("podrazumevani reranker", () => {
+    const base = { DEMO_MODE: "true" };
+
+    it("bez ključa i bez vrednosti bira disabled", () => {
+      expect(parseConfig(base).RAG_RERANKER).toBe("disabled");
+    });
+
+    it("sa Cohere ključem i bez vrednosti bira cohere", () => {
+      expect(
+        parseConfig({ ...base, COHERE_API_KEY: "test-key" }).RAG_RERANKER,
+      ).toBe("cohere");
+    });
+
+    it("prazan ili razmaknut Cohere ključ važi kao odsutan", () => {
+      for (const blank of ["", "   "]) {
+        const config = parseConfig({ ...base, COHERE_API_KEY: blank });
+        expect(config.RAG_RERANKER).toBe("disabled");
+        expect(config.COHERE_API_KEY).toBeUndefined();
+      }
+    });
+
+    it("eksplicitna vrednost ima prednost nad ključem", () => {
+      for (const value of ["deterministic", "disabled"] as const) {
+        expect(
+          parseConfig({
+            ...base,
+            RAG_RERANKER: value,
+            COHERE_API_KEY: "test-key",
+          }).RAG_RERANKER,
+        ).toBe(value);
+      }
+    });
+
+    it("nevažeća vrednost se odbija", () => {
+      expect(() => parseConfig({ ...base, RAG_RERANKER: "unknown" })).toThrow();
+    });
+  });
 });

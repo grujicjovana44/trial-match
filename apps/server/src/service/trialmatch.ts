@@ -920,6 +920,13 @@ export class TrialMatchService {
                 ),
               ) && verifyCitation(ref, allowed),
           );
+        // Brojevi iz izvora važe samo za odlomke koje objašnjenje samo navodi.
+        const citedSourceTexts = [
+          ...new Set(explanation.references.map((ref) => ref.sourceId)),
+        ].flatMap((id) => {
+          const text = allowed.get(id);
+          return text === undefined ? [] : [text];
+        });
         const numbersOk = hasOnlyGroundedNumbers(
           explanation.text,
           collectAllowedNumbers({
@@ -927,7 +934,7 @@ export class TrialMatchService {
             derived,
             results: evaluated,
             trials: shownTrials,
-            sourceTexts: allowed.values(),
+            sourceTexts: citedSourceTexts,
           }),
         );
         if (!citationsOk) groundingOutcome = "fallback:citations";

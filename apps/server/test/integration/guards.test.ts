@@ -227,6 +227,54 @@ describe("objašnjenje modela", () => {
     );
   });
 
+  type CriterionInput = {
+    results: Array<{
+      criteria: Array<{
+        id: string;
+        sourceId: string;
+        citation: { quote: string };
+      }>;
+    }>;
+  };
+  const referenceWhere = (
+    input: unknown,
+    predicate: (quote: string) => boolean,
+  ) => {
+    const criterion = (input as CriterionInput).results
+      .flatMap((t) => t.criteria)
+      .find((c) => predicate(c.citation.quote))!;
+    return {
+      criterionId: criterion.id,
+      sourceId: criterion.sourceId,
+      quote: criterion.citation.quote,
+    };
+  };
+
+  it("vraća šablon kada se broj nalazi samo u odlomku koji objašnjenje ne navodi", async () => {
+    // "1,73" postoji u eGFR odlomcima, ali ne i u profilu ni u pragovima pravila.
+    const service = await makeService(full, (input) => ({
+      text: "Pacijent ima 62 godine, a eGFR se računa na 1,73 m².",
+      references: [referenceWhere(input, (q) => !q.includes("1,73"))],
+    }));
+    const response = await service.start({ profileText: base });
+    expect(response.explanationSource).toBe("template");
+    expect(groundingOutcome(service, response.runId)).toContain(
+      "fallback:numbers",
+    );
+  });
+
+  it("prikazuje tekst modela kada se broj nalazi u odlomku koji objašnjenje navodi", async () => {
+    const service = await makeService(full, (input) => ({
+      text: "Pacijent ima 62 godine, a eGFR se računa na 1,73 m².",
+      references: [referenceWhere(input, (q) => q.includes("1,73"))],
+    }));
+    const response = await service.start({ profileText: base });
+    expect(response.explanationSource).toBe("model");
+    expect(groundingOutcome(service, response.runId)).toContain(
+      "model_explanation_shown",
+    );
+  });
+
   it("vraća šablon kada je citat neispravan", async () => {
     const service = await makeService(full, (input) => ({
       text: "Kriterijumi su proverani.",
