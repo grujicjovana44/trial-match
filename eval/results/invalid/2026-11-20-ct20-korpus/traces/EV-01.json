@@ -1,0 +1,89 @@
+{
+  "case_id": "EV-01",
+  "run_id": "b563a6c5-c00e-441b-b209-ed49aa25c99b",
+  "status": "failed",
+  "execution_mode": "real_model",
+  "model_id": "gemini-3.5-flash-lite",
+  "data_version": "synthetic-trials-v1",
+  "schema_version": "2.0.0",
+  "prompt_version": "phase2.v1",
+  "commit": "2ed092f1b02b46a781bc50162b632480efb77650",
+  "events": [
+    {
+      "step": "model",
+      "attempt": 1,
+      "durationMs": 1012,
+      "inputTokens": 713,
+      "outputTokens": 90,
+      "outcome": "complete",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45"
+    },
+    {
+      "step": "tool",
+      "tool": "compute_egfr",
+      "durationMs": 1,
+      "outcome": "complete"
+    },
+    {
+      "step": "tool",
+      "tool": "compute_bmi",
+      "durationMs": 1,
+      "outcome": "complete"
+    },
+    {
+      "step": "retrieval",
+      "durationMs": 428,
+      "outcome": "used:cohere",
+      "untranslatedTerms": [],
+      "retrievalMode": "hybrid",
+      "vectorHitCount": 60,
+      "selectedTrialIds": [
+        "NCT07574138",
+        "NCT05838287",
+        "NCT07919236",
+        "NCT07409714",
+        "NCT07775846",
+        "NCT07121504",
+        "NCT06888050",
+        "NCT06875193",
+        "NCT07350967",
+        "NCT06449833"
+      ]
+    },
+    {
+      "step": "tool",
+      "tool": "evaluate_criteria",
+      "durationMs": 10,
+      "outcome": "complete"
+    },
+    {
+      "step": "tool",
+      "tool": "select_next_question",
+      "durationMs": 8,
+      "outcome": "complete"
+    },
+    {
+      "step": "model",
+      "attempt": 2,
+      "durationMs": 1213,
+      "inputTokens": 19486,
+      "outputTokens": 103,
+      "outcome": "complete",
+      "promptVersion": "explain_results.v1",
+      "promptHash": "210b6295f2bc7433d253c432ea18200f25157fd5f64899c812868670e3e00e97"
+    },
+    {
+      "step": "grounding",
+      "durationMs": 0,
+      "outcome": "semantic_review_required",
+      "sourceIds": [
+        "NCT06888050#unsplit-1",
+        "NCT06449833#unsplit-1",
+        "NCT07775846#unsplit-1",
+        "NCT07574138#unsplit-1",
+        "NCT06875193#unsplit-1"
+      ]
+    }
+  ]
+}

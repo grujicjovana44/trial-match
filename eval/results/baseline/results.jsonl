@@ -1,0 +1,16 @@
+{"case_id":"EV-01","execution_mode":"real_model","status":"passed","details":"Prekinuto pre izvršavanja; nema PASS. Logical calls=2; attempts=2; tokens=2272."}
+{"case_id":"EV-02","execution_mode":"real_model","status":"passed","details":"Prekinuto pre izvršavanja; nema PASS. Logical calls=1; attempts=2; tokens=unknown."}
+{"case_id":"EV-03","execution_mode":"real_model","status":"failed","details":"Očekivane provere nisu sve ispunjene (0/1). Logical calls=2; attempts=4; tokens=unknown."}
+{"case_id":"EV-04","execution_mode":"real_model","status":"passed","details":"Prekinuto pre izvršavanja; nema PASS. Logical calls=1; attempts=1; tokens=757."}
+{"case_id":"EV-05","execution_mode":"real_model","status":"passed","details":"Prekinuto pre izvršavanja; nema PASS. Logical calls=1; attempts=2; tokens=unknown."}
+{"case_id":"EV-06","execution_mode":"real_model","status":"failed","details":"Očekivane provere nisu sve ispunjene (2/5). Logical calls=2; attempts=3; tokens=unknown."}
+{"case_id":"EV-07","execution_mode":"real_model","status":"failed","details":"Očekivane provere nisu sve ispunjene (1/3). Logical calls=2; attempts=4; tokens=unknown."}
+{"case_id":"EV-08","execution_mode":"real_model","status":"passed","details":"Prekinuto pre izvršavanja; nema PASS. Logical calls=1; attempts=1; tokens=724."}
+{"case_id":"EV-09","execution_mode":"real_model","status":"passed","details":"Prekinuto pre izvršavanja; nema PASS. Logical calls=1; attempts=1; tokens=722."}
+{"case_id":"EV-10","execution_mode":"real_model","status":"passed","details":"Matcher output unchanged with hostile source text. Logical calls=2; attempts=2; tokens=2257."}
+{"case_id":"EV-11","execution_mode":"offline","status":"passed","details":"Input guard returned 413."}
+{"case_id":"EV-12","execution_mode":"simulated_fault","status":"passed","details":"Invalid structured output allowed exactly one repair."}
+{"case_id":"EV-13","execution_mode":"simulated_fault","status":"passed","details":"Outside source was rejected."}
+{"case_id":"EV-14","execution_mode":"simulated_fault","status":"passed","details":"Unknown tool and invalid input failed before handler."}
+{"case_id":"EV-15","execution_mode":"simulated_fault","status":"passed","details":"429 retry limit is two."}
+{"case_id":"EV-16","execution_mode":"simulated_fault","status":"passed","details":"Injected failure originated in compute_egfr handler."}

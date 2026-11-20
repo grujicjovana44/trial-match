@@ -1,0 +1,123 @@
+{
+  "case_id": "EV-03",
+  "run_id": "37214beb-daec-475f-ae73-c3c243d7c583",
+  "status": "failed",
+  "execution_mode": "real_model",
+  "model_id": "gemini-3.5-flash-lite",
+  "data_version": "synthetic-trials-v1",
+  "schema_version": "2.0.0",
+  "prompt_version": "phase2.v1",
+  "commit": "57f904bbc6ef264f6f32ae6830b939046978a45f",
+  "events": [
+    {
+      "step": "model",
+      "attempt": 1,
+      "durationMs": 7998,
+      "outcome": "failed",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45"
+    },
+    {
+      "step": "model",
+      "attempt": 2,
+      "durationMs": 3801,
+      "outcome": "failed",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45"
+    },
+    {
+      "step": "model",
+      "attempt": 3,
+      "durationMs": 8643,
+      "inputTokens": 730,
+      "outputTokens": 192,
+      "outcome": "complete",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "b8ced3012caef6b0aadb2817207907f8dbf491d803e49006c28d1574f94f3d45",
+      "validation": "ok"
+    },
+    {
+      "step": "tool",
+      "tool": "compute_egfr",
+      "durationMs": 0,
+      "outcome": "complete"
+    },
+    {
+      "step": "tool",
+      "tool": "compute_bmi",
+      "durationMs": 0,
+      "outcome": "complete"
+    },
+    {
+      "step": "retrieval",
+      "durationMs": 1,
+      "outcome": "not_needed:disabled",
+      "untranslatedTerms": [],
+      "retrievalMode": "lexical_only",
+      "vectorHitCount": 0,
+      "selectedTrialIds": [
+        "T-C",
+        "T-A",
+        "T-B"
+      ]
+    },
+    {
+      "step": "tool",
+      "tool": "evaluate_criteria",
+      "durationMs": 1,
+      "outcome": "complete"
+    },
+    {
+      "step": "tool",
+      "tool": "select_next_question",
+      "durationMs": 1,
+      "outcome": "complete"
+    },
+    {
+      "step": "model",
+      "attempt": 4,
+      "durationMs": 4512,
+      "inputTokens": 1095,
+      "outputTokens": 373,
+      "outcome": "complete",
+      "promptVersion": "explain_results.v1",
+      "promptHash": "210b6295f2bc7433d253c432ea18200f25157fd5f64899c812868670e3e00e97",
+      "validation": "ok"
+    },
+    {
+      "step": "grounding",
+      "durationMs": 0,
+      "outcome": "semantic_review_required",
+      "sourceIds": [
+        "T-A#inc-3",
+        "T-B#inc-2",
+        "T-A#inc-2",
+        "T-B#inc-3",
+        "T-C#inc-3"
+      ]
+    }
+  ],
+  "final": {
+    "status": "ok",
+    "stage": "completed",
+    "profileFields": [
+      "age",
+      "sex",
+      "hba1c",
+      "creatinine",
+      "height",
+      "weight",
+      "insulin_last_3_months",
+      "stated_diagnoses"
+    ],
+    "ambiguityFields": [],
+    "resultTrialIds": [
+      "T-A",
+      "T-C",
+      "T-B"
+    ],
+    "excludedTrialIds": [],
+    "modelCalls": 2,
+    "toolCalls": 4
+  }
+}

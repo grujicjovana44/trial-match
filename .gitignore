@@ -14,6 +14,13 @@ Thumbs.db
 .idea/
 eval/results/**
 !eval/results/.gitkeep
+# Dokazi žive evaluacije (Faza 3) su deo repozitorijuma; ostala pokretanja ostaju lokalna.
+!eval/results/baseline/
+!eval/results/baseline/**
+!eval/results/final/
+!eval/results/final/**
+!eval/results/invalid/
+!eval/results/invalid/**
 eval/traces/**
 !eval/traces/.gitkeep
 data/index/
