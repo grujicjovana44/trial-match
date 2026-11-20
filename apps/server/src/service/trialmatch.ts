@@ -58,6 +58,7 @@ import {
 } from "../llm/mock-adapter.js";
 import { GeminiAdapter } from "../llm/gemini-adapter.js";
 import type { LlmAdapter } from "../llm/adapter.js";
+import { applyGlucoseGuard } from "./glucose-guard.js";
 import { BusinessValidationError, ModelSession } from "../llm/session.js";
 import { ModelRequestError } from "../llm/generate-structured.js";
 import { RunBudgetError } from "../budget/run-budget.js";
@@ -374,7 +375,11 @@ export class TrialMatchService {
     if (!trials)
       throw new Error("Validirani skup studija nije učitan pri startu.");
     try {
-      const extraction = await this.extract(text, session);
+      const extraction = this.guardGlucose(
+        text,
+        await this.extract(text, session),
+        session,
+      );
       if (forbidden(extraction))
         return this.save(runId, {}, trials, 0, {
           status: "rejected",
@@ -467,9 +472,15 @@ export class TrialMatchService {
         "Ova radnja nije dostupna u trenutnom stanju provere.",
       );
     try {
+      const hypothesisSession = this.sessions.get(runId)!;
+      const explicitHypothesis = this.parseExplicitHypothesis(text);
       const extraction =
-        this.parseExplicitHypothesis(text) ??
-        (await this.extract(text, this.sessions.get(runId)!));
+        explicitHypothesis ??
+        this.guardGlucose(
+          text,
+          await this.extract(text, hypothesisSession),
+          hypothesisSession,
+        );
       if (forbidden(extraction))
         throw this.badRequest(
           "forbidden_intent",
@@ -549,6 +560,21 @@ export class TrialMatchService {
       "weight",
     );
     return candidates.length === 1 ? candidates[0] : undefined;
+  }
+
+  private guardGlucose(
+    text: string,
+    extraction: Extraction,
+    session: ModelSession,
+  ): Extraction {
+    const guarded = applyGlucoseGuard(text, extraction);
+    if (guarded.triggered)
+      session.events.push({
+        step: "guard",
+        durationMs: 0,
+        outcome: "hba1c_glucose_ambiguity",
+      });
+    return guarded.extraction;
   }
 
   private async extract(
@@ -707,6 +733,12 @@ export class TrialMatchService {
       });
     const retriever = this.retriever;
     if (!retriever) throw new Error("RAG retriever nije inicijalizovan.");
+    const excludeFields =
+      /(?:\bbez\b|\bne\s+(?:koristi|koriste|uključuje|ukljucuje|uključuju|ukljucuju|primenjuje|primenjuju)\b).{0,32}\b(?:bmi|indeks(?:a)?\s+telesne\s+mase)\b/iu.test(
+        inputText,
+      )
+        ? ["bmi"]
+        : [];
     const retrievalStartedAt = this.now();
     const retrieval = await retriever.retrieve(profile, trials, {
       maxCandidates: RAG_MAX_CANDIDATES,
@@ -742,6 +774,35 @@ export class TrialMatchService {
         derived,
         explanation: "Nema odgovarajućih izvora u dostupnom skupu.",
       });
+    // Ograničenje prikaza na zahtev korisnika ("bez BMI"), a ne odluka o podobnosti:
+    // studije sa kriterijumom nad izuzetim poljem se ne prikazuju; statusi ostalih se ne menjaju.
+    const shownTrials = excludeFields.length
+      ? retrieval.trials.filter(
+          (trial) =>
+            !trial.criteria.some(
+              (criterion) =>
+                criterion.field !== undefined &&
+                excludeFields.includes(criterion.field),
+            ),
+        )
+      : retrieval.trials;
+    if (excludeFields.length) {
+      session.events.push({
+        step: "filter",
+        durationMs: 0,
+        outcome: `exclude_fields:${excludeFields.join(",")}`,
+        selectedTrialIds: shownTrials.map((trial) => trial.trialId),
+      });
+      if (shownTrials.length === 0)
+        return this.save(runId, profile, trials, rounds, {
+          status: "insufficient_evidence",
+          stage: "completed",
+          reason: "no_matching_trial",
+          derived,
+          explanation:
+            "Nijedna studija ne zadovoljava traženo ograničenje prikaza.",
+        });
+    }
     const { TrialResultSchema, QuestionSchema } =
       await import("../../../../packages/shared/src/index.js");
     const evaluated = z
@@ -750,7 +811,7 @@ export class TrialMatchService {
       .parse(
         await invoke("evaluate_criteria", {
           profile,
-          trials: retrieval.trials,
+          trials: shownTrials,
           derived,
         }),
       ).results;
@@ -761,7 +822,7 @@ export class TrialMatchService {
     let question = QuestionSchema.nullable().parse(
       await invoke("select_next_question", {
         profile,
-        trials: retrieval.trials,
+        trials: shownTrials,
         results: evaluated,
         derived,
       }),
@@ -771,7 +832,7 @@ export class TrialMatchService {
       question = {
         field: field === "egfr" || field === "bmi" ? "creatinine" : field,
         text: "Navedite jasno vrednost i jedinicu traženog podatka.",
-        trialsResolved: retrieval.trials.map((t) => t.trialId),
+        trialsResolved: shownTrials.map((t) => t.trialId),
       };
     }
     if (question) {

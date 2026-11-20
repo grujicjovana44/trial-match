@@ -452,6 +452,8 @@ export async function runLive(
             outcome = checks.every(Boolean) ? "passed" : "failed";
           if (checks.some((value) => !value))
             details = `Očekivane provere nisu sve ispunjene (${checks.filter(Boolean).length}/${checks.length}).`;
+          else if (checks.length)
+            details = `Sve provere ispunjene (${checks.length}/${checks.length}).`;
           if (!checks.length) outcome = "skipped";
           details += ` Logical calls=${final.meta.modelCalls}; attempts=${final.meta.modelAttempts}; tokens=${final.meta.tokens ?? "unknown"}.`;
           runId = final.runId;

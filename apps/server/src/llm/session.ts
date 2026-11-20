@@ -29,7 +29,20 @@ export type ExecutionEvent = {
   invalidPaths?: string[];
   validationCode?: string;
   validationField?: string;
+  errorKind?:
+    "timeout" | "http_429" | "http_5xx" | "http_4xx" | "network" | "other";
 };
+
+function errorKindOf(error: unknown): NonNullable<ExecutionEvent["errorKind"]> {
+  if (!(error instanceof ModelRequestError)) return "other";
+  if (error.timedOut) return "timeout";
+  const code = error.statusCode;
+  if (code === undefined) return "network";
+  if (code === 429) return "http_429";
+  if (code >= 500 && code <= 599) return "http_5xx";
+  if (code >= 400 && code <= 499) return "http_4xx";
+  return "other";
+}
 
 /** Poslovna greška validacije: nosi samo šifru i naziv polja, nikada vrednosti. */
 export class BusinessValidationError extends Error {
@@ -137,6 +150,7 @@ export class ModelSession {
           break;
         } catch (error) {
           event.outcome = "failed";
+          event.errorKind = errorKindOf(error);
           this.tokens = null;
           const retryable =
             error instanceof ModelRequestError &&
