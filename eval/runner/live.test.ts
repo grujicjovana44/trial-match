@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { liveEvalConfig, liveResultsDir } from "./live.js";
+import { liveEvalConfig, liveResultsDir, parseCaseDelayMs } from "./live.js";
 import {
   buildLiveSummary,
   distinctPromptVersions,
@@ -136,5 +136,22 @@ describe("sažetak živog izvođenja", () => {
       toolCalls: 1,
     });
     expect(summary).not.toHaveProperty("accuracy");
+  });
+});
+
+describe("parseCaseDelayMs", () => {
+  it("bez opcije ne pravi pauzu, kao raniji runovi", () => {
+    expect(parseCaseDelayMs(undefined)).toBe(0);
+  });
+
+  it("prihvata cele milisekunde do 60000", () => {
+    expect(parseCaseDelayMs("0")).toBe(0);
+    expect(parseCaseDelayMs("4000")).toBe(4000);
+    expect(parseCaseDelayMs("60000")).toBe(60000);
+  });
+
+  it("odbija negativne, decimalne, prevelike i nenumeričke vrednosti", () => {
+    for (const value of ["-1", "1.5", "60001", "abc", "", "true"])
+      expect(() => parseCaseDelayMs(value)).toThrow("--case-delay-ms");
   });
 });

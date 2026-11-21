@@ -108,6 +108,7 @@ export async function runLive(
       maxAttempts: validated.maxAttempts,
       maxInputTokens: validated.maxInputTokens,
       maxOutputTokens: validated.maxOutputTokens,
+      caseDelayMs: validated.caseDelayMs,
     },
   };
   await writeFile(manifestPath, JSON.stringify(manifest, null, 2), {
@@ -147,7 +148,25 @@ export async function runLive(
   process.once("SIGINT", abort);
   process.once("SIGTERM", abort);
   try {
+    let realModelCasesStarted = 0;
     for (const item of validated.cases) {
+      if (interrupted) break;
+      if (
+        item.execution_mode === "real_model" &&
+        realModelCasesStarted++ > 0 &&
+        validated.caseDelayMs > 0
+      )
+        await new Promise<void>((resolveDelay) => {
+          const timer = setTimeout(resolveDelay, validated.caseDelayMs);
+          interruptController.signal.addEventListener(
+            "abort",
+            () => {
+              clearTimeout(timer);
+              resolveDelay();
+            },
+            { once: true },
+          );
+        });
       if (interrupted) break;
       let outcome: "passed" | "failed" | "skipped" = "skipped";
       let details = "Prekinuto pre izvršavanja; nema PASS.";

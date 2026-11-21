@@ -49,6 +49,18 @@ export function liveResultsDir(label: string): string {
   return resolve("eval/results", label);
 }
 
+/**
+ * Pauza između uzastopnih real_model slučajeva, u milisekundama. Podrazumevano
+ * 0 (ponašanje ranijih runova). Služi da run ostane ispod minutnog limita
+ * provajdera; ne menja ulaze, aplikaciju ni ocenjivanje.
+ */
+export function parseCaseDelayMs(value: string | undefined): number {
+  if (value === undefined) return 0;
+  if (!/^\d{1,5}$/.test(value) || Number(value) > 60_000)
+    throw new Error("--case-delay-ms mora biti ceo broj od 0 do 60000.");
+  return Number(value);
+}
+
 export async function validateLiveRun(
   args: string[],
   env: NodeJS.ProcessEnv = process.env,
@@ -62,6 +74,7 @@ export async function validateLiveRun(
     "--max-input-tokens",
     "--max-output-tokens",
     "--approval",
+    "--case-delay-ms",
   ]);
   for (let i = 0; i < args.length; i++) {
     const key = args[i]!;
@@ -88,6 +101,7 @@ export async function validateLiveRun(
   for (const flag of limits)
     if (!/^[1-9]\d*$/.test(values.get(flag) ?? ""))
       throw new Error(`Nedostaje validno ograničenje ${flag}.`);
+  const caseDelayMs = parseCaseDelayMs(values.get("--case-delay-ms"));
   const approvalPath = values.get("--approval");
   if (!approvalPath) throw new Error("Nedostaje approval fajl.");
   const config = liveEvalConfig(env);
@@ -129,5 +143,6 @@ export async function validateLiveRun(
     maxAttempts: Number(values.get(limits[0])),
     maxInputTokens: Number(values.get(limits[1])),
     maxOutputTokens: Number(values.get(limits[2])),
+    caseDelayMs,
   };
 }
