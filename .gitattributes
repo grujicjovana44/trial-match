@@ -1,0 +1,11 @@
+# Tekstualni fajlovi se u radnom stablu drže sa LF krajevima redova i na Windows-u.
+# Testovi i manifesti porede SHA-256 hash izvornih paketa (npr. T323), pa CRLF
+# checkout menja hash iako je sadržaj isti.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.sqlite binary
+
+# Ljudski pregledan CSV ostaje bajt-identičan originalu (mešoviti krajevi redova).
+data/review_candidates/**/*.csv -text
