@@ -137,6 +137,11 @@ test("LIVE: profil → dopuna → rezultat sa citatom → „Šta ako?“ u isto
   expect(health.demoMode).toBe(false);
 
   await page.goto("/");
+  // Samo za snimke cele stranice: `content-visibility: auto` ostavlja kartice
+  // van ekrana neiscrtane, iako ih korisnik vidi pri skrolovanju.
+  await page.addStyleTag({
+    content: ".trial-card { content-visibility: visible !important; }",
+  });
   await page.getByLabel("Opišite profil").fill(PROFILE);
   await shot("01-unos.png");
 
