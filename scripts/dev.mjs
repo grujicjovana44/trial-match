@@ -1,5 +1,13 @@
 import { spawn, spawnSync } from "node:child_process";
 
+// --live pokreće stvarni Gemini model (DEMO_MODE=false). Ključ se čita iz
+// serverskog okruženja; `pnpm demo:live` ga učitava iz lokalnog .env fajla.
+const live = process.argv.includes("--live");
+if (live)
+  console.log(
+    "LIVE režim: pozivi stvarnom modelu se naplaćuju. Koristite samo sintetičke profile.",
+  );
+
 const build = spawnSync("pnpm", ["build"], { stdio: "inherit", shell: false });
 if (build.error) throw build.error;
 if (build.status !== 0) process.exit(build.status ?? 1);
@@ -8,7 +16,7 @@ const server = spawn(process.execPath, ["dist/apps/server/src/index.js"], {
   stdio: "inherit",
   env: {
     ...process.env,
-    DEMO_MODE: process.env.DEMO_MODE ?? "true",
+    DEMO_MODE: live ? "false" : (process.env.DEMO_MODE ?? "true"),
     DATASET_PROFILE: process.argv.includes("--clinicaltrials-20")
       ? "clinicaltrials-20"
       : "fixtures",

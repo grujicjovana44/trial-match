@@ -499,6 +499,18 @@ description: "Zadaci za funkcionalnost 002: korisnički tok i interfejs TrialMat
 
 ---
 
+## Faza 14: Završna predaja — živi prolaz kroz interfejs i demo (P1)
+
+**Cilj**: odgovor na Capstone feedback od 2026-11-20 (CAP-02, CAP-03, CAP-04, CAP-07): ponovljiv glavni tok kroz web sa stvarnim modelom i demo scenario koji ga koristi.
+
+- [ ] T254 [US2] Opt-in živi UI prolaz i komanda za pokretanje u LIVE režimu
+  - **Datoteke**: `apps/web/e2e-live/live-user-flow.spec.ts`, `playwright.live.config.ts`, `scripts/e2e-live-webserver.mjs`, `scripts/e2e-live-global-teardown.mjs`, `scripts/dev.mjs`, `package.json`.
+  - **Izmena**: `pnpm demo:live` učitava lokalni `.env` i pokreće aplikaciju sa `DEMO_MODE=false` nad `clinicaltrials-20`. `pnpm test:e2e:live` radi samo uz `TRIALMATCH_LIVE_E2E=confirm`; nije deo `pnpm test`, `test:e2e:phase2` ni CI-ja. Scenario: sintetički profil bez podatka o insulinu → dopunsko pitanje → odgovor → rezultat sa citatom i linkom ka registru → „Šta ako?“ u istom `runId`. Snimci ekrana i `run.json` (commit, režim, korpus, koraci API odgovora, primer citata) upisuju se u `eval/results/ui-live/<oznaka>/`; postojeći direktorijum se ne prepisuje.
+  - **Test**: bez potvrde konfiguracija odbija pokretanje; `playwright test --list` za glavni skup ne vidi živi scenario.
+
+- [ ] T255 [US8] Demo scenario za 25. novembar: živi uspešan prolaz, slučaj sa dopunom ili nedovoljno dokaza i kontrolisana greška, uz mock kao rezervu
+  - **Datoteke**: `docs/demo-script.md`.
+
 ## Zavisnosti i redosled
 
 - **Faza 1** nema zavisnosti. **Faza 2** blokira sve priče; unutar nje: T205 → T206, T207; T202 → T208 → T209, T210; T202 → T211 → T212, T213; T209 + T210 → T214.
@@ -548,4 +560,5 @@ Zahtevi koji ne blokiraju nijedan zadatak, ali menjaju ponašanje kada stignu: R
 | 11 Priča 8 | T243–T244 | 2 | 1 |
 | 12 Dorada | T245–T249 | 5 | 0 |
 | 13 Priča 9 | T250–T253 | 4 | 0 |
-| **Ukupno** | T201–T253 | **53** | **2** |
+| 14 Završna predaja | T254–T255 | 2 | 0 |
+| **Ukupno** | T201–T255 | **55** | **2** |
