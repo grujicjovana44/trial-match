@@ -134,7 +134,6 @@ test("LIVE: profil → dopuna → rezultat sa citatom → „Šta ako?“ u isto
   expect(health.demoMode).toBe(false);
 
   await page.goto("/");
-  await expect(page.locator(".mode-badge.mode-live")).toBeVisible();
   await page.getByLabel("Opišite profil").fill(PROFILE);
   await shot("01-unos.png");
 
@@ -150,6 +149,8 @@ test("LIVE: profil → dopuna → rezultat sa citatom → „Šta ako?“ u isto
   const runId = first.body.runId;
   const question = first.body.question;
   if (question === null) throw new Error("Očekivano je dopunsko pitanje.");
+  // Oznaka režima dolazi iz meta podataka odgovora, pa se proverava posle prvog zahteva.
+  await expect(page.locator(".mode-badge.mode-live")).toBeVisible();
   await expect(page.locator("form.follow-up")).toBeVisible();
   await expect(page.locator("form.follow-up label")).toHaveText(question.text);
   await shot("02-dopuna.png");
