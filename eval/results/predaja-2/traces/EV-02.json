@@ -1,0 +1,80 @@
+{
+  "case_id": "EV-02",
+  "run_id": "6c3bd386-6599-47e8-bb7a-6de37e2c8d1f",
+  "status": "passed",
+  "execution_mode": "real_model",
+  "model_id": "gemini-3.5-flash-lite",
+  "data_version": "synthetic-trials-v1",
+  "schema_version": "2.0.0",
+  "prompt_version": "extract_profile.v1",
+  "commit": "2a4e71d75fb1d207cb57ecf4615dd05475e1a852",
+  "events": [
+    {
+      "step": "model",
+      "attempt": 1,
+      "durationMs": 1031,
+      "inputTokens": 691,
+      "outputTokens": 186,
+      "outcome": "complete",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "e47cf7b291636ee309f67bf9c3866ad4788ad62c037d8653e38766d24daceb37",
+      "validation": "ok"
+    },
+    {
+      "step": "tool",
+      "tool": "compute_bmi",
+      "durationMs": 0,
+      "outcome": "complete"
+    },
+    {
+      "step": "retrieval",
+      "durationMs": 4,
+      "outcome": "not_needed:disabled",
+      "untranslatedTerms": [
+        "secerna bolest tip 2"
+      ],
+      "retrievalMode": "lexical_only",
+      "vectorHitCount": 0,
+      "selectedTrialIds": [
+        "T-C",
+        "T-A",
+        "T-B"
+      ]
+    },
+    {
+      "step": "tool",
+      "tool": "evaluate_criteria",
+      "durationMs": 1,
+      "outcome": "complete"
+    },
+    {
+      "step": "tool",
+      "tool": "select_next_question",
+      "durationMs": 3,
+      "outcome": "complete"
+    }
+  ],
+  "final": {
+    "status": "needs_clarification",
+    "stage": "awaiting_input",
+    "questionField": "sex",
+    "profileFields": [
+      "age",
+      "hba1c",
+      "creatinine",
+      "height",
+      "weight",
+      "insulin_last_3_months",
+      "stated_diagnoses"
+    ],
+    "ambiguityFields": [],
+    "resultTrialIds": [
+      "T-C",
+      "T-A",
+      "T-B"
+    ],
+    "excludedTrialIds": [],
+    "modelCalls": 1,
+    "toolCalls": 3
+  }
+}

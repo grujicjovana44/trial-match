@@ -1,0 +1,321 @@
+{
+  "label": "predaja-ui-3",
+  "kind": "ui_live_user_flow",
+  "startedAt": "2026-11-21T23:11:29.492Z",
+  "finishedAt": "2026-11-21T23:11:38.710Z",
+  "commit": "2a4e71d75fb1d207cb57ecf4615dd05475e1a852",
+  "dirty": false,
+  "dirtyFiles": [],
+  "mode": "live",
+  "dataset": "clinicaltrials-20",
+  "note": "Sintetički profil; stvarni Gemini model kroz web interfejs i serverski API.",
+  "health": {
+    "demoMode": false,
+    "retrievalMode": "hybrid",
+    "providerId": "gemini",
+    "modelId": "gemini-3.5-flash-lite"
+  },
+  "input": {
+    "profile": "Muškarac, 62 godine, dijabetes tip 2, HbA1c 8,1%, kreatinin 1,3 mg/dL, visina 178 cm.",
+    "answer": "92 kg",
+    "hypothesis": "Šta ako je HbA1c 10,5%?"
+  },
+  "runId": "ce804a22-6bfc-43a9-9b7c-a6c3e04c3ea8",
+  "steps": [
+    {
+      "step": "initial",
+      "endpoint": "/api/runs",
+      "httpStatus": 200,
+      "runId": "ce804a22-6bfc-43a9-9b7c-a6c3e04c3ea8",
+      "status": "needs_clarification",
+      "stage": "awaiting_input",
+      "reason": null,
+      "question": {
+        "field": "weight",
+        "text": "Koja je težina osobe i u kojoj jedinici?",
+        "options": []
+      },
+      "results": [
+        {
+          "trialId": "NCT07919236",
+          "verdict": "pending",
+          "criteria": 19,
+          "unknown": 17
+        },
+        {
+          "trialId": "NCT07121504",
+          "verdict": "pending",
+          "criteria": 18,
+          "unknown": 17
+        },
+        {
+          "trialId": "NCT05838287",
+          "verdict": "pending",
+          "criteria": 21,
+          "unknown": 20
+        },
+        {
+          "trialId": "NCT06449833",
+          "verdict": "pending",
+          "criteria": 16,
+          "unknown": 16
+        },
+        {
+          "trialId": "NCT06875193",
+          "verdict": "pending",
+          "criteria": 29,
+          "unknown": 29
+        },
+        {
+          "trialId": "NCT06888050",
+          "verdict": "pending",
+          "criteria": 16,
+          "unknown": 16
+        },
+        {
+          "trialId": "NCT07574138",
+          "verdict": "pending",
+          "criteria": 13,
+          "unknown": 13
+        },
+        {
+          "trialId": "NCT07775846",
+          "verdict": "pending",
+          "criteria": 25,
+          "unknown": 25
+        },
+        {
+          "trialId": "NCT07409714",
+          "verdict": "excluded",
+          "criteria": 21,
+          "unknown": 18
+        },
+        {
+          "trialId": "NCT06296485",
+          "verdict": "excluded",
+          "criteria": 14,
+          "unknown": 13
+        }
+      ],
+      "excludedTrials": [],
+      "explanationSource": null,
+      "error": null,
+      "meta": {
+        "providerId": "gemini",
+        "modelId": "gemini-3.5-flash-lite",
+        "demoMode": false,
+        "retrievalMode": "hybrid",
+        "retrievalFallbackReason": null,
+        "dataOrigin": "Dve ranije hash-pinned studije i 18 pojedinačnih ClinicalTrials.gov API v2 zapisa; izvori i hash-evi su u data/raw/studies_20_api_provenance_2026-11-16.json.",
+        "dataVersion": "ctg-t2d-20-4267a13d156a",
+        "dataSnapshotDate": null,
+        "promptVersion": "phase2.v1",
+        "schemaVersion": "2.0.0",
+        "modelAttempts": 1,
+        "modelCalls": 1,
+        "toolCalls": 3,
+        "tokens": 754,
+        "durationMs": 1380
+      }
+    },
+    {
+      "step": "answer",
+      "endpoint": "/api/runs/<runId>/answer",
+      "httpStatus": 200,
+      "runId": "ce804a22-6bfc-43a9-9b7c-a6c3e04c3ea8",
+      "status": "ok",
+      "stage": "completed",
+      "reason": null,
+      "question": null,
+      "results": [
+        {
+          "trialId": "NCT07919236",
+          "verdict": "pending",
+          "criteria": 19,
+          "unknown": 16
+        },
+        {
+          "trialId": "NCT05838287",
+          "verdict": "pending",
+          "criteria": 21,
+          "unknown": 20
+        },
+        {
+          "trialId": "NCT07775846",
+          "verdict": "pending",
+          "criteria": 25,
+          "unknown": 24
+        },
+        {
+          "trialId": "NCT06449833",
+          "verdict": "pending",
+          "criteria": 16,
+          "unknown": 16
+        },
+        {
+          "trialId": "NCT06875193",
+          "verdict": "pending",
+          "criteria": 29,
+          "unknown": 29
+        },
+        {
+          "trialId": "NCT06888050",
+          "verdict": "pending",
+          "criteria": 16,
+          "unknown": 16
+        },
+        {
+          "trialId": "NCT07350967",
+          "verdict": "pending",
+          "criteria": 23,
+          "unknown": 23
+        },
+        {
+          "trialId": "NCT07574138",
+          "verdict": "pending",
+          "criteria": 13,
+          "unknown": 13
+        },
+        {
+          "trialId": "NCT07409714",
+          "verdict": "excluded",
+          "criteria": 21,
+          "unknown": 17
+        },
+        {
+          "trialId": "NCT06296485",
+          "verdict": "excluded",
+          "criteria": 14,
+          "unknown": 13
+        }
+      ],
+      "excludedTrials": [],
+      "explanationSource": "model",
+      "error": null,
+      "meta": {
+        "providerId": "gemini",
+        "modelId": "gemini-3.5-flash-lite",
+        "demoMode": false,
+        "retrievalMode": "hybrid",
+        "retrievalFallbackReason": null,
+        "dataOrigin": "Dve ranije hash-pinned studije i 18 pojedinačnih ClinicalTrials.gov API v2 zapisa; izvori i hash-evi su u data/raw/studies_20_api_provenance_2026-11-16.json.",
+        "dataVersion": "ctg-t2d-20-4267a13d156a",
+        "dataSnapshotDate": null,
+        "promptVersion": "phase2.v1",
+        "schemaVersion": "2.0.0",
+        "modelAttempts": 2,
+        "modelCalls": 2,
+        "toolCalls": 6,
+        "tokens": 18629,
+        "durationMs": 4341
+      }
+    },
+    {
+      "step": "hypothesis",
+      "endpoint": "/api/runs/<runId>/hypothesis",
+      "httpStatus": 200,
+      "runId": "ce804a22-6bfc-43a9-9b7c-a6c3e04c3ea8",
+      "status": "ok",
+      "stage": "completed",
+      "reason": null,
+      "question": null,
+      "results": [
+        {
+          "trialId": "NCT05838287",
+          "verdict": "pending",
+          "criteria": 21,
+          "unknown": 20
+        },
+        {
+          "trialId": "NCT07775846",
+          "verdict": "pending",
+          "criteria": 25,
+          "unknown": 24
+        },
+        {
+          "trialId": "NCT06449833",
+          "verdict": "pending",
+          "criteria": 16,
+          "unknown": 16
+        },
+        {
+          "trialId": "NCT06875193",
+          "verdict": "pending",
+          "criteria": 29,
+          "unknown": 29
+        },
+        {
+          "trialId": "NCT06888050",
+          "verdict": "pending",
+          "criteria": 16,
+          "unknown": 16
+        },
+        {
+          "trialId": "NCT07350967",
+          "verdict": "pending",
+          "criteria": 23,
+          "unknown": 23
+        },
+        {
+          "trialId": "NCT07574138",
+          "verdict": "pending",
+          "criteria": 13,
+          "unknown": 13
+        },
+        {
+          "trialId": "NCT07409714",
+          "verdict": "excluded",
+          "criteria": 21,
+          "unknown": 17
+        },
+        {
+          "trialId": "NCT07919236",
+          "verdict": "excluded",
+          "criteria": 19,
+          "unknown": 16
+        },
+        {
+          "trialId": "NCT06296485",
+          "verdict": "excluded",
+          "criteria": 14,
+          "unknown": 13
+        }
+      ],
+      "excludedTrials": [],
+      "explanationSource": "model",
+      "error": null,
+      "meta": {
+        "providerId": "gemini",
+        "modelId": "gemini-3.5-flash-lite",
+        "demoMode": false,
+        "retrievalMode": "hybrid",
+        "retrievalFallbackReason": null,
+        "dataOrigin": "Dve ranije hash-pinned studije i 18 pojedinačnih ClinicalTrials.gov API v2 zapisa; izvori i hash-evi su u data/raw/studies_20_api_provenance_2026-11-16.json.",
+        "dataVersion": "ctg-t2d-20-4267a13d156a",
+        "dataSnapshotDate": null,
+        "promptVersion": "phase2.v1",
+        "schemaVersion": "2.0.0",
+        "modelAttempts": 3,
+        "modelCalls": 3,
+        "toolCalls": 8,
+        "tokens": 36644,
+        "durationMs": 7349
+      }
+    }
+  ],
+  "sampleCitation": {
+    "trialId": "NCT07919236",
+    "criterionId": "NCT07919236#inc-3",
+    "status": "met",
+    "sourceId": "NCT07919236#unsplit-1",
+    "quote": "* Body mass index ≥25 kg/m2",
+    "registryUrl": "https://clinicaltrials.gov/study/NCT07919236"
+  },
+  "screenshots": [
+    "01-unos.png",
+    "02-dopuna.png",
+    "03-rezultat.png",
+    "04-citat-i-izvor.png",
+    "05-sta-ako.png"
+  ]
+}

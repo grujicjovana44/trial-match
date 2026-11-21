@@ -1,0 +1,38 @@
+{
+  "status": "completed",
+  "label": "predaja-2",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "dataset": "fixtures",
+  "datasetProfile": "fixtures",
+  "retrieval": "lexical-injected",
+  "caseSetHash": "e008103c557623ea25e095848e5c9c9f1f615ae9ddedbb24bed5ab74b1d57e0d",
+  "caseCount": 16,
+  "commit": "2a4e71d75fb1d207cb57ecf4615dd05475e1a852",
+  "dirty": true,
+  "diffHash": "1f368987bf3746154e4a9f0f6d2e85cfcfed7e11951635717b1c41738437bec7",
+  "startedAt": "2026-11-21T23:11:52.817Z",
+  "approval": {
+    "reviewer": "Aleksa Durutović",
+    "approvedAt": "2026-11-21T23:11:51.544Z",
+    "maxAttempts": 60,
+    "maxInputTokens": 2000000,
+    "maxOutputTokens": 122880,
+    "maxCost": null,
+    "currency": null
+  },
+  "requestedLimits": {
+    "maxAttempts": 60,
+    "maxInputTokens": 2000000,
+    "maxOutputTokens": 122880
+  },
+  "completed": 16,
+  "passed": 15,
+  "failed": 1,
+  "skipped": 0,
+  "attempts": 20,
+  "attemptsWithoutUsage": 4,
+  "inputBytes": 96673,
+  "inputTokens": 13165,
+  "outputTokens": 2606
+}

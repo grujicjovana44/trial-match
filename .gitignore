@@ -37,8 +37,8 @@ eval/traces/**
 data/index/
 docs/project-brief.md
 # Dokazi za završnu predaju (2026-11-22): live EV run i živi UI prolaz.
-!eval/results/predaja/
-!eval/results/predaja/**
+!eval/results/predaja*/
+!eval/results/predaja*/**
 !eval/results/ui-live/
 !eval/results/ui-live/**
 !eval/results/approvals/

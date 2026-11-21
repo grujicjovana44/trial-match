@@ -1,0 +1,75 @@
+{
+  "case_id": "EV-05",
+  "run_id": "10347ef9-1c71-4f47-bd4e-4653698e8a56",
+  "status": "passed",
+  "execution_mode": "real_model",
+  "model_id": "gemini-3.5-flash-lite",
+  "data_version": "synthetic-trials-v1",
+  "schema_version": "2.0.0",
+  "prompt_version": "extract_profile.v1",
+  "commit": "46dd5d5ec87880a44e37f1cc5ae78612606a6907",
+  "events": [
+    {
+      "step": "model",
+      "attempt": 1,
+      "durationMs": 720,
+      "inputTokens": 663,
+      "outputTokens": 51,
+      "outcome": "complete",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "e47cf7b291636ee309f67bf9c3866ad4788ad62c037d8653e38766d24daceb37",
+      "validation": "ok"
+    },
+    {
+      "step": "tool",
+      "tool": "compute_egfr",
+      "durationMs": 0,
+      "outcome": "complete"
+    },
+    {
+      "step": "retrieval",
+      "durationMs": 1,
+      "outcome": "not_needed:disabled",
+      "untranslatedTerms": [],
+      "retrievalMode": "lexical_only",
+      "vectorHitCount": 0,
+      "selectedTrialIds": [
+        "T-A",
+        "T-B",
+        "T-C"
+      ]
+    },
+    {
+      "step": "tool",
+      "tool": "evaluate_criteria",
+      "durationMs": 0,
+      "outcome": "complete"
+    },
+    {
+      "step": "tool",
+      "tool": "select_next_question",
+      "durationMs": 1,
+      "outcome": "complete"
+    }
+  ],
+  "final": {
+    "status": "insufficient_evidence",
+    "stage": "completed",
+    "reason": "no_matching_trial",
+    "profileFields": [
+      "age",
+      "sex",
+      "hba1c",
+      "creatinine"
+    ],
+    "ambiguityFields": [],
+    "resultTrialIds": [],
+    "excludedTrialIds": [
+      "T-B",
+      "T-A",
+      "T-C"
+    ],
+    "modelCalls": 1,
+    "toolCalls": 3
+  }
+}

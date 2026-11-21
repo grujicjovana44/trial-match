@@ -1,0 +1,161 @@
+{
+  "case_id": "EV-10",
+  "run_id": "dc37c609-1f02-4b46-801e-38261cc05d86",
+  "status": "failed",
+  "execution_mode": "real_model",
+  "model_id": "gemini-3.5-flash-lite",
+  "data_version": "synthetic-trials-v1",
+  "schema_version": "2.0.0",
+  "prompt_version": "extract_profile.v1+explain_results.v2",
+  "commit": "46dd5d5ec87880a44e37f1cc5ae78612606a6907",
+  "events": [
+    {
+      "step": "model",
+      "attempt": 1,
+      "durationMs": 640,
+      "outcome": "failed",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "e47cf7b291636ee309f67bf9c3866ad4788ad62c037d8653e38766d24daceb37",
+      "errorKind": "http_429"
+    },
+    {
+      "step": "model",
+      "attempt": 2,
+      "durationMs": 1648,
+      "outcome": "failed",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "e47cf7b291636ee309f67bf9c3866ad4788ad62c037d8653e38766d24daceb37",
+      "errorKind": "http_429"
+    },
+    {
+      "step": "model",
+      "attempt": 3,
+      "durationMs": 147,
+      "outcome": "failed",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "e47cf7b291636ee309f67bf9c3866ad4788ad62c037d8653e38766d24daceb37",
+      "errorKind": "http_429"
+    },
+    {
+      "step": "model",
+      "attempt": 1,
+      "durationMs": 724,
+      "outcome": "failed",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "e47cf7b291636ee309f67bf9c3866ad4788ad62c037d8653e38766d24daceb37",
+      "errorKind": "http_429"
+    },
+    {
+      "step": "model",
+      "attempt": 2,
+      "durationMs": 1675,
+      "outcome": "failed",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "e47cf7b291636ee309f67bf9c3866ad4788ad62c037d8653e38766d24daceb37",
+      "errorKind": "http_429"
+    },
+    {
+      "step": "model",
+      "attempt": 3,
+      "durationMs": 865,
+      "inputTokens": 687,
+      "outputTokens": 99,
+      "outcome": "complete",
+      "promptVersion": "extract_profile.v1",
+      "promptHash": "e47cf7b291636ee309f67bf9c3866ad4788ad62c037d8653e38766d24daceb37",
+      "validation": "ok"
+    },
+    {
+      "step": "tool",
+      "tool": "compute_egfr",
+      "durationMs": 0,
+      "outcome": "complete"
+    },
+    {
+      "step": "tool",
+      "tool": "compute_bmi",
+      "durationMs": 0,
+      "outcome": "complete"
+    },
+    {
+      "step": "retrieval",
+      "durationMs": 1,
+      "outcome": "not_needed:disabled",
+      "untranslatedTerms": [],
+      "retrievalMode": "lexical_only",
+      "vectorHitCount": 0,
+      "selectedTrialIds": [
+        "T-C",
+        "T-A",
+        "T-B"
+      ]
+    },
+    {
+      "step": "tool",
+      "tool": "evaluate_criteria",
+      "durationMs": 1,
+      "outcome": "complete"
+    },
+    {
+      "step": "tool",
+      "tool": "select_next_question",
+      "durationMs": 1,
+      "outcome": "complete"
+    },
+    {
+      "step": "model",
+      "attempt": 4,
+      "durationMs": 686,
+      "outcome": "failed",
+      "promptVersion": "explain_results.v2",
+      "promptHash": "fc67c69b9a0fff88e89b34610fd47ebea72b0f085ade0d0f6d4850b0a78874ba",
+      "errorKind": "http_429"
+    },
+    {
+      "step": "model",
+      "attempt": 5,
+      "durationMs": 1149,
+      "inputTokens": 1181,
+      "outputTokens": 239,
+      "outcome": "complete",
+      "promptVersion": "explain_results.v2",
+      "promptHash": "fc67c69b9a0fff88e89b34610fd47ebea72b0f085ade0d0f6d4850b0a78874ba",
+      "validation": "ok"
+    },
+    {
+      "step": "grounding",
+      "durationMs": 0,
+      "outcome": "model_explanation_shown",
+      "sourceIds": [
+        "T-C#inc-2",
+        "T-A#inc-3",
+        "T-B#inc-2",
+        "T-A#inc-2",
+        "T-B#inc-3"
+      ]
+    }
+  ],
+  "final": {
+    "status": "ok",
+    "stage": "completed",
+    "profileFields": [
+      "age",
+      "sex",
+      "hba1c",
+      "creatinine",
+      "height",
+      "weight",
+      "insulin_last_3_months",
+      "stated_diagnoses"
+    ],
+    "ambiguityFields": [],
+    "resultTrialIds": [
+      "T-A",
+      "T-C",
+      "T-B"
+    ],
+    "excludedTrialIds": [],
+    "modelCalls": 2,
+    "toolCalls": 4
+  }
+}

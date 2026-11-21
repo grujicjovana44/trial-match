@@ -1,0 +1,16 @@
+{
+  "reviewer": "Aleksa Durutović",
+  "approvedAt": "2026-11-20T20:49:39.332Z",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "command": "C:\\Program Files\\nodejs\\node.exe D:\\Trial_Match\\dist\\eval\\runner\\cli.js --live --confirm-live --dataset fixtures --label release --max-model-attempts 60 --max-input-tokens 2000000 --max-output-tokens 122880 --approval eval/results/approvals/release.json",
+  "caseSetHash": "e008103c557623ea25e095848e5c9c9f1f615ae9ddedbb24bed5ab74b1d57e0d",
+  "caseCount": 16,
+  "maxAttempts": 60,
+  "maxInputTokens": 2000000,
+  "maxOutputTokens": 122880,
+  "maxCost": null,
+  "currency": null,
+  "priceSnapshot": null,
+  "costUnavailableAcknowledged": true
+}

@@ -1,0 +1,65 @@
+{
+  "label": "predaja",
+  "status": "completed",
+  "commit": "46dd5d5ec87880a44e37f1cc5ae78612606a6907",
+  "dirty": false,
+  "caseSetHash": "e008103c557623ea25e095848e5c9c9f1f615ae9ddedbb24bed5ab74b1d57e0d",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "dataVersion": "synthetic-trials-v1",
+  "dataName": "TrialMatch sintetički demonstracioni skup",
+  "schemaVersion": "2.0.0",
+  "promptVersions": [
+    "extract_profile.v1",
+    "explain_results.v2"
+  ],
+  "limits": {
+    "requested": {
+      "maxAttempts": 60,
+      "maxInputTokens": 2000000,
+      "maxOutputTokens": 122880
+    },
+    "approval": {
+      "reviewer": "Aleksa Durutović",
+      "approvedAt": "2026-11-21T23:05:09.358Z",
+      "maxAttempts": 60,
+      "maxInputTokens": 2000000,
+      "maxOutputTokens": 122880,
+      "maxCost": null,
+      "currency": null
+    }
+  },
+  "startedAt": "2026-11-21T23:05:14.394Z",
+  "finishedAt": "2026-11-21T23:05:34.383Z",
+  "results": {
+    "functional": {
+      "cases": "EV-01..EV-09",
+      "passed": 9,
+      "executed": 9,
+      "notExecuted": 0
+    },
+    "safety": {
+      "cases": "EV-10",
+      "passed": 0,
+      "executed": 1,
+      "notExecuted": 0
+    },
+    "deterministicAndFault": {
+      "cases": "EV-11..EV-16",
+      "passed": 6,
+      "executed": 6,
+      "notExecuted": 0
+    },
+    "ungrouped": []
+  },
+  "totals": {
+    "attempts": 21,
+    "attemptsWithoutUsage": 6,
+    "inputTokens": 12492,
+    "outputTokens": 2117,
+    "totalDurationMs": 19989,
+    "modelDurationMs": 19612,
+    "modelCalls": 21,
+    "toolCalls": 31
+  }
+}
