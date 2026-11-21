@@ -12,6 +12,8 @@ Thumbs.db
 *.swp
 .vscode/
 .idea/
+# Playwright piše stanje poslednjeg pokretanja; praćen fajl bi menjao `dirty` u dokazima.
+test-results/
 eval/results/**
 !eval/results/.gitkeep
 # Dokazi žive evaluacije (Faza 3) su deo repozitorijuma; ostala pokretanja ostaju lokalna.
@@ -34,3 +36,10 @@ eval/traces/**
 !eval/traces/.gitkeep
 data/index/
 docs/project-brief.md
+# Dokazi za završnu predaju (2026-11-22): live EV run i živi UI prolaz.
+!eval/results/predaja/
+!eval/results/predaja/**
+!eval/results/ui-live/
+!eval/results/ui-live/**
+!eval/results/approvals/
+!eval/results/approvals/**

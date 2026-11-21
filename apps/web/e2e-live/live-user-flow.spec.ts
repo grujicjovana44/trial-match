@@ -199,9 +199,13 @@ test("LIVE: profil → dopuna → rezultat sa citatom → „Šta ako?“ u isto
   const firstTrial = answered.body.results[0];
   if (firstTrial === undefined)
     throw new Error("Rezultat nema nijednu studiju.");
-  const cited = firstTrial.criteria.find(
+  // Primer citata: prednost ima kriterijum sa presudom matchera, a ne `unknown`.
+  const withQuote = firstTrial.criteria.filter(
     (criterion) => criterion.citation.quote.trim().length > 0,
   );
+  const cited =
+    withQuote.find((criterion) => criterion.status !== "unknown") ??
+    withQuote[0];
   if (cited === undefined) throw new Error("Prva studija nema citat.");
   const registryHref = await registry.getAttribute("href");
 
@@ -218,13 +222,18 @@ test("LIVE: profil → dopuna → rezultat sa citatom → „Šta ako?“ u isto
   await expect(page.locator("#results-heading")).toBeVisible();
   await shot("05-sta-ako.png");
 
+  const dirtyFiles = git(["status", "--porcelain", "--untracked-files=no"])
+    .split(/\r?\n/)
+    .filter((line) => line.trim().length > 0)
+    .map((line) => line.slice(3));
   const record = {
     label,
     kind: "ui_live_user_flow",
     startedAt,
     finishedAt: new Date().toISOString(),
     commit: git(["rev-parse", "HEAD"]),
-    dirty: git(["status", "--porcelain", "--untracked-files=no"]).length > 0,
+    dirty: dirtyFiles.length > 0,
+    dirtyFiles,
     mode: "live",
     dataset: "clinicaltrials-20",
     note: "Sintetički profil; stvarni Gemini model kroz web interfejs i serverski API.",
