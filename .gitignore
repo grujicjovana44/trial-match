@@ -41,5 +41,5 @@ docs/project-brief.md
 !eval/results/predaja*/**
 !eval/results/ui-live/
 !eval/results/ui-live/**
-!eval/results/approvals/
-!eval/results/approvals/**
+# Approval zapisi se dodaju sa `git add -f` posle runa: nov, još nepraćen zapis
+# ne sme da označi run kao `dirty`. Isti podaci su i u summary.json svakog runa.
