@@ -7,7 +7,7 @@ TrialMatch je TypeScript veb-aplikacija za preliminarnu proveru sintetičkog pro
 ## Bezbednosne granice
 
 - Ovo nije alat za dijagnozu, lečenje, doziranje ni odluku o uključivanju. Konačnu odluku donosi lekar.
-- Direktni server podrazumeva Gemini live režim; za lokalni razvoj `pnpm dev` eksplicitno bira mock sa `DEMO_MODE=true`. Bez serverskog ključa live režim se zaustavlja uz konfiguracionu grešku.
+- Direktni server podrazumeva Gemini live režim; `pnpm dev` i `pnpm demo` eksplicitno biraju mock sa `DEMO_MODE=true`, a `pnpm demo:live` stvarni model. Bez serverskog ključa live režim se zaustavlja uz konfiguracionu grešku.
 - Koristite isključivo izmišljene profile. Ne unosite stvarne podatke pacijenata.
 - Studije T-A, T-B i T-C su sintetički testni primeri. Njihovi pragovi nisu klinički preporučeni.
 - Nepoznata vrednost ostaje `unknown`; ne tumači se kao „da“ ili „ne“.
@@ -20,8 +20,12 @@ TrialMatch je TypeScript veb-aplikacija za preliminarnu proveru sintetičkog pro
 
 ```sh
 pnpm install --frozen-lockfile
-DEMO_MODE=true pnpm dev
+pnpm dev          # DEMO (mock), sintetičke studije T-A, T-B, T-C
+pnpm demo         # DEMO (mock), 20 studija sa ClinicalTrials.gov
+pnpm demo:live    # stvarni Gemini model, 20 studija; traži .env (vidi ispod)
 ```
+
+Za `pnpm demo:live` kopirajte `.env.example` u `.env` i upišite `GEMINI_API_KEY`. Opcioni `OPENAI_API_KEY` (embeddings za `hybrid` retrieval) i `COHERE_API_KEY` (reranker) poboljšavaju retrieval; bez njih se koristi leksička pretraga. Ključevi ostaju samo na serveru. Pozivi se naplaćuju, pa unosite samo sintetičke profile.
 
 `pnpm dev` always selects the synthetic `fixtures` profile. `pnpm demo` starts the same local DEMO app with the 20-study `clinicaltrials-20` profile. Both use lexical retrieval if the local RAG index is missing or invalid; `/health` and result technical details show the active retrieval mode, and fallback is announced in the server log and result UI.
 
@@ -39,6 +43,9 @@ Lokalni DEMO može zatražiti dopunu, na primer podatak o upotrebi insulina. Za 
 | ---------------------------------- | ----------------------------------------------------------------------------- |
 | `pnpm dev`                         | Lokalni DEMO server i Vite interfejs                                          |
 | `pnpm demo`                        | Lokalni DEMO server sa 20 ClinicalTrials.gov studija                          |
+| `pnpm demo:live`                   | Isti tok sa stvarnim Gemini modelom; učitava `.env`, pozivi se naplaćuju      |
+| `pnpm test:e2e:phase2`             | Playwright tok kroz interfejs u DEMO režimu (bez modelskih poziva)            |
+| `pnpm test:e2e:live`               | Živi UI prolaz sa stvarnim modelom; samo uz `TRIALMATCH_LIVE_E2E=confirm`     |
 | `pnpm typecheck`                   | TypeScript provera                                                            |
 | `pnpm lint`                        | ESLint provera                                                                |
 | `pnpm format:check`                | Provera Prettier formatiranja                                                 |
@@ -96,4 +103,33 @@ Formule za eGFR, BMI i konverzije imaju izvore u kodu i potvrđene su u [docs/pr
 - [Mapa dokaza CAP-01–CAP-08](docs/evidence-map.md)
 - [Sastav tima](docs/team.md)
 
-Faza 2 implementacija je u toku. SQLite + sqlite-vec osnova je izabrana i jedan embeddings smoke poziv je uspeo; index build, stvarni EV baseline i browser review nisu izvršeni. RAG evaluacioni skup je nacrt koji čeka ljudsku adjudikaciju. Glas, javni deployment i AC-11 ostaju van opsega. Pogledajte [trenutnu spremnost](docs/phase-2-readiness.md).
+## Stanje i dokazi za završnu predaju
+
+Faze 1–3 su završene. Faza 3 je dodala živu evaluaciju, ciljane izmene posle baseline-a i proveru kroz interfejs sa stvarnim modelom. Glavni dokazi:
+
+- **16 EV slučajeva sa stvarnim modelom:** `baseline` 13/16 → `final` 16/16 → `predaja-3` 16/16 na commit-u `a62df6b` ([eval/results/](eval/results/), [postupak](docs/evaluation.md)).
+- **Glavni tok kroz web sa stvarnim modelom:** profil → dopunsko pitanje → rezultat sa citatom i linkom ka registru → „Šta ako?“ u istom `runId` ([eval/results/ui-live/predaja-ui-3/](eval/results/ui-live/predaja-ui-3/), snimci i `run.json`).
+- **Mapa dokaza** sa režimom i korpusom svakog prolaza: [docs/evidence-map.md](docs/evidence-map.md).
+
+### Šta drugi član može da ponovi
+
+Bez API ključa, iz čistog checkout-a:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm typecheck && pnpm lint && pnpm build
+pnpm test && pnpm smoke && pnpm eval:offline && pnpm gold:metrics
+pnpm test:e2e:phase2      # Playwright, Microsoft Edge (E2E_BROWSER_CHANNEL za drugi kanal)
+pnpm demo                 # pa http://127.0.0.1:5173
+```
+
+Sa `GEMINI_API_KEY` u `.env` (plaćeni pozivi):
+
+```sh
+pnpm demo:live
+TRIALMATCH_LIVE_E2E=confirm TRIALMATCH_LIVE_LABEL=<nova-oznaka> pnpm test:e2e:live
+```
+
+U PowerShell-u se promenljive postavljaju sa `$env:TRIALMATCH_LIVE_E2E='confirm'`. Živi EV run traži i approval zapis ([docs/evaluation.md](docs/evaluation.md) → „Ponavljanje“).
+
+Van opsega su glas u javnom deployment-u, javna dostupnost aplikacije (nalazi TM-01–TM-05 iz [bezbednosnog audita](SECURITY_AUDIT.md)) i statistička procena pouzdanosti modela, jer je svaki run pokrenut jednom.

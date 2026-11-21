@@ -230,13 +230,29 @@ Pokretanje traži `GEMINI_API_KEY` u okruženju, nov approval zapis čije polje 
 
 ```sh
 pnpm build
-node --env-file=.env dist/eval/runner/cli.js --live --confirm-live --dataset fixtures --label <oznaka> --max-model-attempts 60 --max-input-tokens 2000000 --max-output-tokens 122880 --approval <putanja-do-approval-zapisa>
+node --env-file=.env dist/eval/runner/cli.js --live --confirm-live --dataset fixtures --label <oznaka> --max-model-attempts 60 --max-input-tokens 2000000 --max-output-tokens 122880 --approval <putanja-do-approval-zapisa> --case-delay-ms 8000
 pnpm eval:compare eval/results/baseline eval/results/<oznaka>
 ```
 
-Runner pre pokretanja uvek zaključava fixture korpus, pa `.env` sme da sadrži i podešavanja za demo korpus.
+Runner pre pokretanja uvek zaključava fixture korpus, pa `.env` sme da sadrži i podešavanja za demo korpus. `--case-delay-ms` je opcionalan; 8000 ms drži run ispod minutnog limita provajdera (vidi „Završna predaja“). Polje `command` u approval zapisu mora sadržati i ovu opciju. Novi approval zapis ostaje ignorisan do commit-a (`git add -f`), da ne bi označio run kao `dirty`.
 
 Od 2026-11-20 runner pored `manifest.json` (stanje tokom pokretanja) piše i `summary.json`, kako traži opis projekta (§11). Sažetak prikazuje odvojeno funkcionalne slučajeve EV-01–EV-09, bezbednosni EV-10 i determinističke/fault provere EV-11–EV-16 (samo izvršeni slučajevi ulaze u brojilac i imenilac), uz verzije podataka, šeme i stvarno korišćenih promptova, limite, tokene, trajanje i broj poziva modela i alata. Zaglavlje trace-a sada navodi stvarne verzije promptova tog slučaja (npr. `extract_profile.v1+explain_results.v2`) umesto fiksne oznake `phase2.v1`. Direktorijumi `baseline/` i `final/` nastali su pre ove izmene i nemaju `summary.json`; ne menjaju se.
+
+## Završna predaja — ponovljeni live runovi (2026-11-21/22)
+
+Posle bezbednosnih ispravki (`957b8f5`), LF krajeva redova (`.gitattributes`) i alata za živi UI prolaz pokrenuta su tri nova live runa nad istim skupom slučajeva (`e008103c…`), sa istim modelom i limitima kao `release`. Odobrio ih je Aleksa Durutović; approval zapisi su u `eval/results/approvals/`. Raniji direktorijumi nisu menjani.
+
+| Pokretanje | Commit | `dirty` | Ishod | Pokušaji / bez usage-a | Napomena |
+|---|---|---|---|---|---|
+| `eval/results/predaja/` | `46dd5d5` | `false` | 15/16 | 21 / 6 | EV-10: prvi zahtev dobio `http_429` tri puta (početni + dva ponovna pokušaja) → `provider_rate_limit` |
+| `eval/results/predaja-2/` | `2a4e71d` | `true` | 15/16 | 20 / 4 | isti uzrok za EV-10; `dirty` zbog nepraćenog direktorijuma `predaja/` |
+| `eval/results/predaja-3/` | `a62df6b` | `false` | **16/16** | 18 / 0 | `--case-delay-ms 8000`; nijedan `http_429` |
+
+- `pnpm eval:compare eval/results/release eval/results/predaja-3`: nijedan slučaj nije promenio ishod. U `predaja` i `predaja-2` jedina promena je EV-10, a oba puta je uzrok minutni limit provajdera, ne odgovor aplikacije. Drugi zahtev EV-10 u `predaja` (izvor sa zlonamernom instrukcijom) prošao je normalno.
+- Već `release` je imao pet `429` odgovora u EV-10 i prošao je zahvaljujući ponovnim pokušajima. Runner zato dobija opciju `--case-delay-ms` (podrazumevano 0): pauza pre svakog sledećeg `real_model` slučaja, upisana u `limits.requested.caseDelayMs`. Ne menja ulaze, aplikaciju ni ocenjivanje. Granica ponovnih pokušaja u aplikaciji (EV-15) nije menjana.
+- U `predaja-3/traces/EV-03.json` filter „bez BMI“ ostavlja T-A i T-B, a izvori objašnjenja su samo `T-A#…` i `T-B#…`. Ograničenje iz završnog runa (odlomak skrivene studije u kontekstu objašnjenja) više se ne javlja.
+- Živi UI prolaz sa istim modelom nad `clinicaltrials-20` je u `eval/results/ui-live/predaja-ui-3/` (vidi [mapu dokaza](evidence-map.md), CAP-02).
+- Model nije deterministički i svaki run je pokrenut jednom. 16/16 nije statistička procena pouzdanosti.
 
 ## RAG retrieval sa stvarnim embeddings-om (2026-11-20)
 

@@ -503,13 +503,15 @@ description: "Zadaci za funkcionalnost 002: korisnički tok i interfejs TrialMat
 
 **Cilj**: odgovor na Capstone feedback od 2026-11-20 (CAP-02, CAP-03, CAP-04, CAP-07): ponovljiv glavni tok kroz web sa stvarnim modelom i demo scenario koji ga koristi.
 
-- [ ] T254 [US2] Opt-in živi UI prolaz i komanda za pokretanje u LIVE režimu
+- [X] T254 [US2] Opt-in živi UI prolaz i komanda za pokretanje u LIVE režimu
   - **Datoteke**: `apps/web/e2e-live/live-user-flow.spec.ts`, `playwright.live.config.ts`, `scripts/e2e-live-webserver.mjs`, `scripts/e2e-live-global-teardown.mjs`, `scripts/dev.mjs`, `package.json`.
   - **Izmena**: `pnpm demo:live` učitava lokalni `.env` i pokreće aplikaciju sa `DEMO_MODE=false` nad `clinicaltrials-20`. `pnpm test:e2e:live` radi samo uz `TRIALMATCH_LIVE_E2E=confirm`; nije deo `pnpm test`, `test:e2e:phase2` ni CI-ja. Scenario: sintetički profil bez težine → dopunsko pitanje o težini → odgovor → rezultat sa citatom i linkom ka registru → „Šta ako?“ u istom `runId`. Snimci ekrana i `run.json` (commit, režim, korpus, koraci API odgovora, primer citata) upisuju se u `eval/results/ui-live/<oznaka>/`; postojeći direktorijum se ne prepisuje.
   - **Test**: bez potvrde konfiguracija odbija pokretanje; `playwright test --list` za glavni skup ne vidi živi scenario.
+  - **Ishod (2026-11-22, Windows, Microsoft Edge)**: `eval/results/ui-live/predaja-ui-3/` na `2a4e71d`, `dirty: false`: tri koraka sa istim `runId`, HTTP 200, `demoMode: false`, retrieval `hybrid`, objašnjenje modela prikazano. Raniji pokušaji nisu sačuvani kao dokaz: (1) oznaka režima se proveravala pre prvog odgovora; (2) profil sa svim poljima nad 20 studija ne traži dopunu, pa je uzet profil bez težine (provereno u DEMO režimu pre živog poziva); (3) praćen `test-results/.last-run.json` je davao `dirty: true`; (4) `content-visibility: auto` je ostavljao prazne kartice na snimku cele stranice, pa test samo za snimak uključuje njihovo iscrtavanje.
 
-- [ ] T255 [US8] Demo scenario za 25. novembar: živi uspešan prolaz, slučaj sa dopunom ili nedovoljno dokaza i kontrolisana greška, uz mock kao rezervu
+- [X] T255 [US8] Demo scenario za 25. novembar: živi uspešan prolaz, slučaj sa dopunom ili nedovoljno dokaza i kontrolisana greška, uz mock kao rezervu
   - **Datoteke**: `docs/demo-script.md`.
+  - **Ishod**: kontrolisana greška u živom režimu (`MODEL_TIMEOUT_MS=1`) proverena je kroz API 2026-11-22 i daje `error` / `model_timeout` sa porukom bez tehničkih detalja.
 
 ## Zavisnosti i redosled
 
