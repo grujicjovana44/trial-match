@@ -505,7 +505,7 @@ description: "Zadaci za funkcionalnost 002: korisnički tok i interfejs TrialMat
 
 - [ ] T254 [US2] Opt-in živi UI prolaz i komanda za pokretanje u LIVE režimu
   - **Datoteke**: `apps/web/e2e-live/live-user-flow.spec.ts`, `playwright.live.config.ts`, `scripts/e2e-live-webserver.mjs`, `scripts/e2e-live-global-teardown.mjs`, `scripts/dev.mjs`, `package.json`.
-  - **Izmena**: `pnpm demo:live` učitava lokalni `.env` i pokreće aplikaciju sa `DEMO_MODE=false` nad `clinicaltrials-20`. `pnpm test:e2e:live` radi samo uz `TRIALMATCH_LIVE_E2E=confirm`; nije deo `pnpm test`, `test:e2e:phase2` ni CI-ja. Scenario: sintetički profil bez podatka o insulinu → dopunsko pitanje → odgovor → rezultat sa citatom i linkom ka registru → „Šta ako?“ u istom `runId`. Snimci ekrana i `run.json` (commit, režim, korpus, koraci API odgovora, primer citata) upisuju se u `eval/results/ui-live/<oznaka>/`; postojeći direktorijum se ne prepisuje.
+  - **Izmena**: `pnpm demo:live` učitava lokalni `.env` i pokreće aplikaciju sa `DEMO_MODE=false` nad `clinicaltrials-20`. `pnpm test:e2e:live` radi samo uz `TRIALMATCH_LIVE_E2E=confirm`; nije deo `pnpm test`, `test:e2e:phase2` ni CI-ja. Scenario: sintetički profil bez težine → dopunsko pitanje o težini → odgovor → rezultat sa citatom i linkom ka registru → „Šta ako?“ u istom `runId`. Snimci ekrana i `run.json` (commit, režim, korpus, koraci API odgovora, primer citata) upisuju se u `eval/results/ui-live/<oznaka>/`; postojeći direktorijum se ne prepisuje.
   - **Test**: bez potvrde konfiguracija odbija pokretanje; `playwright test --list` za glavni skup ne vidi živi scenario.
 
 - [ ] T255 [US8] Demo scenario za 25. novembar: živi uspešan prolaz, slučaj sa dopunom ili nedovoljno dokaza i kontrolisana greška, uz mock kao rezervu

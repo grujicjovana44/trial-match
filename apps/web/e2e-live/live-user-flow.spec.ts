@@ -10,7 +10,10 @@ import { expect, test, type Page, type Response } from "@playwright/test";
 import type { RunResponse } from "../../../packages/shared/src/index.js";
 
 const PROFILE =
-  "Muškarac, 62 godine, dijabetes tip 2, HbA1c 8,1%, kreatinin 1,3 mg/dL, visina 178 cm, težina 92 kg.";
+  "Muškarac, 62 godine, dijabetes tip 2, HbA1c 8,1%, kreatinin 1,3 mg/dL, visina 178 cm.";
+// Bez težine BMI ostaje nepoznat, a BMI odlučuje kod odobrenih pravila, pa
+// deterministički izbor pitanja traži težinu.
+const ANSWER = "92 kg";
 const HYPOTHESIS = "Šta ako je HbA1c 10,5%?";
 const API_HEALTH = "http://127.0.0.1:43174/health";
 
@@ -137,7 +140,7 @@ test("LIVE: profil → dopuna → rezultat sa citatom → „Šta ako?“ u isto
   await page.getByLabel("Opišite profil").fill(PROFILE);
   await shot("01-unos.png");
 
-  // 1. Početni zahtev: profil bez podatka o insulinu.
+  // 1. Početni zahtev: profil bez težine.
   const first = await capture(
     page,
     "initial",
@@ -169,7 +172,7 @@ test("LIVE: profil → dopuna → rezultat sa citatom → „Šta ako?“ u isto
           .getByRole("button", { name: option, exact: true })
           .click();
       else {
-        await page.locator("#answer").fill("Ne");
+        await page.locator("#answer").fill(ANSWER);
         await page.locator("form.follow-up button[type=submit]").click();
       }
     },
@@ -231,7 +234,11 @@ test("LIVE: profil → dopuna → rezultat sa citatom → „Šta ako?“ u isto
       providerId: health.providerId,
       modelId: health.modelId,
     },
-    input: { profile: PROFILE, answer: option ?? "Ne", hypothesis: HYPOTHESIS },
+    input: {
+      profile: PROFILE,
+      answer: option ?? ANSWER,
+      hypothesis: HYPOTHESIS,
+    },
     runId,
     steps,
     sampleCitation: {
