@@ -22,11 +22,11 @@ Usput nađeno i zabeleženo: EV-10 je u dva runa pao na minutnom limitu provajde
 
 | #   | Zadatak                                                                                     | Ko                     | Gotovo kada                                                                                                                |
 | --- | ------------------------------------------------------------------------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Svi: `git fetch` i `git reset --hard origin/<grana>` (ili nov klon) zbog prepisane istorije | svi                    | lokalne kopije prate novu istoriju                                                                                         |
-| 2   | **Tag** verzije za predaju                                                                  | drugi član             | tag je na GitHub-u i upisan na vrhu [mape dokaza](evidence-map.md)                                                         |
-| 3   | **Provera iz čistog checkout-a** taga, tačno prema README-ju                                | drugi član (ne Aleksa) | upisani OS, Node, pnpm, komande i stvarni ishodi u CAP-07 mape dokaza                                                      |
-| 4   | `docs/team.md`: uloge A–D i pregledači                                                      | tim                    | nema TODO                                                                                                                  |
-| 5   | CAP-08 beleška `docs/team/<ime>.md` za svakog člana, sa istim tagom                         | svaki član             | četiri beleške; Igor povezuje svoj rad iz Faze 2 (`f793968`, `1cbd647`, `6a0abbb`, `23d7471`) sa onim što je ušlo u `main` |
+| 1   | `git fetch` i osvežavanje kopije                                                            | Igor                   | izvršeno; ovaj checkout prati `origin/security-audit-fixes` na `ba74268`; ostali članovi treba da osveže svoje kopije      |
+| 2   | **Tag `capstone-v1`**                                                                       | tim                    | ne kreirati dok se E2E/UI prepreke ne reše, sve beleške ne stignu i Aleksa ne bude obavešten o neuspelim proverama          |
+| 3   | **Provera iz čistog checkout-a**, prema README-ju                                           | Igor                   | osnovne offline provere PASS; E2E nije prošao jer browser nije instaliran, UI profil nije ručno proveren; ishodi CAP-07    |
+| 4   | `docs/team.md`: uloge A–D i pregledači                                                      | Igor                   | tabela popunjena predlogom iz istorije; direktna potvrda tima još nedostaje                                                |
+| 5   | CAP-08 beleška `docs/team/<ime>.md` za svakog člana                                         | svaki član             | Igorova je u `docs/team/igor.md`; Jovana, Jelena i Aleksa treba da dodaju svoje pre taga                                   |
 
 ## Van opsega
 

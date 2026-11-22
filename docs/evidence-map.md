@@ -2,7 +2,7 @@
 
 Stanje: 22. 11. 2026, grana `security-audit-fixes`. Prethodna mapa (Faza 1 i 2) je u [evidence-map-faze-1-2.md](evidence-map-faze-1-2.md) i služi samo kao istorijski zapis.
 
-**Verzija za predaju.** Tag postavlja drugi član tima posle provere iz čistog checkout-a (vidi CAP-07). Svi dokazi ispod nastali su na kodu commit-a `a62df6b` ili ranijem. Commit-ovi posle `a62df6b` menjaju samo dokumentaciju i `eval/results/`. Kada tag postoji, upisati ga ovde: **tag: _TODO_ → commit: _TODO_**.
+**Verzija za predaju.** Planirani zajednički tag je **`capstone-v1`**. Još nije napravljen: clean-checkout E2E i ručni UI prolaz nisu završeni zbog nedostupnog browser-a, a beleške ostalih članova tek treba da budu dodate. Svi prethodni dokazi nastali su na kodu commit-a `a62df6b` ili ranijem. Ova provera i Igorova beleška su na `security-audit-fixes`; nakon rešavanja blokatora, tag treba da pokazuje na commit koji sadrži sve četiri beleške i rezultate.
 
 **Prepisana istorija.** Istorija na GitHub-u prepisana je 21. 11. 2026. Uklonjen je red o koautorstvu iz poruka commit-ova, dok su kod, autori i datumi ostali isti. Stariji dokumenti i nepromenljivi manifesti zato navode stare SHA. Tabela stari → novi SHA je na kraju ove mape.
 
@@ -115,13 +115,31 @@ Ograničenje: nalazi TM-01–TM-05 iz audita odnose se na javnu dostupnost. Apli
 | Početni podaci               | `data/fixtures/`, paketi u `data/rule_sets/`; sintetički profil u README-ju                           |
 | Osnovni test pokretanja      | `pnpm smoke` PASS; `pnpm test` 417/417 (74 fajla) na kodu `a62df6b`, Windows                          |
 | Windows checkout             | `.gitattributes` drži LF, pa T323 prolazi i na Windows-u                                              |
-| Provera iz čistog checkout-a | **_TODO_ — drugi član**: klonira tag, prati README i upisuje OS, Node, pnpm, komande i stvarne ishode |
+| Provera iz čistog checkout-a | **Čist klon na `ba74268`; Linux 7.0.0-43-generic x86_64; Node v24.20.0; pnpm 12.16.1 preko Corepack-a.** Detaljni ishodi svake komande su ispod. |
+
+### Detaljni rezultati reda „Provera iz čistog checkout-a“
+
+| Komanda / okruženje | Stvarni ishod |
+| ------------------- | -------------- |
+| `git clone --branch security-audit-fixes https://github.com/grujicjovana44/trial-match.git trialmatch-check` | Prvi sandbox pokušaj: **FAIL**, `Could not resolve host: github.com`. Ponovljeno uz mrežni pristup: **PASS**, čist klon na `ba74268`. |
+| `uname -srm`; `node -v`; `pnpm -v` | `Linux 7.0.0-43-generic x86_64`; `v24.20.0` (README minimum `24.15.0`); globalni pnpm je `12.18.0`, a pinned Corepack pnpm je `12.16.1` (README verzija). |
+| `pnpm install --frozen-lockfile` | Globalnim pnpm `12.18.0`: **FAIL**, `ERR_PNPM_STORE_DIR_OPEN_OPERATION_LOCK` — operacioni lock u `pnpm-store-operation-locks` nije mogao da se otvori jer je putanja read-only. Sa `COREPACK_HOME=/tmp/trialmatch-corepack corepack pnpm@12.16.1 install --frozen-lockfile`: **PASS**, lockfile važeći, 245 paketa instalirano. Sve sledeće pnpm komande koristile su 12.16.1 preko Corepack-a. |
+| `pnpm typecheck` | **PASS**, `tsc --noEmit -p tsconfig.json`, exit 0. |
+| `pnpm lint` | **PASS**, ESLint, exit 0. |
+| `pnpm build` | **PASS**, 554 modula; UI bundle JS 494.06 kB. |
+| `pnpm test` | **PASS**, 74 fajla i 417/417 testova, 42.30 s. |
+| `pnpm smoke` | **PASS**, 1/1 test. |
+| `pnpm eval:offline` | **PASS**, offline/fault 6 passed, 0 failed; real-model 0 executed, 7 skipped; 3 dry-run. |
+| `pnpm gold:metrics` | **PASS**, 8 slučajeva; TP 9, FP 0, FN 1, precision 1, recall 0.9. Izlaz upozorava da je to sintetički parser razvojni skup, ne statistička potvrda. |
+| `pnpm test:e2e:phase2` | Sandbox pokušaj završio sa `Process from config.webServer exited early`; direktni server pokušaj pokazao je `listen EPERM: operation not permitted 127.0.0.1:43173`. Uz loopback bind, komanda je došla do Playwright-a, ali **3/3 testa su pala** jer Edge nije instaliran na `/opt/microsoft/msedge/msedge`. Sa dokumentovanim `E2E_BROWSER_CHANNEL=chromium`, **3/3 su pala** jer nedostaje `/home/legi/.cache/ms-playwright/chromium-1255/chrome-linux64/chrome`. |
+| `pnpm demo` | **Start-up PASS**: API sluša na `127.0.0.1:3000`, Vite na `http://127.0.0.1:5173`; HTTP `HEAD /` je vratio `200 OK`. Profil nije ručno poslat kroz UI: CUA okruženje je prijavilo `Browser is not available` za `iab` i `chrome`, pa UI walkthrough nije završen. |
+| `pnpm demo:live`; `pnpm test:e2e:live` | Nisu pokretani, prema instrukciji. Nije korišćen API ključ. |
 
 Šta drugi član može da ponovi **bez ključa**: `pnpm install --frozen-lockfile`, `pnpm typecheck`, `pnpm lint`, `pnpm build`, `pnpm test`, `pnpm smoke`, `pnpm eval:offline`, `pnpm gold:metrics`, `pnpm test:e2e:phase2`, `pnpm demo`. **Sa ključem** (plaćeni pozivi): `pnpm demo:live`, `pnpm test:e2e:live`, live EV run (komanda u [evaluation.md](evaluation.md) → „Ponavljanje“).
 
 ## CAP-08 · Individualni doprinos
 
-Svaki član piše belešku `docs/team/<ime>.md` (doprinos, odluka i provera, pregled tuđeg rada, veza sa glavnim tokom, primer upotrebe AI-ja) i navodi isti tag. Uloge i pregledače treba upisati u [team.md](team.md). **_TODO_ — svaki član za sebe.**
+Igorova beleška je u [team/igor.md](team/igor.md); sadrži Fazu 2, proverenu zastupljenost commit-a u `main`, odluku/proveru, lokalni zapis pregleda i AI primer. [Uloge i predloženi pregledači](team.md) popunjeni su iz repozitorijumskih dokaza, ali čekaju potvrdu članova. Jovana, Jelena i Aleksa treba da dodaju svoje beleške pre zajedničkog taga.
 
 ## Stari → novi SHA (prepisana istorija, 21. 11. 2026)
 
