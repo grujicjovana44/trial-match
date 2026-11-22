@@ -18,13 +18,13 @@ Feedback je pregledao `main` na `2ed092f` i `phase-3-eval` na `93a4d5f`. Posle p
 
 Usput nađeno i zabeleženo: EV-10 je u dva runa pao na minutnom limitu provajdera (`http_429`). Aplikacija se pri tom završila kontrolisano. Runner je dobio opcionu pauzu između slučajeva (`--case-delay-ms`). Neuspeli runovi su sačuvani.
 
-## Ostaje (drugi članovi)
+## Status zadataka za završnu predaju
 
 | #   | Zadatak                                                                                     | Ko                     | Gotovo kada                                                                                                                |
 | --- | ------------------------------------------------------------------------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | 1   | `git fetch` i osvežavanje kopije                                                            | Igor                   | izvršeno; ovaj checkout prati `origin/security-audit-fixes` na `ba74268`; ostali članovi treba da osveže svoje kopije      |
-| 2   | **Tag `capstone-v1`**                                                                       | tim                    | ne kreirati dok se E2E/UI prepreke ne reše, sve beleške ne stignu i Aleksa ne bude obavešten o neuspelim proverama          |
-| 3   | **Provera iz čistog checkout-a**, prema README-ju                                           | Igor                   | osnovne offline provere PASS; E2E nije prošao jer browser nije instaliran, UI profil nije ručno proveren; ishodi CAP-07    |
+| 2   | **Tag `capstone-v1`**                                                                       | tim                    | provere su završene; tag čeka beleške ostalih članova i potvrdu raspodele uloga                                             |
+| 3   | **Provera iz čistog checkout-a**, prema README-ju                                           | Igor                   | završen na klonu `ba74268`; offline provere PASS, E2E 3/3 PASS sa Playwright Chromium, README profil PASS kroz `pnpm demo` |
 | 4   | `docs/team.md`: uloge A–D i pregledači                                                      | Igor                   | tabela popunjena predlogom iz istorije; direktna potvrda tima još nedostaje                                                |
 | 5   | CAP-08 beleška `docs/team/<ime>.md` za svakog člana                                         | svaki član             | Igorova je u `docs/team/igor.md`; Jovana, Jelena i Aleksa treba da dodaju svoje pre taga                                   |
 

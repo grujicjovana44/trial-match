@@ -29,4 +29,4 @@ DEMO koristi mock i ne proverava stvarni Gemini. Live poziv zahteva serverski kl
 
 ## Primer upotrebe AI-ja
 
-AI pomoć sam koristio pri pripremi ove CAP-08 beleške da sažmem istoriju i izlaze provera. Prihvatio sam predlog da se u evidenciji navedu tačni brojevi testova i razlozi neuspeha, a tekst sam dopunio stvarnim rezultatima: `pnpm test` 417/417; podrazumevani E2E pokušaj nije našao Microsoft Edge, a Chromium override nije našao očekivani Playwright browser. To sam proverio ponovnim pokretanjem komande i pregledom izlaza; nisam te neuspehe predstavio kao PASS.
+AI pomoć sam koristio pri pripremi ove CAP-08 beleške da sažmem istoriju i izlaze provera. Prihvatio sam predlog da se u evidenciji navedu tačni brojevi i razlozi prvobitnih neuspeha, a zatim sam ažurirao zaključak nakon instalacije Playwright Chromium-a: `pnpm test` 417/417, E2E 3/3 i README profil u DEMO UI-ju završen. Ishode sam proverio ponovnim pokretanjem komandi i vidljivim UI stanjem; nisam pomešao početni nedostatak browsera sa konačnim PASS rezultatom.
