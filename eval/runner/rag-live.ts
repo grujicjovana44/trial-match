@@ -29,7 +29,10 @@ export const RagasDatasetSchema = z
   })
   .strict()
   .superRefine((dataset, ctx) => {
-    if (new Set(dataset.samples.map(({ sampleId }) => sampleId)).size !== dataset.samples.length)
+    if (
+      new Set(dataset.samples.map(({ sampleId }) => sampleId)).size !==
+      dataset.samples.length
+    )
       ctx.addIssue({
         code: "custom",
         message: "ID uzorka RAGAS skupa mora biti jedinstven.",
@@ -115,7 +118,8 @@ function parseArgs(args: string[]): Map<string, string> {
   for (let index = 0; index < args.length; index += 1) {
     const key = args[index]!;
     if (!allowed.has(key)) throw new Error(`Nepoznata opcija ${key}.`);
-    if (values.has(key)) throw new Error(`Opcija ${key} je navedena više puta.`);
+    if (values.has(key))
+      throw new Error(`Opcija ${key} je navedena više puta.`);
     const value = args[index + 1];
     if (key !== "--confirm-live" && (!value || value.startsWith("--")))
       throw new Error(`Nedostaje vrednost za ${key}.`);
@@ -133,15 +137,21 @@ export async function validateRagLiveRun(
   if (values.get("--confirm-live") !== "true")
     throw new Error("Nedostaje --confirm-live.");
   if (values.get("--dataset") !== "eval/rag/ragas-dataset.json")
-    throw new Error("Live RAGAS evaluator prima samo odobreni sintetički skup.");
+    throw new Error(
+      "Live RAGAS evaluator prima samo odobreni sintetički skup.",
+    );
   const label = values.get("--label") ?? "";
   if (!/^[a-z0-9][a-z0-9._-]{0,63}$/iu.test(label))
     throw new Error("Neispravna oznaka pokretanja.");
   const maxModelCalls = Number(values.get("--max-model-calls"));
   const maxInputBytes = Number(values.get("--max-input-bytes"));
   const maxOutputTokens = Number(values.get("--max-output-tokens"));
-  if (![maxModelCalls, maxInputBytes, maxOutputTokens].every(Number.isSafeInteger) ||
-      [maxModelCalls, maxInputBytes, maxOutputTokens].some((value) => value < 1))
+  if (
+    ![maxModelCalls, maxInputBytes, maxOutputTokens].every(
+      Number.isSafeInteger,
+    ) ||
+    [maxModelCalls, maxInputBytes, maxOutputTokens].some((value) => value < 1)
+  )
     throw new Error("Nedostaju validna ograničenja poziva, ulaza i izlaza.");
   const approvalPath = values.get("--approval");
   if (!approvalPath || /\.env(?:\.|$)/iu.test(approvalPath))
@@ -168,13 +178,19 @@ export async function validateRagLiveRun(
     maxInputBytes > approval.maxInputBytes ||
     maxOutputTokens > approval.maxOutputTokens
   )
-    throw new Error("RAGAS approval se ne odnosi na ovu komandu, skup ili limite.");
+    throw new Error(
+      "RAGAS approval se ne odnosi na ovu komandu, skup ili limite.",
+    );
   if (approval.maxCost !== null || !approval.costUnavailableAcknowledged)
-    throw new Error("Cena zahteva maxCost=null i eksplicitno priznanje da nije dostupna.");
+    throw new Error(
+      "Cena zahteva maxCost=null i eksplicitno priznanje da nije dostupna.",
+    );
   if (maxModelCalls < dataset.samples.length)
     throw new Error("Broj poziva je manji od broja sintetičkih uzoraka.");
   if (maxOutputTokens < dataset.samples.length * 64)
-    throw new Error("Odobreni izlazni limit nije dovoljan za ograničen izlaz svakog uzorka.");
+    throw new Error(
+      "Odobreni izlazni limit nije dovoljan za ograničen izlaz svakog uzorka.",
+    );
   return {
     config,
     samples: dataset.samples,
@@ -265,17 +281,22 @@ export async function runRagLiveEvaluation(args: string[]): Promise<void> {
         },
       );
       if (!response.ok)
-        throw new Error(`Gemini RAGAS evaluator nije uspeo (HTTP ${response.status}).`);
+        throw new Error(
+          `Gemini RAGAS evaluator nije uspeo (HTTP ${response.status}).`,
+        );
       const payload: unknown = await response.json();
       const parsed = GeminiResponseSchema.parse(payload);
       const candidate = parsed.candidates?.[0];
       if (candidate?.finishReason !== "STOP")
         throw new Error("Gemini RAGAS evaluator vratio je nepotpun odgovor.");
-      const text = candidate.content?.parts.map((part) => part.text ?? "").join("") ?? "";
+      const text =
+        candidate.content?.parts.map((part) => part.text ?? "").join("") ?? "";
       const score = ScoreSchema.parse(JSON.parse(text));
       const usage = parsed.usageMetadata;
       if (!usage)
-        throw new Error("Gemini nije vratio token usage; prekidam radi budžetske zaštite.");
+        throw new Error(
+          "Gemini nije vratio token usage; prekidam radi budžetske zaštite.",
+        );
       outputTokens += usage.candidatesTokenCount;
       if (outputTokens > validated.maxOutputTokens)
         throw new Error("Gemini izlaz je premašio odobreni token limit.");

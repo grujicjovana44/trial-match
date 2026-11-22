@@ -39,7 +39,9 @@ describe("CohereCandidateReranker", () => {
       transport,
     );
 
-    await expect(reranker.rerank("type 2 diabetes", candidates)).resolves.toEqual([
+    await expect(
+      reranker.rerank("type 2 diabetes", candidates),
+    ).resolves.toEqual([
       { id: "NCT-1#p1", score: 0.91 },
       { id: "NCT-1", score: 0.62 },
     ]);
@@ -48,7 +50,11 @@ describe("CohereCandidateReranker", () => {
 
   it("ne poziva transport kada nedostaje ključ", async () => {
     const transport = vi.fn<typeof fetch>();
-    const reranker = new CohereCandidateReranker(undefined, undefined, transport);
+    const reranker = new CohereCandidateReranker(
+      undefined,
+      undefined,
+      transport,
+    );
     await expect(reranker.rerank("query", candidates)).rejects.toThrow(
       "API ključ nije konfigurisan",
     );
@@ -75,25 +81,33 @@ describe("CohereCandidateReranker", () => {
       },
       "svaki kandidat",
     ],
-  ])("odbija nepotpun, dupliran ili van-opsega odgovor", async (body, message) => {
-    const reranker = new CohereCandidateReranker(
-      "test-only-key",
-      undefined,
-      vi.fn<typeof fetch>(async () => jsonResponse(body)),
-    );
-    await expect(reranker.rerank("query", candidates)).rejects.toThrow(message);
-  });
+  ])(
+    "odbija nepotpun, dupliran ili van-opsega odgovor",
+    async (body, message) => {
+      const reranker = new CohereCandidateReranker(
+        "test-only-key",
+        undefined,
+        vi.fn<typeof fetch>(async () => jsonResponse(body)),
+      );
+      await expect(reranker.rerank("query", candidates)).rejects.toThrow(
+        message,
+      );
+    },
+  );
 
   it("svodi HTTP grešku na status bez čitanja tela odgovora", async () => {
     const text = vi.fn();
     const reranker = new CohereCandidateReranker(
       "test-only-key",
       undefined,
-      vi.fn<typeof fetch>(async () => ({
-        ok: false,
-        status: 503,
-        text,
-      }) as unknown as Response),
+      vi.fn<typeof fetch>(
+        async () =>
+          ({
+            ok: false,
+            status: 503,
+            text,
+          }) as unknown as Response,
+      ),
     );
     await expect(reranker.rerank("query", candidates)).rejects.toThrow("503");
     expect(text).not.toHaveBeenCalled();

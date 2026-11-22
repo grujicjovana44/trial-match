@@ -49,12 +49,12 @@ describe("Gemini candidate reranker", () => {
       },
     );
 
-    await expect(reranker.rerank("type 2 diabetes", candidates)).resolves.toEqual(
-      [
-        { id: "T-A#study", score: 0.9 },
-        { id: "T-A#inc-1", score: 0.8 },
-      ],
-    );
+    await expect(
+      reranker.rerank("type 2 diabetes", candidates),
+    ).resolves.toEqual([
+      { id: "T-A#study", score: 0.9 },
+      { id: "T-A#inc-1", score: 0.8 },
+    ]);
     expect(calls).toBe(1);
     expect(body).toMatchObject({
       generationConfig: {

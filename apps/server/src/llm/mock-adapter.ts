@@ -57,9 +57,7 @@ export class MockLlmAdapter implements LlmAdapter {
   extract(profileText: string): Extraction {
     this.calls += 1;
     const text = profileText.toLocaleLowerCase("sr");
-    const normalizedText = text
-      .normalize("NFD")
-      .replace(/\p{M}/gu, "");
+    const normalizedText = text.normalize("NFD").replace(/\p{M}/gu, "");
     if (
       /\b(?:hba1c|kreatinin|creatinine|visina|težina|tezina)\s*(?:[:=]\s*)?(?:abc|invalid|neispravno)\b/u.test(
         text,

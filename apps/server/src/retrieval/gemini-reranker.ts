@@ -1,9 +1,6 @@
 import { z } from "zod";
 import { GeminiAdapter } from "../llm/gemini-adapter.js";
-import type {
-  CandidateReranker,
-  RerankCandidate,
-} from "./hybrid-retrieve.js";
+import type { CandidateReranker, RerankCandidate } from "./hybrid-retrieve.js";
 
 export const RerankOutputSchema = z
   .array(
@@ -67,7 +64,9 @@ export class GeminiCandidateReranker implements CandidateReranker {
       new Set(ranking.map(({ id }) => id)).size !== ranking.length ||
       ranking.some(({ id }) => !expectedIds.has(id))
     )
-      throw new Error("Gemini reranker vratio je nepoznate ili duplirane ID-jeve.");
+      throw new Error(
+        "Gemini reranker vratio je nepoznate ili duplirane ID-jeve.",
+      );
     return ranking;
   }
 }

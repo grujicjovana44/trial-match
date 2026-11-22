@@ -134,10 +134,7 @@ export async function loadRagCorpus(
             trials = TrialSchema.array().parse(
               splitDraft.data.trials.map((trial) => {
                 if (typeof trial !== "object" || trial === null) return trial;
-                const normalizedTrial = { ...trial } as Record<
-                  string,
-                  unknown
-                >;
+                const normalizedTrial = { ...trial } as Record<string, unknown>;
                 delete normalizedTrial.reviewStatus;
                 delete normalizedTrial.splitStatus;
                 return normalizedTrial;

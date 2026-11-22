@@ -105,11 +105,19 @@ Formule za eGFR, BMI i konverzije imaju izvore u kodu i potvrđene su u [docs/pr
 
 ## Stanje i dokazi za završnu predaju
 
+Stanje provereno 22. 11. 2026: aktivna grana je `main`, bazni HEAD `9cf7fc68e1c41b1efbe0f9d3d8e0c80516a6495c`, a tag `capstone-v1` još ne postoji. Lokalna grana `security-audit-fixes` i lokalne remote reference pokazuju na isti commit; remote nije osvežavan. Vlasnik projekta je 23. 11. potvrdio raspodelu uloga A–D; CAP-08 lične izjave i odobrenje live provera i dalje čekaju.
+
 Faze 1–3 su završene. Faza 3 je dodala živu evaluaciju, ciljane izmene posle baseline-a i proveru kroz interfejs sa stvarnim modelom. Glavni dokazi:
 
-- **16 EV slučajeva sa stvarnim modelom:** `baseline` 13/16 → `final` 16/16 → `predaja-3` 16/16 na commit-u `a62df6b` ([eval/results/](eval/results/), [postupak](docs/evaluation.md)).
-- **Glavni tok kroz web sa stvarnim modelom:** profil → dopunsko pitanje → rezultat sa citatom i linkom ka registru → „Šta ako?“ u istom `runId` ([eval/results/ui-live/predaja-ui-3/](eval/results/ui-live/predaja-ui-3/), snimci i `run.json`).
+- **Istorijski live EV rezultat:** `baseline` 13/16 → `final` 16/16 → `predaja-3` 16/16 na commit-u `a62df6b` ([eval/results/](eval/results/), [postupak](docs/evaluation.md)); nije ponovljen u današnjoj proveri.
+- **Sačuvan glavni tok kroz web sa stvarnim modelom:** profil → dopunsko pitanje → rezultat sa citatom i linkom ka registru → „Šta ako?“ u istom `runId` ([eval/results/ui-live/predaja-ui-3/](eval/results/ui-live/predaja-ui-3/), snimci i `run.json`; istorijski run na commit-u `2a4e71d`).
 - **Mapa dokaza** sa režimom i korpusom svakog prolaza: [docs/evidence-map.md](docs/evidence-map.md).
+
+### Offline provera na checkout-u zasnovanom na `9cf7fc6` (22. 11. 2026)
+
+Sa pnpm `12.16.1`: typecheck, lint, build, svih 417 testova, smoke, offline EV, gold metrike, priprema lokalnog skupa, sqlite-vec smoke, Chromium E2E (3/3) i fake/offline RAG provera su prošli. Nijedna od ovih provera nije pozvala stvarni model. Detalji režima, korpusa, izlaznih putanja i ograničenja su u [mapi dokaza](docs/evidence-map.md) i [evaluaciji](docs/evaluation.md).
+
+Izolovan klon je napravljen iz lokalnog Git izvora u `/tmp`; frozen instalacija nije završena jer offline pnpm store nema `@types/react@19.3.0`. Nije pokušana mrežna instalacija, pa provere nisu ponovljene u tom klonu. Novi `eval/results/` artefakti su git-ignorisani i nisu deo commita; njihovi ishodi su sažeti u dokumentaciji. Ova radna kopija sadrži necommitovane izmene formatiranja i predajnih beleški; nije završna označena verzija.
 
 ### Šta drugi član može da ponovi
 

@@ -57,9 +57,7 @@ export class EmbeddingError extends Error {
 
 class NonRetryableEmbeddingError extends EmbeddingError {}
 
-export function embeddingFailureReason(
-  error: unknown,
-): EmbeddingFailureReason {
+export function embeddingFailureReason(error: unknown): EmbeddingFailureReason {
   if (error instanceof EmbeddingError) return error.reason;
   if (
     error instanceof Error &&
@@ -164,9 +162,7 @@ export class OpenAIEmbeddingClient implements Embedder {
           error instanceof NonRetryableEmbeddingError
         )
           throw error;
-        await new Promise((resolve) =>
-          setTimeout(resolve, 100 * 2 ** attempt),
-        );
+        await new Promise((resolve) => setTimeout(resolve, 100 * 2 ** attempt));
       }
     }
     throw new EmbeddingError(
@@ -194,25 +190,19 @@ export class OpenAIEmbeddingClient implements Embedder {
     } catch (error) {
       const reason = embeddingFailureReason(error);
       throw new EmbeddingError(
-        reason === "embedding_timeout"
-          ? reason
-          : "embedding_network_error",
+        reason === "embedding_timeout" ? reason : "embedding_network_error",
         "OpenAI embeddings transport nije uspeo.",
         { cause: error },
       );
     }
     if (!response.ok) {
-      const message =
-        `OpenAI embeddings zahtev nije uspeo (HTTP ${response.status}); proverite ključ, model i pristup endpoint-u.`;
+      const message = `OpenAI embeddings zahtev nije uspeo (HTTP ${response.status}); proverite ključ, model i pristup endpoint-u.`;
       if (response.status !== 429 && response.status < 500)
         throw new NonRetryableEmbeddingError(
           `embedding_http_${response.status}`,
           message,
         );
-      throw new EmbeddingError(
-        `embedding_http_${response.status}`,
-        message,
-      );
+      throw new EmbeddingError(`embedding_http_${response.status}`, message);
     }
 
     let payload: unknown;

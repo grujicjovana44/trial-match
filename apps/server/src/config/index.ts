@@ -40,7 +40,9 @@ const ConfigSchema = z
         typeof value === "string" && value.trim() === "" ? undefined : value,
       z.string().min(1).optional(),
     ),
-    COHERE_RERANK_MODEL: z.literal("rerank-v5.0-fast").default("rerank-v5.0-fast"),
+    COHERE_RERANK_MODEL: z
+      .literal("rerank-v5.0-fast")
+      .default("rerank-v5.0-fast"),
     DATA_DIR: z.string().min(1).default("data/fixtures"),
     DATASET_PROFILE: z
       .enum(["fixtures", "clinicaltrials-20"])

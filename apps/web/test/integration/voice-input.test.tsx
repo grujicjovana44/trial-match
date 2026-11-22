@@ -22,9 +22,7 @@ afterEach(() => {
 });
 
 function profileField(): HTMLTextAreaElement {
-  return screen.getByLabelText(
-    "Opišite profil",
-  ) as HTMLTextAreaElement;
+  return screen.getByLabelText("Opišite profil") as HTMLTextAreaElement;
 }
 
 function dictate(): void {

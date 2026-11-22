@@ -41,11 +41,7 @@ export interface CandidateReranker {
 }
 
 export type AppliedReranker =
-  | "cohere"
-  | "fallback-rrf"
-  | "gemini"
-  | "deterministic"
-  | "disabled";
+  "cohere" | "fallback-rrf" | "gemini" | "deterministic" | "disabled";
 export type RerankerFallbackReason =
   | "timeout"
   | "http_error"
@@ -59,7 +55,8 @@ export type RetrievalTrace = {
   retrievalMode: "hybrid" | "lexical_fallback" | "lexical_only";
   fallbackReason?: EmbeddingFailureReason;
   vectorHitCount: number;
-  reranking: "deterministic" | "gemini" | "cohere" | "rrf_fallback" | "disabled";
+  reranking:
+    "deterministic" | "gemini" | "cohere" | "rrf_fallback" | "disabled";
   appliedReranker: AppliedReranker;
   rerankerFallbackReason?: RerankerFallbackReason;
   metadataFilters: { state?: string; status?: string };
@@ -90,7 +87,8 @@ function compareRanked(left: RankedCandidate, right: RankedCandidate): number {
 
 function classifyRerankerFallback(error: unknown): RerankerFallbackReason {
   const message = error instanceof Error ? error.message : String(error);
-  if (error instanceof DOMException && error.name === "TimeoutError") return "timeout";
+  if (error instanceof DOMException && error.name === "TimeoutError")
+    return "timeout";
   if (/timeout|aborted|abort/iu.test(message)) return "timeout";
   if (/HTTP greška/iu.test(message)) return "http_error";
   if (/API ključ/iu.test(message)) return "missing_key";
@@ -98,7 +96,10 @@ function classifyRerankerFallback(error: unknown): RerankerFallbackReason {
   return "provider_error";
 }
 
-function logReranker(application: AppliedReranker, reason?: RerankerFallbackReason): void {
+function logReranker(
+  application: AppliedReranker,
+  reason?: RerankerFallbackReason,
+): void {
   console.info(
     JSON.stringify({
       event: "retrieval_reranker",

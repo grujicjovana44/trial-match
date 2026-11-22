@@ -14,7 +14,16 @@ export type RagasStyleMetrics = {
 };
 
 function tokens(value: string): Set<string> {
-  const stopWords = new Set(["and", "or", "the", "with", "for", "of", "a", "an"]);
+  const stopWords = new Set([
+    "and",
+    "or",
+    "the",
+    "with",
+    "for",
+    "of",
+    "a",
+    "an",
+  ]);
   return new Set(
     value
       .toLocaleLowerCase("en")
@@ -38,9 +47,7 @@ function mean(values: readonly number[]): number | null {
     : null;
 }
 
-export function evaluateRagasStyle(
-  sample: RagasSample,
-): RagasStyleMetrics {
+export function evaluateRagasStyle(sample: RagasSample): RagasStyleMetrics {
   const supportedClaims = sample.answerClaims.map((claim) =>
     sample.contexts.some((context) => overlapRatio(claim, context) >= 0.5)
       ? 1

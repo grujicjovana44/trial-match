@@ -118,10 +118,10 @@ Ovaj odeljak je aktuelni rezultat žive evaluacije. Prethodni odeljci ostaju ist
 
 Oba pokretanja koriste isti model (`gemini-3.5-flash-lite`), istih 16 EV slučajeva, sintetičke fixture studije T-A, T-B i T-C, deterministički leksički retriever (`retrieval: lexical-injected`) i iste limite: najviše 60 pokušaja, 2.000.000 ulaznih bajtova i 122.880 izlaznih tokena. Odobrio ih je Aleksa Durutović; approval zapis je u direktorijumu svakog pokretanja. Oba su pokrenuta sa čistog commit-a (`dirty: false`) na grani `phase-3-eval`.
 
-| Pokretanje | Commit | Hash skupa slučajeva | Ishod | Pokušaji modela | Pokušaji bez usage-a | Tokeni ulaz / izlaz |
-|---|---|---|---|---|---|---|
-| `eval/results/baseline/` | `57f904b` | `8af2271d…` | 13/16 prošlo | 24 | 7 | 13.971 / 2.748 |
-| `eval/results/final/` | `ed7f762` | `e008103c…` | 16/16 prošlo | 21 | 5 | 13.111 / 2.307 |
+| Pokretanje               | Commit    | Hash skupa slučajeva | Ishod        | Pokušaji modela | Pokušaji bez usage-a | Tokeni ulaz / izlaz |
+| ------------------------ | --------- | -------------------- | ------------ | --------------- | -------------------- | ------------------- |
+| `eval/results/baseline/` | `57f904b` | `8af2271d…`          | 13/16 prošlo | 24              | 7                    | 13.971 / 2.748      |
+| `eval/results/final/`    | `ed7f762` | `e008103c…`          | 16/16 prošlo | 21              | 5                    | 13.111 / 2.307      |
 
 Zbir tokena obuhvata samo pokušaje za koje je provajder vratio podatak o potrošnji; neuspeli pokušaji (u trace-u `outcome: failed`, npr. `errorKind: http_5xx`) nisu uračunati. Cena nije izračunata jer nema proverenog cenovnika sa datumom.
 
@@ -197,14 +197,14 @@ Ispravno su radili:
 
 Provera je otkrila šest problema. Nijedan nije bio vidljiv u testovima ni u EV evaluaciji, jer fixture studije nemaju kriterijume isključenja, a EV slučajevi ne proveravaju tekst objašnjenja. Svi su ispravljeni posle commit-a `ed7f762`:
 
-| Nalaz | Posledica | Ispravka |
-|---|---|---|
-| Kriterijum isključenja sa statusom `met` prikazan je kao „Ispunjen“ (npr. „HbA1c >10.0%“ uz HbA1c 8,1%) | Lekar može da pomisli da isključenje važi | Oznake „Ne odnosi se“ / „Odnosi se“ i vrsta kriterijuma (FR-035) |
-| Odgovor „HbA1c 8,1%“ na pitanje HbA1c/glukoza nije prihvaćen; „šećer“ nije prepoznat kao glukoza | Provera ostaje zaglavljena na istom pitanju | Parser odgovora prihvata oznaku polja ispred broja; prepoznavanje glukoze koristi Unicode granice |
-| Objašnjenje modela se nikada nije prikazivalo, iako je poziv plaćen | AI objašnjenje nevidljivo, suprotno odluci i opisu projekta | Prikazuje se kada prođe proveru citata i brojeva; inače šablon; poreklo je navedeno u interfejsu (FR-037) |
-| Provera brojeva je u „NCT06449833“ prepoznavala broj 6449833 | Svako objašnjenje koje pominje studiju bilo je odbačeno | Jedinstven tokenizer brojeva za objašnjenje i izvore |
-| Objašnjenje modela navelo je pogrešan broj ispunjenih kriterijuma, rečima | Netačna tvrdnja u tekstu modela | Prompt `explain_results.v2` zabranjuje navođenje zbirova; zbirove prikazuje kod |
-| Escape iz registra (`\>`), „62 years“ i zbirni red sa nulama pre provere | Slabija čitljivost | Prikaz bez escape-a (FR-036), jedinica „godina“, zbir se skriva dok nema provere |
+| Nalaz                                                                                                   | Posledica                                                   | Ispravka                                                                                                  |
+| ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Kriterijum isključenja sa statusom `met` prikazan je kao „Ispunjen“ (npr. „HbA1c >10.0%“ uz HbA1c 8,1%) | Lekar može da pomisli da isključenje važi                   | Oznake „Ne odnosi se“ / „Odnosi se“ i vrsta kriterijuma (FR-035)                                          |
+| Odgovor „HbA1c 8,1%“ na pitanje HbA1c/glukoza nije prihvaćen; „šećer“ nije prepoznat kao glukoza        | Provera ostaje zaglavljena na istom pitanju                 | Parser odgovora prihvata oznaku polja ispred broja; prepoznavanje glukoze koristi Unicode granice         |
+| Objašnjenje modela se nikada nije prikazivalo, iako je poziv plaćen                                     | AI objašnjenje nevidljivo, suprotno odluci i opisu projekta | Prikazuje se kada prođe proveru citata i brojeva; inače šablon; poreklo je navedeno u interfejsu (FR-037) |
+| Provera brojeva je u „NCT06449833“ prepoznavala broj 6449833                                            | Svako objašnjenje koje pominje studiju bilo je odbačeno     | Jedinstven tokenizer brojeva za objašnjenje i izvore                                                      |
+| Objašnjenje modela navelo je pogrešan broj ispunjenih kriterijuma, rečima                               | Netačna tvrdnja u tekstu modela                             | Prompt `explain_results.v2` zabranjuje navođenje zbirova; zbirove prikazuje kod                           |
+| Escape iz registra (`\>`), „62 years“ i zbirni red sa nulama pre provere                                | Slabija čitljivost                                          | Prikaz bez escape-a (FR-036), jedinica „godina“, zbir se skriva dok nema provere                          |
 
 Posle ispravki, dva uzastopna poziva sa istim profilom dala su objašnjenje modela koje je prošlo proveru (`model_explanation_shown`). Tekst opisuje dva ili tri konkretna kriterijuma sa oznakom studije i ne navodi zbirove.
 
@@ -214,9 +214,9 @@ Uticaj na evaluaciju: završni run (`ed7f762`) prethodi ovim izmenama. EV prover
 
 Posle ispravki iz provere uživo i usklađivanja sa planom projekta (commit `54c00c7`: prompt `explain_results.v2`, objašnjenje modela uz proveru citata i brojeva iz citiranih odlomaka, filter „bez BMI“ i za izvore objašnjenja, podrazumevani reranker) pokrenut je jedan novi live run nad istim skupom slučajeva. `baseline/` i `final/` nisu menjani.
 
-| Pokretanje | Commit | Hash skupa slučajeva | Ishod | Pokušaji modela | Pokušaji bez usage-a | Tokeni ulaz / izlaz |
-|---|---|---|---|---|---|---|
-| `eval/results/release/` | `54c00c7` | `e008103c…` | 16/16 prošlo | 22 | 5 | 14.814 / 2.488 |
+| Pokretanje              | Commit    | Hash skupa slučajeva | Ishod        | Pokušaji modela | Pokušaji bez usage-a | Tokeni ulaz / izlaz |
+| ----------------------- | --------- | -------------------- | ------------ | --------------- | -------------------- | ------------------- |
+| `eval/results/release/` | `54c00c7` | `e008103c…`          | 16/16 prošlo | 22              | 5                    | 14.814 / 2.488      |
 
 - Po grupama ([`summary.json`](../eval/results/release/summary.json)): funkcionalni EV-01–EV-09 9/9, bezbednosni EV-10 1/1, determinističke i fault provere EV-11–EV-16 6/6. Ovo je prvi run koji piše `summary.json`.
 - `pnpm eval:compare eval/results/final eval/results/release`: nijedan slučaj nije promenio ishod.
@@ -242,11 +242,11 @@ Od 2026-11-20 runner pored `manifest.json` (stanje tokom pokretanja) piše i `su
 
 Posle bezbednosnih ispravki (`957b8f5`), LF krajeva redova (`.gitattributes`) i alata za živi UI prolaz pokrenuta su tri nova live runa nad istim skupom slučajeva (`e008103c…`), sa istim modelom i limitima kao `release`. Odobrio ih je Aleksa Durutović; approval zapisi su u `eval/results/approvals/`. Raniji direktorijumi nisu menjani.
 
-| Pokretanje | Commit | `dirty` | Ishod | Pokušaji / bez usage-a | Napomena |
-|---|---|---|---|---|---|
-| `eval/results/predaja/` | `46dd5d5` | `false` | 15/16 | 21 / 6 | EV-10: prvi zahtev dobio `http_429` tri puta (početni + dva ponovna pokušaja) → `provider_rate_limit` |
-| `eval/results/predaja-2/` | `2a4e71d` | `true` | 15/16 | 20 / 4 | isti uzrok za EV-10; `dirty` zbog nepraćenog direktorijuma `predaja/` |
-| `eval/results/predaja-3/` | `a62df6b` | `false` | **16/16** | 18 / 0 | `--case-delay-ms 8000`; nijedan `http_429` |
+| Pokretanje                | Commit    | `dirty` | Ishod     | Pokušaji / bez usage-a | Napomena                                                                                              |
+| ------------------------- | --------- | ------- | --------- | ---------------------- | ----------------------------------------------------------------------------------------------------- |
+| `eval/results/predaja/`   | `46dd5d5` | `false` | 15/16     | 21 / 6                 | EV-10: prvi zahtev dobio `http_429` tri puta (početni + dva ponovna pokušaja) → `provider_rate_limit` |
+| `eval/results/predaja-2/` | `2a4e71d` | `true`  | 15/16     | 20 / 4                 | isti uzrok za EV-10; `dirty` zbog nepraćenog direktorijuma `predaja/`                                 |
+| `eval/results/predaja-3/` | `a62df6b` | `false` | **16/16** | 18 / 0                 | `--case-delay-ms 8000`; nijedan `http_429`                                                            |
 
 - `pnpm eval:compare eval/results/release eval/results/predaja-3`: nijedan slučaj nije promenio ishod. U `predaja` i `predaja-2` jedina promena je EV-10, a oba puta je uzrok minutni limit provajdera, ne odgovor aplikacije. Drugi zahtev EV-10 u `predaja` (izvor sa zlonamernom instrukcijom) prošao je normalno.
 - Već `release` je imao pet `429` odgovora u EV-10 i prošao je zahvaljujući ponovnim pokušajima. Runner zato dobija opciju `--case-delay-ms` (podrazumevano 0): pauza pre svakog sledećeg `real_model` slučaja, upisana u `limits.requested.caseDelayMs`. Ne menja ulaze, aplikaciju ni ocenjivanje. Granica ponovnih pokušaja u aplikaciji (EV-15) nije menjana.
@@ -277,13 +277,13 @@ node --env-file=.env dist/eval/runner/rag-offline.js --dataset eval/rag/retrieva
 
 Proseci preko 7 ranking slučajeva (ukupno 10 relevantnih studija):
 
-| Varijanta | nDCG@5 | nDCG@10 | Recall@5 | Recall@10 | MRR@10 | Tačna prva studija |
-|---|---|---|---|---|---|---|
-| leksička (MiniSearch) | 0,416 | 0,485 | 0,500 | 0,714 | 0,409 | 2/7 |
-| vektorska | 0,653 | 0,653 | 0,929 | 0,929 | 0,576 | 3/7 |
-| hibridna (RRF) | 0,699 | 0,747 | 0,786 | 0,929 | 0,699 | 4/7 |
-| hibridna + deterministički reranker | 0,460 | 0,503 | 0,786 | 0,929 | 0,366 | 1/7 |
-| **hibridna + Cohere reranker** | **0,892** | **0,892** | **0,929** | 0,929 | **0,929** | **6/7** |
+| Varijanta                           | nDCG@5    | nDCG@10   | Recall@5  | Recall@10 | MRR@10    | Tačna prva studija |
+| ----------------------------------- | --------- | --------- | --------- | --------- | --------- | ------------------ |
+| leksička (MiniSearch)               | 0,416     | 0,485     | 0,500     | 0,714     | 0,409     | 2/7                |
+| vektorska                           | 0,653     | 0,653     | 0,929     | 0,929     | 0,576     | 3/7                |
+| hibridna (RRF)                      | 0,699     | 0,747     | 0,786     | 0,929     | 0,699     | 4/7                |
+| hibridna + deterministički reranker | 0,460     | 0,503     | 0,786     | 0,929     | 0,366     | 1/7                |
+| **hibridna + Cohere reranker**      | **0,892** | **0,892** | **0,929** | 0,929     | **0,929** | **6/7**            |
 
 Sa lažnim embeddings-om, nad istim skupom, vektorska varijanta ima nDCG@10 0,466 i Recall@10 0,571, a hibridna nDCG@10 0,681. Leksička varijanta je u oba režima ista jer ne koristi embeddings.
 
@@ -304,3 +304,13 @@ Na nivou odlomaka nDCG@5 je nizak u svim varijantama (0,12–0,20): odlomci koje
 - Oznake su oznake retrieval relevantnosti jedne osobe, bez kliničkog pregleda.
 - Cohere je meren samo nad ovim skupom i samo sa rokom od 2.000 ms. Rang Cohere-a zavisi od spoljnog servisa i verzije modela, pa ponovljeni run može malo da odstupi.
 - Lokalni live server u proveri uživo koristio je `RAG_RERANKER=cohere`, a šema konfiguracije je tada podrazumevano postavljala `deterministic`. Na ovom skupu deterministički reranker je lošiji i od hibridne pretrage bez reranker-a, a Cohere je najbolji. Zato je podrazumevana vrednost promenjena: bez podešenog `RAG_RERANKER` koristi se `cohere` u LIVE režimu kada postoji `COHERE_API_KEY`, a inače (i uvek u DEMO režimu) `disabled` (`docs/decisions.md`).
+
+## Ponovljene offline provere — 2026-11-22
+
+Provere su izvršene sa pnpm `12.16.1` na radnoj kopiji zasnovanoj na HEAD `9cf7fc68e1c41b1efbe0f9d3d8e0c80516a6495c`, posle formatiranja održavanog izvornog koda. Checkout je bio izmenjen, pa je novi EV sažetak naveo `commit: unavailable`; ne pripisuje se čistom commit-u. Nisu pozivani stvarni modeli.
+
+- `pnpm eval:offline`: offline/fault EV-11–EV-16 prošli su 6/6; 7 live slučajeva preskočeno, a 3 dry-run slučaja ne ulaze u PASS broj. `model_id=mock/offline`, `data_version=synthetic-trials-v1`. Lokalni artefakt `eval/results/offline-2026-11-22T22-46-05.399Z-36be8107/` je u git-ignorisanom `eval/results/`.
+- `pnpm gold:metrics`: 8 primera, TP=9, FP=0, FN=1, precision=1.0 i recall=0.9. To je sintetički razvojni skup, ne statistička potvrda.
+- `pnpm eval:rag:offline`: podrazumevani fake/hash režim (`offline-rag-hash-v1`), skup `rag-retrieval-v2`, snapshot `rag-corpus-v0-dev`, četiri slučaja i deterministički reranker. `annotationStatus=pending_human_review`; VectorStore paritet je `true`. Izveštaj je `eval/results/rag/offline-fake-2026-11-22T22-46-59.789Z/summary.json`, takođe git-ignorisan.
+
+Fake/hash embeddings daju samo dijagnostički signal o evaluatoru i lokalnom toku retrieval-a. Nisu dokaz semantičkog kvaliteta niti opravdavaju zaključak o kvalitetu reranking-a. Human review oznaka ostaje `pending_human_review`; ranije adjudikovane oznake ostaju vezane za svoje verzionisane korpuse. Sirovi rezultati ovih novih provera su git-ignorisan lokalni izlaz, a dokumentacioni sažetak još nije commit-ovan; nijedno se ne računa kao verzionisani dokaz predaje dok ne bude uključeno u završni commit.

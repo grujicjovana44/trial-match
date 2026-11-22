@@ -34,4 +34,3 @@ The global `pnpm format:check` failed because Prettier reports 210 files reposit
 ## Limitations that govern interpretation
 
 Lexicon-v3 measurements are a separate run and are **not comparable** to frozen `baseline-v2`; the v3 fix is targeted at RAG-002 and does not establish general retrieval quality. Hash embeddings are not semantic evidence. Two ranking cases are too few for a robust reranker conclusion. ClinicalTrials.gov provenance records endpoints, dates and hashes, and its terms require attribution, currentness, processed-date disclosure and modification description; third-party rights may apply, so this is not blanket legal clearance. P003 is negative only within its five-study snapshot. The 18 new studies remain matcher-unknown.
-

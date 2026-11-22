@@ -17,7 +17,8 @@ describe("index:build options", () => {
 
   it("clinicaltrials-20 bira isključivo odobrene rule_set korene", () => {
     expect(
-      parseBuildOptions([], { DATASET_PROFILE: "clinicaltrials-20" }).corpusRoots,
+      parseBuildOptions([], { DATASET_PROFILE: "clinicaltrials-20" })
+        .corpusRoots,
     ).toEqual([...CLINICALTRIALS_20_CORPUS_ROOTS]);
   });
 

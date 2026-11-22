@@ -115,7 +115,7 @@ export const RetrievalDatasetSchema = z
       if (
         (testCase.labelStatus === "proposed" &&
           (testCase.reviewer !== "TODO" || testCase.reviewedAt !== "TODO")) ||
-      (testCase.labelStatus !== "proposed" &&
+        (testCase.labelStatus !== "proposed" &&
           (testCase.reviewer === "TODO" || testCase.reviewedAt === "TODO"))
       )
         ctx.addIssue({

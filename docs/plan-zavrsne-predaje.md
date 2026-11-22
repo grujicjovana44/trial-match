@@ -1,6 +1,6 @@
 # Plan završne predaje — odgovor na Capstone feedback od 20. 11. 2026.
 
-Rokovi: **24. 11.** predaja označene verzije, **25. 11.** demo. Stanje: 22. 11. 2026, grana `security-audit-fixes` (ne spaja se u `main` u okviru ovog plana).
+Rokovi: **24. 11.** predaja označene verzije, **25. 11.** demo. Stanje provereno 22. 11. 2026: aktivna grana `main`, bazni HEAD `9cf7fc68e1c41b1efbe0f9d3d8e0c80516a6495c`, bez tagova. Lokalna `security-audit-fixes` i lokalni `origin/main`/`origin/security-audit-fixes` pokazuju na isti commit; nije rađen `git fetch` niti pristup remote-u.
 
 Feedback je pregledao `main` na `2ed092f` i `phase-3-eval` na `93a4d5f`. Posle prepisivanja istorije 21. 11. ti commit-ovi su `b64098d` i `cc13c91`. Tabela svih starih i novih SHA nalazi se u [mapi dokaza](evidence-map.md).
 
@@ -15,18 +15,27 @@ Feedback je pregledao `main` na `2ed092f` i `phase-3-eval` na `93a4d5f`. Posle p
 | Demo 25. 11.                                           | Scenario: uspešan prolaz sa dopunom, nedovoljno podataka („šećer“), kontrolisana greška (provereno kroz API) i rezervni plan                                                     | [demo-script.md](demo-script.md)                                 |
 | Windows checkout                                       | T323 sada prolazi zahvaljujući `.gitattributes` (LF)                                                                                                                             | `pnpm test` bez padova                                           |
 | Bezbednosni audit                                      | `SECURITY_AUDIT.md` i `SECURITY_REMEDIATION.md` su u repozitorijumu                                                                                                              | koren repozitorijuma                                             |
+| Današnje offline provere                               | `pnpm` 12.16.1: typecheck, lint, build, test, smoke, offline EV, gold, data prepare, Chromium E2E, sqlite i fake RAG PASS                                                        | Detalji, korpusi i putanje u [mapi dokaza](evidence-map.md)      |
+| Format provera                                         | Održavani kod/dokumenti formatirani; raw/hash-pinned/eval izvori usko izuzeti uz obrazloženje; završni check PASS                                                                | `.prettierignore`, `pnpm format:check`                           |
 
 Usput nađeno i zabeleženo: EV-10 je u dva runa pao na minutnom limitu provajdera (`http_429`). Aplikacija se pri tom završila kontrolisano. Runner je dobio opcionu pauzu između slučajeva (`--case-delay-ms`). Neuspeli runovi su sačuvani.
 
 ## Status zadataka za završnu predaju
 
-| #   | Zadatak                                                                                     | Ko                     | Gotovo kada                                                                                                                |
-| --- | ------------------------------------------------------------------------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| 1   | `git fetch` i osvežavanje kopije                                                            | Igor                   | izvršeno; ovaj checkout prati `origin/security-audit-fixes` na `ba74268`; ostali članovi treba da osveže svoje kopije      |
-| 2   | **Tag `capstone-v1`**                                                                       | tim                    | provere su završene; tag čeka beleške ostalih članova i potvrdu raspodele uloga                                             |
-| 3   | **Provera iz čistog checkout-a**, prema README-ju                                           | Igor                   | završen na klonu `ba74268`; offline provere PASS, E2E 3/3 PASS sa Playwright Chromium, README profil PASS kroz `pnpm demo` |
-| 4   | `docs/team.md`: uloge A–D i pregledači                                                      | Igor                   | tabela popunjena predlogom iz istorije; direktna potvrda tima još nedostaje                                                |
-| 5   | CAP-08 beleška `docs/team/<ime>.md` za svakog člana                                         | svaki član             | Igorova je u `docs/team/igor.md`; Jovana, Jelena i Aleksa treba da dodaju svoje pre taga                                   |
+| #   | Zadatak                                             | Ko         | Gotovo kada                                                                                                                                   |
+| --- | --------------------------------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Provera grane i lokalnih Git referenci              | Igor       | `main` i lokalne `security-audit-fixes` reference su na `9cf7fc6`; remote nije osvežavan zbog offline ograničenja                             |
+| 2   | **Tag `capstone-v1`**                               | tim        | ne praviti dok ne stignu CAP-08 izjave, odobrenja za žive provere i završne provere; raspodela uloga je potvrđena                             |
+| 3   | **Provera iz čistog checkout-a**, prema README-ju   | Igor       | lokalni klon na `9cf7fc6` napravljen; offline instalacija blokirana nedostajućim tarball-om `@types/react@19.3.0`; ponovljeno u radnoj kopiji |
+| 4   | `docs/team.md`: uloge A–D i pregledači              | tim        | potvrđeno od vlasnika projekta 23. 11. 2026; mapa je u `docs/team.md`                                                                         |
+| 5   | CAP-08 beleška `docs/team/<ime>.md` za svakog člana | svaki član | Igorova beleška postoji; Jovana, Jelena i Aleksa imaju prazne šablone koji čekaju njihove izjave                                              |
+
+## Otvoreno za ljudsku proveru
+
+- Jovana, Jelena i Aleksa treba da popune CAP-08 šablone svojim doprinosima, odlukom i proverom, vezom sa glavnim tokom, ograničenjem, primerom pregleda rada drugog člana i AI primerom (ili potvrdom da AI nije korišćen).
+- Jovana, Jelena i Aleksa treba sami da dostave CAP-08 izjave; korisnik ne potvrđuje doprinose u njihovo ime.
+- Vlasnik projekta treba da odobri konkretne live komande i brojčanu/provider-enforced budžetsku granicu. Gemini `3.5 Flash Lite` free tier i kvote 15 RPM / 250K TPM / 500 RPD su prijavljeni, ali nisu novčani plafon; OpenAI kvota/budžet nije poznata. Nijedna nova live provera nije odobrena niti pokrenuta.
+- Uslove korišćenja/licencu podataka treba ljudski proveriti pre javnog objavljivanja. Nije data tvrdnja da je licenca potvrđena.
 
 ## Van opsega
 

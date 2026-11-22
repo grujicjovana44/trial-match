@@ -1,8 +1,5 @@
 import { z } from "zod";
-import type {
-  CandidateReranker,
-  RerankCandidate,
-} from "./hybrid-retrieve.js";
+import type { CandidateReranker, RerankCandidate } from "./hybrid-retrieve.js";
 
 export const COHERE_RERANK_MODEL = "rerank-v5.0-fast" as const;
 const MAX_CANDIDATES = 20;
@@ -27,7 +24,9 @@ export class CohereCandidateReranker implements CandidateReranker {
     private readonly timeoutMs = 2_000,
   ) {
     if (model !== COHERE_RERANK_MODEL)
-      throw new Error("Cohere reranker zahteva odobreni model rerank-v5.0-fast.");
+      throw new Error(
+        "Cohere reranker zahteva odobreni model rerank-v5.0-fast.",
+      );
     if (!Number.isSafeInteger(timeoutMs) || timeoutMs <= 0)
       throw new Error("RAG reranker timeout mora biti pozitivan ceo broj.");
   }
@@ -71,14 +70,17 @@ export class CohereCandidateReranker implements CandidateReranker {
       throw new Error("Cohere reranker vratio je neispravan JSON.");
     }
     const parsed = CohereResponseSchema.safeParse(raw);
-    if (!parsed.success) throw new Error("Cohere reranker odgovor nije validan.");
+    if (!parsed.success)
+      throw new Error("Cohere reranker odgovor nije validan.");
     const results = parsed.data.results;
     if (
       results.length !== candidates.length ||
       new Set(results.map(({ index }) => index)).size !== results.length ||
       results.some(({ index }) => index >= candidates.length)
     )
-      throw new Error("Cohere reranker nije vratio svaki kandidat tačno jednom.");
+      throw new Error(
+        "Cohere reranker nije vratio svaki kandidat tačno jednom.",
+      );
 
     return results.map(({ index, relevance_score }) => ({
       id: candidates[index]!.id,

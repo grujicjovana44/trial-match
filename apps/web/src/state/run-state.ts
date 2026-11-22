@@ -76,9 +76,7 @@ export function runReducer(state: RunState, action: RunAction): RunState {
         return {
           ...state,
           phase: "error",
-          ...(preservesResult
-            ? {}
-            : { result: null, resultKind: null }),
+          ...(preservesResult ? {} : { result: null, resultKind: null }),
           pending: null,
           error: uiErrorFromCategory(
             response.error,

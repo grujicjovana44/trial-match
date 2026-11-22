@@ -158,8 +158,12 @@ describe("Jovanine oznake za aktivni 20-study korpus", () => {
   it("čuva osam potvrđenih relevance oznaka bez mešanja sa kliničkim pregledom", () => {
     expect(dataset.annotationStatus).toBe("adjudicated");
     expect(dataset.cases).toHaveLength(8);
-    expect(dataset.cases.filter((testCase) => testCase.kind === "ranking")).toHaveLength(7);
-    expect(dataset.cases.filter((testCase) => testCase.kind === "negative")).toMatchObject([
+    expect(
+      dataset.cases.filter((testCase) => testCase.kind === "ranking"),
+    ).toHaveLength(7);
+    expect(
+      dataset.cases.filter((testCase) => testCase.kind === "negative"),
+    ).toMatchObject([
       {
         caseId: "J-RAG-07",
         relevantTrialIds: [],
@@ -169,7 +173,9 @@ describe("Jovanine oznake za aktivni 20-study korpus", () => {
       },
     ]);
     expect(dataset.annotationMethod).toContain("not clinical review");
-    expect(dataset.cases.every((testCase) => testCase.reviewer === "Jovana")).toBe(true);
+    expect(
+      dataset.cases.every((testCase) => testCase.reviewer === "Jovana"),
+    ).toBe(true);
   });
 });
 

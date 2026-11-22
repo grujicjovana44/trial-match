@@ -81,10 +81,7 @@ export function parseBuildOptions(
       : [...DEFAULT_CORPUS_ROOTS];
 
   return {
-    corpusRoots:
-      corpusRoots.length > 0
-        ? corpusRoots
-        : defaultCorpusRoots,
+    corpusRoots: corpusRoots.length > 0 ? corpusRoots : defaultCorpusRoots,
     indexPath:
       indexPathExplicit || !env.RAG_INDEX_PATH?.trim()
         ? indexPath

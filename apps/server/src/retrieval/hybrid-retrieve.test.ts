@@ -348,7 +348,9 @@ describe("hibridni retrieval", () => {
     expect(result.trials.map((item) => item.trialId)).toEqual(["T-X"]);
     expect(result.retrievalTrace?.reranking).toBe("rrf_fallback");
     expect(result.retrievalTrace?.appliedReranker).toBe("fallback-rrf");
-    expect(result.retrievalTrace?.rerankerFallbackReason).toBe("provider_error");
+    expect(result.retrievalTrace?.rerankerFallbackReason).toBe(
+      "provider_error",
+    );
     expect(log).toHaveBeenCalledWith(
       JSON.stringify({
         event: "retrieval_reranker",

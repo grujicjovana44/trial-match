@@ -125,9 +125,9 @@ describe("criteria gold metrics", () => {
       traceId: null,
     };
 
-    expect(scoreCriteria([expected], [candidate], datasetVersion)).toMatchObject(
-      { tp: 1, fp: 0, fn: 0, precision: 1, recall: 1 },
-    );
+    expect(
+      scoreCriteria([expected], [candidate], datasetVersion),
+    ).toMatchObject({ tp: 1, fp: 0, fn: 0, precision: 1, recall: 1 });
   });
 
   it("rejects duplicate IDs, duplicate atoms, and mismatched source hashes", () => {
@@ -211,7 +211,10 @@ describe("criteria gold metrics", () => {
       sourcePackage: string;
       sourcePackageSha256: string;
       predictionBasis: string;
-      artifacts: { annotations: { sha256: string }; predictions: { sha256: string } };
+      artifacts: {
+        annotations: { sha256: string };
+        predictions: { sha256: string };
+      };
     };
     const proposalContents = await readFile(
       `${base}/annotation-proposals.json`,
@@ -254,7 +257,9 @@ describe("criteria gold metrics", () => {
       complex_manual_review: 10,
       manual_review_text: 10,
     });
-    expect(digest(proposalContents)).toBe(manifest.artifacts.annotations.sha256);
+    expect(digest(proposalContents)).toBe(
+      manifest.artifacts.annotations.sha256,
+    );
     expect(digest(predictionContents)).toBe(
       manifest.artifacts.predictions.sha256,
     );
@@ -263,9 +268,9 @@ describe("criteria gold metrics", () => {
     expect(proposal.samples.every((sample) => sample.reviewer === null)).toBe(
       true,
     );
-    expect(
-      proposal.samples.every((sample) => sample.reviewedAt === null),
-    ).toBe(true);
+    expect(proposal.samples.every((sample) => sample.reviewedAt === null)).toBe(
+      true,
+    );
     expect(
       proposal.samples.every(
         (sample) => digest(sample.originalText) === sample.sourceHash,

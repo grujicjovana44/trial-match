@@ -11,3 +11,20 @@ eval/*.jsonl
 specs/
 docs/project-brief.md
 docs/decisions.md
+
+# Source captures and versioned dataset payloads: formatting would change the
+# original bytes or hashes used for provenance and rule approvals.
+data/raw/
+data/review_candidates/
+data/rule_sets/**/trials.json
+data/trials/
+
+# Frozen evaluation inputs and human annotations are evidence, not maintained
+# prose or source code.
+eval/rag/*.json
+eval/gold-criteria/**/*.json
+eval/rag/JELENA_REVIEW.md
+
+# Keep the archived evidence snapshot and consultant remediation report intact.
+docs/evidence-map-faze-1-2.md
+SECURITY_REMEDIATION.md

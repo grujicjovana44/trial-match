@@ -137,8 +137,12 @@ export function filterKnownMetadata(
     ? canonicalState(filters.state)
     : undefined;
   const activeState =
-    requestedState && knownStates.has(requestedState) ? requestedState : undefined;
-  const requestedStatus = filters?.status ? normalize(filters.status) : undefined;
+    requestedState && knownStates.has(requestedState)
+      ? requestedState
+      : undefined;
+  const requestedStatus = filters?.status
+    ? normalize(filters.status)
+    : undefined;
   const activeStatus =
     requestedStatus && knownStatuses.has(requestedStatus)
       ? requestedStatus
@@ -146,14 +150,12 @@ export function filterKnownMetadata(
 
   return {
     trials: trials.filter((trial) => {
-      if (
-        activeState &&
-        !locationStates(trial).includes(activeState)
-      )
+      if (activeState && !locationStates(trial).includes(activeState))
         return false;
       if (
         activeStatus &&
-        (!trial.overallStatus || normalize(trial.overallStatus) !== activeStatus)
+        (!trial.overallStatus ||
+          normalize(trial.overallStatus) !== activeStatus)
       )
         return false;
       return true;
