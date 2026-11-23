@@ -35,7 +35,13 @@ Zatim otvorite `http://127.0.0.1:5173`. Primer sintetičkog profila:
 Muškarac, 62 godine, dijabetes tip 2, HbA1c 8,1%, kreatinin 1,3 mg/dL, visina 178 cm, težina 92 kg.
 ```
 
-Lokalni DEMO može zatražiti dopunu, na primer podatak o upotrebi insulina. Za izgrađeni preview pokrenite API sa `DEMO_MODE=true`, napravite UI build sa `VITE_API_BASE_URL=http://127.0.0.1:3000`, pa `pnpm preview:ui`. API prihvata samo loopback origin naveden u `WEB_ORIGIN` (podrazumevano `http://127.0.0.1:4173`). Po završenoj preliminarnoj proveri polje „Šta ako?“ ponavlja procenu u istom `runId`.
+Lokalni DEMO može zatražiti dopunu, na primer podatak o upotrebi insulina. Za izgrađeni preview pokrenite API sa `DEMO_MODE=true`, napravite UI build sa `VITE_API_BASE_URL=http://127.0.0.1:3000`, pa `pnpm preview:ui`. API prihvata samo tačno podešeni `WEB_ORIGIN` (podrazumevano `http://127.0.0.1:4173`). Po završenoj preliminarnoj proveri polje „Šta ako?“ ponavlja procenu u istom `runId`.
+
+## Deployment: Vercel i Render (DEMO)
+
+Prvi javni deployment koristi isključivo testne profile, `DEMO_MODE=true` i `DATASET_PROFILE=clinicaltrials-20`. Render Web Service povežite sa korenom repozitorijuma: Node 24, build `corepack pnpm install --frozen-lockfile && corepack pnpm build`, start `node dist/apps/server/src/index.js`, health check `/health`. Podesite `HOST=0.0.0.0`, `DEMO_MODE=true`, `DATASET_PROFILE=clinicaltrials-20` i `WEB_ORIGIN=https://<vercel-production-domain>` (tačan HTTPS origin, bez završne kose crte). Render zadaje `PORT`; server ga čita iz okruženja. `GEMINI_API_KEY` nije potreban za ovaj DEMO režim. Bez izgrađenog odgovarajućeg RAG indeksa aplikacija koristi lokalni leksički fallback; to prikazuju `/health` i UI.
+
+Vercel projekat podesite sa **Root Directory = koren repozitorijuma**, Node 24 i `VITE_API_BASE_URL=https://<render-service>.onrender.com` u Production okruženju. [vercel.json](vercel.json) koristi `corepack pnpm build` i objavljuje samo `dist/web`. Browser šalje `/api/...` direktno na taj Render URL; Vite lokalni proxy postoji samo za razvoj. Promena `VITE_API_BASE_URL` zahteva novi frontend build. Interfejs nema interne client-side rute koje traže SPA rewrite, pa `/api` zahtevi nisu preusmereni na `index.html`. CORS prihvata samo jedan tačno podešeni origin; Vercel preview domeni nisu automatski dozvoljeni.
 
 ## Komande
 

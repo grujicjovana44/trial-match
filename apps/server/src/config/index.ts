@@ -10,6 +10,13 @@ const RerankerSetting = z.enum([
   "disabled",
 ]);
 
+const isAllowedWebOrigin = (value: string): boolean => {
+  const url = new URL(value);
+  if (url.origin !== value || url.hostname.includes("*")) return false;
+  const isLoopback = ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
+  return url.protocol === "https:" || (isLoopback && url.protocol === "http:");
+};
+
 const ConfigSchema = z
   .object({
     NODE_ENV: z
@@ -20,9 +27,7 @@ const ConfigSchema = z
     WEB_ORIGIN: z
       .string()
       .url()
-      .refine((value) =>
-        ["localhost", "127.0.0.1", "[::1]"].includes(new URL(value).hostname),
-      )
+      .refine(isAllowedWebOrigin)
       .default("http://127.0.0.1:4173"),
     WEB_PORT: integerSetting(5173, 65535),
     DEMO_MODE: z

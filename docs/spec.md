@@ -45,3 +45,7 @@ AC-14 proširuje samo lokalni tok pripreme i ručnog pregleda stvarnih studija; 
 
 Dodata su runtime šema manifest/metapodataka, poreklo opaženih vrednosti, jedinice, status/faza, razlozi isključenja, idempotency/run lock, loopback CORS i bezbedne kategorije grešaka. Direktan server podrazumeva Gemini `gemini-3.5-flash-lite`; lokalni razvoj bira `DEMO_MODE=true`. Dodat je CTG v2 lokalni importer, compile:rules samo za ručno odobrene kriterijume, i guard za live evaluator. Implementaciona spremnost, lokalna provera i ljudski/plaćeni blokatori vode se odvojeno u [phase-2-readiness.md](phase-2-readiness.md).
 `AC-14` pokriva lokalni `data:split` pregledni nacrt: raw/import ulaz, deterministički odabir, strogo konzervativno izdvajanje, proverljiv originalni citat, izveštavanje grešaka i zabranu odobravanja/pakovanja bez ljudskog pregleda.
+
+## Dopuna za deployment (2026-11-23)
+
+`WEB_ORIGIN` prihvata jedan tačno konfigurisan HTTPS origin produkcionog frontenda ili lokalni HTTP loopback. Nema wildcard CORS-a; postojeći OPTIONS preflight i `Idempotency-Key` ostaju podržani. Prvi javni deployment bira DEMO adapter i paket `clinicaltrials-20`; medicinska pravila i RAG algoritam nisu menjani.

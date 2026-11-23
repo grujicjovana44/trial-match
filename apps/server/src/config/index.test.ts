@@ -25,6 +25,42 @@ describe("konfiguracija", () => {
     ).toThrow();
   });
 
+  it("prihvata jedan HTTPS web origin i lokalne HTTP origine", () => {
+    for (const origin of [
+      "https://trialmatch.vercel.app",
+      "http://localhost:5173",
+      "http://127.0.0.1:4173",
+      "http://[::1]:5173",
+    ]) {
+      expect(
+        parseConfig({ DEMO_MODE: "true", WEB_ORIGIN: origin }).WEB_ORIGIN,
+      ).toBe(origin);
+    }
+    for (const origin of [
+      "http://trialmatch.vercel.app",
+      "https://*.vercel.app",
+      "https://trialmatch.vercel.app/",
+      "https://trialmatch.vercel.app/path",
+      "https://trialmatch.vercel.app,https://other.vercel.app",
+    ]) {
+      expect(() =>
+        parseConfig({ DEMO_MODE: "true", WEB_ORIGIN: origin }),
+      ).toThrow();
+    }
+  });
+
+  it("prihvata Render HOST i PORT iz okruženja", () => {
+    const config = parseConfig({
+      HOST: "0.0.0.0",
+      PORT: "10000",
+      DEMO_MODE: "true",
+      DATASET_PROFILE: "clinicaltrials-20",
+    });
+    expect(config.HOST).toBe("0.0.0.0");
+    expect(config.PORT).toBe(10000);
+    expect(config.DATASET_PROFILE).toBe("clinicaltrials-20");
+  });
+
   it("čita poznate promenljive iz stvarnog okruženja", () => {
     expect(() =>
       parseConfig({ ...process.env, DEMO_MODE: "true" }),
