@@ -1,5 +1,7 @@
 # Predaja funkcionalnosti 003
 
+> Istorijski status pre odobrenja paketa 2026-11-23. Trenutni paket od 18 studija ima 27 `auto` i 273 `manual_review` kriterijuma sa važećim hash-povezanim pregledom; ranija tvrdnja ispod da paket ne postoji odnosi se samo na tadašnji snimak.
+
 Implementacija koda za funkcionalnost 003 postoji u radnoj kopiji. Stvarno stanje komandi i dokaza je u [readiness izveštaju](../../docs/phase-2-readiness.md), a otvoreni zadaci ostaju u [tasks.md](tasks.md). Ne tumačiti prisustvo koda kao prolaz testova, ljudski pregled, live poziv ili završenu Fazu 2.
 
 ## Šta je implementirano

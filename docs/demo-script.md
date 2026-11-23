@@ -2,6 +2,8 @@
 
 Demo pokazuje glavni tok sa **stvarnim Gemini modelom** nad 20 studija sa ClinicalTrials.gov: uspešan prolaz, slučaj sa dopunom i kontrolisanu grešku. Koristiti samo sintetičke profile. Ovo je demonstracija toka i arhitekture, ne dokaz kliničkog kvaliteta.
 
+Aktivni paket od 18 novih studija (odobrenje 2026-11-23) ima 27 `auto` i 273 `manual_review` kriterijuma. Raniji snimci ekrana i `run.json` ispod su istorijski dokaz svog tadašnjeg pokretanja, ne novo merenje nad ovim paketom. Pre prezentacije ponoviti korake uživo nad aktuelnim paketom; za `NCT07350967#inc-2` trenutna starost je projektna zamena za starost pri pristanku.
+
 Isti tok je sačuvan kao dokaz u [eval/results/ui-live/predaja-ui-3/](../eval/results/ui-live/predaja-ui-3/) (snimci i `run.json`). Ako živi servis ne radi, pokazati te snimke i preći na rezervni plan na kraju.
 
 ## Priprema (pre izlaganja)
@@ -23,7 +25,7 @@ Isti tok je sačuvan kao dokaz u [eval/results/ui-live/predaja-ui-3/](../eval/re
 | 3:50–4:30 | **2. Nedovoljno podataka**       | „Počni iznova“ → „Muškarac, 62 godine, dijabetes tip 2, šećer 8,1, kreatinin 1,3 mg/dL, visina 178 cm, težina 92 kg.“ Sistem ne nagađa: pita da li je 8,1 HbA1c ili glukoza i ne poziva alate. To je ciljana izmena posle baseline-a (EV-07, trag u mapi dokaza).                                                                                                                                                            |
 | 4:30–5:20 | **3. Kontrolisana greška**       | Pokazati unapred snimljen ili uživo pokrenut primer (vidi ispod). Poruka „Provera nije završena. Počnite novu proveru.“ nema tehničke detalje ni tajne, a stari rezultat se ne prikazuje kao novi.                                                                                                                                                                                                                           |
 | 5:20–6:10 | Arhitektura i evaluacija         | [architecture.md](architecture.md): React/Vite → Fastify/Zod → adapter modela → retrieval → alati sa allowlist-om → deterministički matcher → provera citata. Evaluacija: 16 fiksnih slučajeva, baseline 13/16 → 16/16, `predaja-3` 16/16 na `a62df6b` ([mapa dokaza](evidence-map.md)).                                                                                                                                     |
-| 6:10–7:00 | Ograničenja                      | Svaki run je pokrenut jednom, pa to nije statistička procena. 290 kriterijuma čeka ljudski pregled. Aplikacija je lokalna; nalazi TM-01–TM-05 iz audita važe pre javne dostupnosti. Podaci: ClinicalTrials.gov, preuzeto 16. 11. 2026; pravni pregled nije urađen.                                                                                                                                                           |
+| 6:10–7:00 | Ograničenja                      | Svaki run je pokrenut jednom, pa to nije statistička procena. U paketu od 18 studija 273 kriterijuma ostaju `manual_review`/`unknown`; `NCT07775846#inc-5` je među njima jer verzija CKD-EPI formule studije nije potvrđena. Aplikacija je lokalna; nalazi TM-01–TM-05 iz audita važe pre javne dostupnosti. Podaci: ClinicalTrials.gov, preuzeto 16. 11. 2026; pravni pregled nije urađen.                                  |
 
 ## Kontrolisana greška — kako je izazvati
 

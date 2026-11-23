@@ -9,6 +9,7 @@ import {
   TrialSchema,
   type Trial,
 } from "../../../../packages/shared/src/index.js";
+import { evaluateCriteria } from "../matcher/evaluate-criteria.js";
 import { hashRagSourceContent, loadRagCorpus } from "./corpus.js";
 import { buildRagDocuments } from "./documents.js";
 import { retrieveTrials } from "./retrieve.js";
@@ -253,7 +254,7 @@ describe("RAG corpus loader", () => {
     ]);
   });
 
-  it("učitava tačno 20 studija i 10 odobrenih auto pravila iz hash-pinned paketa", async () => {
+  it("učitava tačno 20 studija i 27 auto pravila iz aktivnog paketa", async () => {
     const corpus = await loadRagCorpus([
       "data/rule_sets/studies_2_approved_20261115_1539",
       "data/rule_sets/studies_18_approved_REVIEWED",
@@ -291,7 +292,7 @@ describe("RAG corpus loader", () => {
             .length,
         0,
       ),
-    ).toBe(10);
+    ).toBe(27);
     expect(
       newStudies.reduce(
         (count, item) =>
@@ -301,7 +302,16 @@ describe("RAG corpus loader", () => {
           ).length,
         0,
       ),
-    ).toBe(290);
+    ).toBe(273);
+    const ageResults = evaluateCriteria({ age: 62 }, newStudies);
+    const criterionStatus = (id: string) =>
+      ageResults
+        .flatMap((trial) => trial.criteria)
+        .find((criterion) => criterion.id === id)?.status;
+    for (const criterionId of ["NCT06888050#inc-1", "NCT07350967#inc-2"])
+      expect(criterionStatus(criterionId)).toBe("met");
+    expect(criterionStatus("NCT06875193#inc-1")).toBe("unknown");
+    expect(criterionStatus("NCT07775846#inc-5")).toBe("unknown");
     const unavailable: string[] = [];
     for (const item of corpus.trials) {
       const retrieval = retrieveTrials(

@@ -2,6 +2,8 @@
 
 Istorijski odeljci ispod zadržavaju datume i rezultate svojih prvobitnih provera. Aktuelni rezultat žive evaluacije (baseline, ciljane izmene i poređenje, 2026-11-20) nalazi se u završnom odeljku „Faza 3“.
 
+T323 pripremni manifest i privremene predikcije ostaju zamrznuti za `rules-713d7b1f382f`; izraz „current compiled rules“ u tom istorijskom manifestu znači paket u trenutku pripreme, ne aktivni paket `rules-524f33766f98` od 2026-11-23. Nisu nezavisna evaluacija parsera niti dokaz kvaliteta trenutnih 27 `auto` / 273 `manual_review` pravila.
+
 ## Fiksni slučajevi i režimi
 
 `eval/cases.jsonl` čuva stabilnih 16 slučajeva, sintetičke ulaze, režime, očekivane osobine i zabranjene ishode. `real_model`, `offline` i `simulated_fault` ostaju različiti režimi i rezultati se ne spajaju u jednu metriku.

@@ -190,11 +190,11 @@ export class TrialMatchService {
         license:
           "ClinicalTrials.gov Terms and Conditions: https://clinicaltrials.gov/terms-conditions (atribucija; mogu važiti prava trećih strana; ne tvrdi se zasebna licenca).",
         transformations:
-          "Dva ranije odobrena zapisa spojena su sa 18 hash-pinned matcher pravila odobrenih 2026-11-18; od 300 novih kriterijuma, 10 eksplicitnih numeričkih pravila je auto-proverljivo, a 290 ostaje manual_review.",
+          "Dva ranije odobrena zapisa spojena su sa 18 pregledanih studija; od 300 novih kriterijuma, 27 eksplicitnih numeričkih pravila je odobreno za auto-proveru, a 273 ostaje manual_review. Od 27 auto pravila, 17 je naknadno strukturisano iz izvornog teksta.",
         limitations: [
           "Korpus sadrži 20 izabranih zapisa, ne potpun rezultat registry pretrage.",
-          "Dve ranije studije i 18 novih studija imaju hash-pinned approval pakete; od 300 novih kriterijuma, 290 ostaje manual_review/unknown.",
-          "Samo deset eksplicitnih numeričkih pravila iz novih studija ulazi u deterministički matcher; ostali izvorni kriterijumi ostaju manual_review.",
+          "Dve ranije studije i 18 novih studija imaju pregledane pakete; od 300 novih kriterijuma, 273 ostaje manual_review/unknown.",
+          "Samo 27 eksplicitnih numeričkih pravila iz novih studija ulazi u deterministički matcher. Za NCT07350967#inc-2 trenutna starost je projektna zamena za starost pri pristanku; NCT07775846#inc-5 ostaje manual_review jer verzija CKD-EPI formule studije nije navedena.",
           "Mogu važiti prava trećih strana.",
         ],
         downloadedCount: 20,

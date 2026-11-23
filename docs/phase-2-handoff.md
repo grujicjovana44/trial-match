@@ -1,5 +1,7 @@
 # Phase 2 handoff — 2026-11-17
 
+> Istorijski snimak od 2026-11-17. Tadašnji opisi 18 pending studija i 300 `manual_review` kriterijuma ne opisuju aktivni paket od 2026-11-23: 18 studija, 27 `auto`, 273 `manual_review`, sa važećim review hash-evima. Ostali rezultati ovog handoff-a ostaju istorijski dokazi.
+
 ## Status: NOT READY
 
 Core local integration and regression checks pass, but RAG gold coverage, human approvals, provenance/legal review, and repository-wide formatting remain unresolved. No Phase 3/4 work, live evaluation, merge, or push was performed; `.env` was not read.

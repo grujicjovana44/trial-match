@@ -4,9 +4,15 @@ Stanje na početku provere, 22. 11. 2026: aktivna grana `main`, HEAD `9cf7fc68e1
 
 **Predaja nije završena.** Tag `capstone-v1` nije napravljen. Vlasnik projekta je 23. 11. 2026. potvrdio raspodelu A–D u [team.md](team.md). CAP-08 izjave Jovane, Jelene i Alekse i odobrenje za eventualne plaćene provere i dalje nedostaju. Izmene u ovoj radnoj kopiji su necommitovane; ne označavaju završnu verziju.
 
+**Dopuna 23. 11. 2026 — aktuelna pravila:** demo profil spaja dve ranije odobrene i 18 dodatnih studija. Paket pravila za tih 18 dodatnih studija, `data/rule_sets/studies_18_approved_REVIEWED/` (`rules-524f33766f98`), ima 300 kriterijuma: 27 `auto`, 273 `manual_review`; `review-report.json` potvrđuje aktuelni `dataVersion` svih 18 studija. Izveštaj od 19. 11. ostaje istorijski. T323 manifest/predikcije odnose se na `rules-713d7b1f382f`, ne na ovaj paket. Odobrenje mapiranja nije nezavisni dokaz kliničkog kvaliteta ili podobnosti pacijenta.
+
+**Verzija za predaju.** Planirani zajednički tag je **`capstone-v1`**. Još nije napravljen jer beleške ostalih članova nisu u repozitorijumu. Clean-checkout E2E je prošao 3/3 nakon instalacije Linux Chromium browsera; README profil je prošao kroz `pnpm demo` u headless Chromium-u. Ta provera i Igorova beleška nastale su na `security-audit-fixes`; tag treba da pokazuje na commit koji sadrži sve četiri beleške i rezultate.
+
 **Prepisana istorija.** Istorija na GitHub-u prepisana je 21. 11. 2026. Uklonjen je red o koautorstvu iz poruka commit-ova, dok su kod, autori i datumi ostali isti. Stariji dokumenti i nepromenljivi manifesti zato navode stare SHA. Tabela stari → novi SHA je na kraju ove mape.
 
 ## Ponovljene provere na radnoj kopiji — 22. 11. 2026.
+
+Brojke 10 `auto` / 290 `manual_review` u ovom datiranom odeljku opisuju tadašnji paket, ne aktuelno stanje navedeno iznad.
 
 Sve komande ispod koristile su pnpm `12.16.1`, verziju iz `package.json`, pokrenutu iz lokalnog Corepack keša. Osnova je HEAD `9cf7fc68e1c41b1efbe0f9d3d8e0c80516a6495c`; radna kopija je tokom provera bila izmenjena samo formatiranjem održavanog koda/dokumenata i pripremom predajnih beleški. Offline EV manifest je zato upisao `commit: unavailable`; tačan bazni HEAD je naveden ovde, bez tvrdnje da je artefakt nastao iz čistog commita. Nisu pozivani modeli ni spoljni servisi.
 
@@ -115,7 +121,7 @@ Stvarni model se koristi u živom UI prolazu i u slučajevima EV-01–EV-10. Sim
 | Poznat i kontrolisan skup              | [data/manifest.json](../data/manifest.json) (sintetički `fixtures`); [manifest porekla 20 studija](../data/raw/studies_20_api_provenance_2026-11-16.json) sa URL-om, datumom preuzimanja i hash-em po zapisu           |
 | Iz rezultata se otvara tačan izvor     | `run.json` → `sampleCitation`: `NCT07919236#inc-3`, status `met`, citat „Body mass index ≥25 kg/m2“, link `https://clinicaltrials.gov/study/NCT07919236`; isto na snimku `04-citat-i-izvor.png`                        |
 | Citat mora postojati u aktivnom izvoru | EV-13 (citat van tekućeg izvršavanja se odbija)                                                                                                                                                                        |
-| Bez osnova rezultat to kaže            | EV-05 (`no_matching_trial`), EV-09 (`not_in_sources`); 290 kriterijuma bez odobrenog pravila ostaje `unknown`                                                                                                          |
+| Bez osnova rezultat to kaže            | EV-05 (`no_matching_trial`), EV-09 (`not_in_sources`); u aktivnom paketu od 18 studija 273 `manual_review` kriterijuma ostaju `unknown`                                                                                |
 | Napomena iz feedback-a za EV-03        | **Zatvoreno.** Izvori objašnjenja su suženi na prikazane studije (`9e7ea5c`). U `predaja-3/traces/EV-03.json` filter ostavlja T-A i T-B, a grounding koristi samo `T-A#…` i `T-B#…`, bez odlomka skrivene studije T-C. |
 
 ## CAP-04 · Workflow i alat

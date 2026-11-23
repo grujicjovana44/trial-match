@@ -1,0 +1,149 @@
+{
+  "included": [
+    {
+      "trialId": "NCT05439226",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
+      "sourceHash": "9d982f64c22b431ec419260d7a188c583c3f784976761801d2539ae8efc91b8a",
+      "rulesHash": "32c17b2951553695c4b64a4685d41701b0e053145162d0358e4fc1276295c016",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT05838287",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
+      "sourceHash": "f62277be5419f6243797c1989207bdea23fa32c80368eb5e4cb4cff071a503d8",
+      "rulesHash": "d5618966dea1c05ff99a018780054a3753c49abe338d97b22e29ce7ed688f061",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT06118931",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "sourceHash": "3a08f7d0023d3554f74f96d1c7ee90eafb2601fb072f64091019c87543696cbe",
+      "rulesHash": "cac140c84476d4d3054757214513e22060ef7855cebca3d7c4ca34dacbf33441",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT06251323",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "sourceHash": "b7e38d7985e8661f3e20966436b4fe329f6979083b9be8262f11fc63e3ebe9e0",
+      "rulesHash": "4512d9cfc983b32147966026e242b081795685f4d0ae05815f23f36019906a3d",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT06271382",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "sourceHash": "50f3bead1bd7cd80674139e23b226cfca457719c0e4bf5934a39550cd2af216b",
+      "rulesHash": "e6482c12d8ff8b0f784dd772402b7b2620c14acc488adaf59f8b986d8d3db870",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT06296485",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "sourceHash": "43719a28350de16939410f3cdb0d28c9b4b36a6dfcf4546058fa42ce4753b0f0",
+      "rulesHash": "0d86f96da77e86d27fa0e257b6739ca262f91431ef5d6e27e50ab3fc9e6ee90b",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT06449833",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
+      "sourceHash": "0799e651de2d32d66f7638cb56659a85309b31193781daf6033024953213ca38",
+      "rulesHash": "2e386c8f543145fe9b2c783c653df5cecfad3bc92f2e2678fb90e729d29e2ba0",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT06852950",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "sourceHash": "740467fae69cf5b4739fb622576b9ae2c6577ebf7ae2b054dcec45d3cdd51d7a",
+      "rulesHash": "6ba5539ea6ca952c6b4a00bd1f68c887c1fa05bacb374b872bb469c0cd99976a",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT06862739",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
+      "sourceHash": "bdb044e3ef2c67f0b970ae4a43b01bf8ff4638284d9e6b82a70e1ad437894026",
+      "rulesHash": "7db8795133407e0e58ea9b8d941804997de8649746eee347a6b9aecbf664249f",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT06875193",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
+      "sourceHash": "5ea42d7321bf0ffd52626b128d0f8b8f6d2c9bf596ef651568f3672752690566",
+      "rulesHash": "f55809b15f1e6cbf9213df48d93020f09fa71c010bbcf213a2fc62019298460d",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT06888050",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
+      "sourceHash": "11e70bd63194ce83fdcbcf1ff3f100a3045714f7accf3c525d46b4ef15608df7",
+      "rulesHash": "346d2a8b04a28bb2523173d7298116dfd1996324bde7e6f41f9ad813a224259c",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT07121504",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "sourceHash": "92a30a47f5acc07279d85a014ee5bd9eee8fb1ed56ab9cf2a1a0dfd5850fe54b",
+      "rulesHash": "44dc82b17fbb00e3e37cffa97865ab87b125547b0a288743387e75f40a6b4d14",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT07350967",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
+      "sourceHash": "8194c9e3c830b2072cb01b3e2598c2afef82c7db98e624283419831496fbf913",
+      "rulesHash": "0dc3e06d1a44ae02d1a2b6157efc5abfac08284730d225452f3a45f291bb7b7e",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT07574138",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
+      "sourceHash": "534013420afc484b07a540ceef7538af157e0d16dd920ec5357eb1a42015affc",
+      "rulesHash": "85f54de599c67c5c2a299cd54cf4fb0fe2d05320b3bb95433f0b3d8865f6c449",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT07676773",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
+      "sourceHash": "52468506c9caf7e81e92a1e07a19ba4c702d8ab6a502e485b953d2319f8cc5d3",
+      "rulesHash": "cc32cc80ee4b839299efd6057ee678b56b32f0fc27ebc0bf7761a12d86e28d97",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT07767331",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "sourceHash": "3c30947190a80838723e7398a65c429f820bbfec7f3324e57a8ba2c8304b9767",
+      "rulesHash": "901ead2f7f9a0ae8095947f59a17522ba96ce82067660310d8658c13f18a180d",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT07775846",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
+      "sourceHash": "bc1afde82ac5ee70463a6dd5b611d79aad594d28fce375f998a5330d86bf44bd",
+      "rulesHash": "8c5cbbc14e0726a9694d5773ecae1912ff610f88dbe736c425ca705ec6be8012",
+      "rulesVersion": "1"
+    },
+    {
+      "trialId": "NCT07919236",
+      "reviewer": "Jovana",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
+      "sourceHash": "040b58b4dfa1ebc226987628fae830a3569a477a912f03755dfe275f6e9623d5",
+      "rulesHash": "5ef9889fe67304f6f0b994b70935589de58970bac0b3b911aaffe06e5de0da1d",
+      "rulesVersion": "1"
+    }
+  ],
+  "excluded": []
+}

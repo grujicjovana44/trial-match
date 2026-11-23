@@ -243,6 +243,8 @@ describe("criteria gold metrics", () => {
     }>;
     const digest = (value: string) =>
       createHash("sha256").update(value).digest("hex");
+    const artifactDigest = (value: string) =>
+      digest(value.replace(/\r\n/g, "\n"));
     const sourceCriteria = new Map(
       sourceTrials.flatMap((trial) =>
         trial.criteria.map((criterion) => [criterion.id, criterion] as const),
@@ -251,16 +253,16 @@ describe("criteria gold metrics", () => {
 
     expect(manifest.status).toBe("PREPARATION_ONLY_T323_OPEN");
     expect(manifest.sampleCount).toBe(30);
-    expect(digest(sourceContents)).toBe(manifest.sourcePackageSha256);
+    expect(artifactDigest(sourceContents)).toBe(manifest.sourcePackageSha256);
     expect(manifest.strata).toEqual({
       simple_numeric_or_structured: 10,
       complex_manual_review: 10,
       manual_review_text: 10,
     });
-    expect(digest(proposalContents)).toBe(
+    expect(artifactDigest(proposalContents)).toBe(
       manifest.artifacts.annotations.sha256,
     );
-    expect(digest(predictionContents)).toBe(
+    expect(artifactDigest(predictionContents)).toBe(
       manifest.artifacts.predictions.sha256,
     );
     expect(proposal.status).toBe("PROPOSAL_NOT_HUMAN_CONFIRMED_NOT_GOLD");

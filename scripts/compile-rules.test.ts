@@ -155,7 +155,7 @@ describe.each(["lt", "gt"] as const)(
       );
       expect(manifest).toMatchObject({
         limitations: expect.arrayContaining([
-          "Od 300 kriterijuma u ovom paketu, 10 su odobrena za automatsku proveru; 290 ostaje manual_review/unknown.",
+          "Od 1 kriterijuma u ovom paketu, 1 je odobreno za automatsku proveru; 0 ostaje manual_review/unknown.",
         ]),
       });
       expect(JSON.stringify(manifest)).not.toContain(

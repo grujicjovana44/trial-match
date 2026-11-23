@@ -25,7 +25,7 @@ Zapis pregleda od 22. 11. 2026: pregledao sam Jovanine izmene iz PR #6, posebno 
 
 Serverski tok prihvata profil, model može da izdvoji činjenice i objasni rezultat, a matcher deterministički ocenjuje samo dozvoljena strukturisana pravila. UI prikazuje validiran odgovor kroz API. Faza 2 je zato adapter i integracija oko istog determinističkog matcher-a.
 
-DEMO koristi mock i ne proverava stvarni Gemini. Live poziv zahteva serverski ključ i može imati trošak. U demo paketu 290 kriterijuma ostaje `manual_review`/`unknown`; uzorak studija nije dokaz potpunosti korpusa, a kvalitet parsiranja kriterijuma nije izmeren. RAG kvalitet, nezavisni pregled pravnih uslova i poreklo/paginacija snimka od 50 studija ostaju ograničenja opisana u `docs/phase-2-readiness.md`.
+DEMO koristi mock i ne proverava stvarni Gemini. Live poziv zahteva serverski ključ i može imati trošak. U aktivnom paketu od 18 studija 273 kriterijuma ostaju `manual_review`/`unknown`, a 27 `auto` pravila imaju važeći hash-povezan pregled; uzorak studija nije dokaz potpunosti korpusa, a kvalitet parsiranja kriterijuma nije izmeren. RAG kvalitet, nezavisni pregled pravnih uslova i poreklo/paginacija snimka od 50 studija ostaju ograničenja opisana u `docs/phase-2-readiness.md`.
 
 ## Primer upotrebe AI-ja
 

@@ -33,23 +33,35 @@
         "id": "NCT05439226#inc-2",
         "trialId": "NCT05439226",
         "kind": "inclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "age",
+        "operator": "between",
+        "value": [
+          18,
+          75
+        ],
+        "unit": "years",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "* Age between 18 and 75 years",
         "sourceId": "NCT05439226#unsplit-1",
-        "sourceQuote": "* Age between 18 and 75 years",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "* Age between 18 and 75 years"
       },
       {
         "id": "NCT05439226#inc-3",
         "trialId": "NCT05439226",
         "kind": "inclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "bmi",
+        "operator": "between",
+        "value": [
+          18,
+          35
+        ],
+        "unit": "kg/m²",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "* BMI between 18.0 and 35.0 kg/m2",
         "sourceId": "NCT05439226#unsplit-1",
-        "sourceQuote": "* BMI between 18.0 and 35.0 kg/m2",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "* BMI between 18.0 and 35.0 kg/m2"
       },
       {
         "id": "NCT05439226#inc-4",
@@ -206,7 +218,7 @@
         "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
       }
     ],
-    "dataVersion": "509ab19399ab1858b3e0a8d0487010ab41a8ba122fce5cbee6e352eae718a987"
+    "dataVersion": "32c17b2951553695c4b64a4685d41701b0e053145162d0358e4fc1276295c016"
   },
   {
     "trialId": "NCT05838287",
@@ -252,34 +264,52 @@
         "id": "NCT05838287#inc-3",
         "trialId": "NCT05838287",
         "kind": "inclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "age",
+        "operator": "between",
+        "value": [
+          30,
+          70
+        ],
+        "unit": "years",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "3. Male or female, aged 30-70 years",
         "sourceId": "NCT05838287#unsplit-1",
-        "sourceQuote": "3. Male or female, aged 30-70 years",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "3. Male or female, aged 30-70 years"
       },
       {
         "id": "NCT05838287#inc-4",
         "trialId": "NCT05838287",
         "kind": "inclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "bmi",
+        "operator": "between",
+        "value": [
+          27.5,
+          40
+        ],
+        "unit": "kg/m²",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "4. Body Mass Index (BMI) of 27.5-40kg/m²",
         "sourceId": "NCT05838287#unsplit-1",
-        "sourceQuote": "4. Body Mass Index (BMI) of 27.5-40kg/m²",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "4. Body Mass Index (BMI) of 27.5-40kg/m²"
       },
       {
         "id": "NCT05838287#inc-5",
         "trialId": "NCT05838287",
         "kind": "inclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "hba1c",
+        "operator": "between",
+        "value": [
+          6.5,
+          10
+        ],
+        "unit": "%",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "5. HbA1c of 6.5 to 10%",
         "sourceId": "NCT05838287#unsplit-1",
-        "sourceQuote": "5. HbA1c of 6.5 to 10%",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "5. HbA1c of 6.5 to 10%"
       },
       {
         "id": "NCT05838287#inc-6",
@@ -461,7 +491,7 @@
         "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
       }
     ],
-    "dataVersion": "032daa7ce6291ade32aa8d45a9931ba9a1a961b850451b88c9010659f0c9c9d8"
+    "dataVersion": "d5618966dea1c05ff99a018780054a3753c49abe338d97b22e29ce7ed688f061"
   },
   {
     "trialId": "NCT06118931",
@@ -1128,12 +1158,18 @@
         "id": "NCT06449833#inc-4",
         "trialId": "NCT06449833",
         "kind": "inclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "hba1c",
+        "operator": "between",
+        "value": [
+          7,
+          8.5
+        ],
+        "unit": "%",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "4. HbA1c: 7.0%-8.5%",
         "sourceId": "NCT06449833#unsplit-1",
-        "sourceQuote": "4. HbA1c: 7.0%-8.5%",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "4. HbA1c: 7.0%-8.5%"
       },
       {
         "id": "NCT06449833#inc-5",
@@ -1268,7 +1304,7 @@
         "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
       }
     ],
-    "dataVersion": "18eec5fcf0cd1d26c9b08001bc93ec41d031b495f274c7abc8179d8af82d3fc3"
+    "dataVersion": "2e386c8f543145fe9b2c783c653df5cecfad3bc92f2e2678fb90e729d29e2ba0"
   },
   {
     "trialId": "NCT06852950",
@@ -1524,23 +1560,32 @@
         "id": "NCT06862739#inc-2",
         "trialId": "NCT06862739",
         "kind": "inclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "age",
+        "operator": "between",
+        "value": [
+          18,
+          80
+        ],
+        "unit": "years",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "2. Patients aged between 18-80 years",
         "sourceId": "NCT06862739#unsplit-1",
-        "sourceQuote": "2. Patients aged between 18-80 years",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "2. Patients aged between 18-80 years"
       },
       {
         "id": "NCT06862739#inc-3",
         "trialId": "NCT06862739",
         "kind": "inclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "hba1c",
+        "operator": "gte",
+        "value": 8,
+        "unit": "%",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "3. Patients having HbA1c 8 % or above",
         "sourceId": "NCT06862739#unsplit-1",
-        "sourceQuote": "3. Patients having HbA1c 8 % or above",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "3. Patients having HbA1c 8 % or above"
       },
       {
         "id": "NCT06862739#inc-4",
@@ -1579,12 +1624,15 @@
         "id": "NCT06862739#exc-1",
         "trialId": "NCT06862739",
         "kind": "exclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "age",
+        "operator": "lt",
+        "value": 18,
+        "unit": "years",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "1. Patients with age less than 18",
         "sourceId": "NCT06862739#unsplit-1",
-        "sourceQuote": "1. Patients with age less than 18",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "1. Patients with age less than 18"
       },
       {
         "id": "NCT06862739#exc-2",
@@ -1697,7 +1745,7 @@
         "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
       }
     ],
-    "dataVersion": "139c829a7d76aaa77fa2316c5b1ee89bae2ac4888208645f7685d2790213192b"
+    "dataVersion": "7db8795133407e0e58ea9b8d941804997de8649746eee347a6b9aecbf664249f"
   },
   {
     "trialId": "NCT06875193",
@@ -1786,12 +1834,15 @@
         "id": "NCT06875193#exc-2",
         "trialId": "NCT06875193",
         "kind": "exclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "bmi",
+        "operator": "gt",
+        "value": 40,
+        "unit": "kg/m²",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "* Have a BMI \\> 40 kg/m2",
         "sourceId": "NCT06875193#unsplit-1",
-        "sourceQuote": "* Have a BMI \\> 40 kg/m2",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "* Have a BMI \\> 40 kg/m2"
       },
       {
         "id": "NCT06875193#exc-3",
@@ -2036,7 +2087,7 @@
         "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
       }
     ],
-    "dataVersion": "e28b40b639facab0a9e6af7ef46cacfb5bb6f871ae94e5cef545c7206dd4142a"
+    "dataVersion": "f55809b15f1e6cbf9213df48d93020f09fa71c010bbcf213a2fc62019298460d"
   },
   {
     "trialId": "NCT06888050",
@@ -2059,12 +2110,18 @@
         "id": "NCT06888050#inc-1",
         "trialId": "NCT06888050",
         "kind": "inclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "age",
+        "operator": "between",
+        "value": [
+          18,
+          75
+        ],
+        "unit": "years",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "* Age between 18 and 75 years old.",
         "sourceId": "NCT06888050#unsplit-1",
-        "sourceQuote": "* Age between 18 and 75 years old.",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "* Age between 18 and 75 years old."
       },
       {
         "id": "NCT06888050#inc-2",
@@ -2232,7 +2289,7 @@
         "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
       }
     ],
-    "dataVersion": "58420abcf6dfdffc77a1806048a87d5166fd8ded1eb8ad85ec10021447cb66d7"
+    "dataVersion": "346d2a8b04a28bb2523173d7298116dfd1996324bde7e6f41f9ad813a224259c"
   },
   {
     "trialId": "NCT07121504",
@@ -2488,23 +2545,35 @@
         "id": "NCT07350967#inc-2",
         "trialId": "NCT07350967",
         "kind": "inclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "age",
+        "operator": "between",
+        "value": [
+          25,
+          65
+        ],
+        "unit": "years",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "2. Male or Female, aged ≥ 25 years to ≤ 65 years inclusive at the time of informed consent",
         "sourceId": "NCT07350967#unsplit-1",
-        "sourceQuote": "2. Male or Female, aged ≥ 25 years to ≤ 65 years inclusive at the time of informed consent",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "2. Male or Female, aged ≥ 25 years to ≤ 65 years inclusive at the time of informed consent"
       },
       {
         "id": "NCT07350967#inc-3",
         "trialId": "NCT07350967",
         "kind": "inclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "bmi",
+        "operator": "between",
+        "value": [
+          30,
+          50
+        ],
+        "unit": "kg/m²",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "3. BMI 30-50",
         "sourceId": "NCT07350967#unsplit-1",
-        "sourceQuote": "3. BMI 30-50",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "3. BMI 30-50"
       },
       {
         "id": "NCT07350967#inc-4",
@@ -2727,7 +2796,7 @@
         "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
       }
     ],
-    "dataVersion": "d7a3c1af4997f012e7691140076c22847d302301cc58fd29a408dd3dfc7c19a5"
+    "dataVersion": "0dc3e06d1a44ae02d1a2b6157efc5abfac08284730d225452f3a45f291bb7b7e"
   },
   {
     "trialId": "NCT07574138",
@@ -2848,12 +2917,15 @@
         "id": "NCT07574138#exc-4",
         "trialId": "NCT07574138",
         "kind": "exclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "egfr",
+        "operator": "lt",
+        "value": 30,
+        "unit": "mL/min/1.73 m²",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "* Severe renal failure with an estimated glomerular filtration rate (eGFR) \\< 30 mL/min/1.73 m².",
         "sourceId": "NCT07574138#unsplit-1",
-        "sourceQuote": "* Severe renal failure with an estimated glomerular filtration rate (eGFR) \\< 30 mL/min/1.73 m².",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "* Severe renal failure with an estimated glomerular filtration rate (eGFR) \\< 30 mL/min/1.73 m²."
       },
       {
         "id": "NCT07574138#exc-5",
@@ -2889,7 +2961,7 @@
         "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
       }
     ],
-    "dataVersion": "456220a9f33560d3bf064f4542bf093a822ebdad5c4e375cac5f4a59f8db127f"
+    "dataVersion": "85f54de599c67c5c2a299cd54cf4fb0fe2d05320b3bb95433f0b3d8865f6c449"
   },
   {
     "trialId": "NCT07676773",
@@ -2913,12 +2985,18 @@
         "id": "NCT07676773#inc-1",
         "trialId": "NCT07676773",
         "kind": "inclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "age",
+        "operator": "between",
+        "value": [
+          40,
+          69
+        ],
+        "unit": "years",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "(1) Both gender, age from 40 to 69 years old.",
         "sourceId": "NCT07676773#unsplit-1",
-        "sourceQuote": "(1) Both gender, age from 40 to 69 years old.",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "(1) Both gender, age from 40 to 69 years old."
       },
       {
         "id": "NCT07676773#inc-2",
@@ -3119,7 +3197,7 @@
         "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
       }
     ],
-    "dataVersion": "a5a8a94ca54770003b77f2e27ef67beae5a6c6d4a4f02462912e7afb2f035421"
+    "dataVersion": "cc32cc80ee4b839299efd6057ee678b56b32f0fc27ebc0bf7761a12d86e28d97"
   },
   {
     "trialId": "NCT07767331",
@@ -3247,7 +3325,7 @@
         "text": "* Estimated glomerular filtration rate (eGFR) based on the CKD-EPI formula ≥ 30 mL/min/1.73m2.",
         "sourceId": "NCT07775846#unsplit-1",
         "sourceQuote": "* Estimated glomerular filtration rate (eGFR) based on the CKD-EPI formula ≥ 30 mL/min/1.73m2.",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "reason": "Verzija CKD-EPI formule nije navedena u izvornom kriterijumu; automatsko poređenje sa CKD-EPI 2021 nije odobreno. Potreban je ručni pregled."
       },
       {
         "id": "NCT07775846#inc-6",
@@ -3264,12 +3342,15 @@
         "id": "NCT07775846#inc-7",
         "trialId": "NCT07775846",
         "kind": "inclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "hba1c",
+        "operator": "lt",
+        "value": 11,
+        "unit": "%",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "* Glycated hemoglobin (HbA1c) \\< 11%.",
         "sourceId": "NCT07775846#unsplit-1",
-        "sourceQuote": "* Glycated hemoglobin (HbA1c) \\< 11%.",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "* Glycated hemoglobin (HbA1c) \\< 11%."
       },
       {
         "id": "NCT07775846#inc-8",
@@ -3470,7 +3551,7 @@
         "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
       }
     ],
-    "dataVersion": "7fd52f0c35992e1a7f2d686f4d1762a42019e888a9b6aa75b55974c07393caaf"
+    "dataVersion": "8c5cbbc14e0726a9694d5773ecae1912ff610f88dbe736c425ca705ec6be8012"
   },
   {
     "trialId": "NCT07919236",
@@ -3493,12 +3574,18 @@
         "id": "NCT07919236#inc-1",
         "trialId": "NCT07919236",
         "kind": "inclusion",
-        "checkability": "manual_review",
-        "origin": "raw_extracted",
+        "field": "age",
+        "operator": "between",
+        "value": [
+          18,
+          65
+        ],
+        "unit": "years",
+        "checkability": "auto",
+        "origin": "compiled_reviewed",
         "text": "* Age between 18 and 65 years (both inclusive)",
         "sourceId": "NCT07919236#unsplit-1",
-        "sourceQuote": "* Age between 18 and 65 years (both inclusive)",
-        "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
+        "sourceQuote": "* Age between 18 and 65 years (both inclusive)"
       },
       {
         "id": "NCT07919236#inc-2",
@@ -3711,6 +3798,6 @@
         "reason": "Originalni kriterijum je potvrđen kao veran izvoru; automatizovana semantika nije posebno odobrena."
       }
     ],
-    "dataVersion": "e7a9b42782c6e010d74d93c475c8fd3f53a40a894796a570573089d9b4226243"
+    "dataVersion": "5ef9889fe67304f6f0b994b70935589de58970bac0b3b911aaffe06e5de0da1d"
   }
 ]

@@ -1,5 +1,7 @@
 # Spremnost za Fazu 2 — provera na `main` (2026-11-17)
 
+> **Aktuelno stanje 2026-11-23:** aktivni paket od 18 studija ima 300 kriterijuma (27 `auto`, 273 `manual_review`), sa važećim review hash-evima za svih 18 studija u `data/rule_sets/studies_18_approved_REVIEWED/review-report.json`. Raniji odeljci ispod su datirani snimci rada iz 17–19. novembra; njihove brojke 10/290 i opisi pending importa nisu opis današnjeg paketa. `NCT07775846#inc-5` ostaje ručni zbog nepotvrđene verzije CKD-EPI formule. Za `NCT07350967#inc-2` trenutna starost je projektna zamena za starost pri pristanku, ne potvrđen istorijski podatak. T323 i pravni/provenance pregled ostaju odvojena otvorena pitanja.
+
 ## Dopuna — korisnička potvrda i integraciona obrada (2026-11-18)
 
 Vlasnica projekta dostavila je 2026-11-18 potvrđeni CSV za 18 studija / 300 kriterijuma i potvrdila da je Jelena Kantarveic odobrila 10 numeričkih auto pravila tog dana. Hash-pinned compile uključuje svih 18 studija, 10 `auto` i 290 `manual_review` kriterijuma; 290 ostaju `unknown` uz citate. CSV-ova `matcherApproval=NOT_APPROVED` vrednost je pređena naknadnom izričitom potvrdom vlasnice projekta.

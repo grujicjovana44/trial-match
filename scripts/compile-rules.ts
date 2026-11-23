@@ -169,6 +169,13 @@ export async function compileRules(
   const packageHash = hash(
     JSON.stringify({ sourceHash: data.manifest.sourceHash, approvals }),
   );
+  const compiledCriteria = reviewed.flatMap(
+    (trial) => TrialSchema.parse(trial).criteria,
+  );
+  const autoCount = compiledCriteria.filter(
+    (criterion) => criterion.checkability === "auto",
+  ).length;
+  const manualCount = compiledCriteria.length - autoCount;
   const manifest = DatasetManifestSchema.parse({
     ...data.manifest,
     name: "lokalni-pregledani-korpus",
@@ -182,7 +189,7 @@ export async function compileRules(
           "All eligibility text and extracted criteria require human review; no approval is implied.",
       ),
       "Nepregledana pravila ne ulaze u matcher.",
-      "Od 300 kriterijuma u ovom paketu, 10 su odobrena za automatsku proveru; 290 ostaje manual_review/unknown.",
+      `Od ${compiledCriteria.length} kriterijuma u ovom paketu, ${autoCount} je odobreno za automatsku proveru; ${manualCount} ostaje manual_review/unknown.`,
     ],
     includedCount: reviewed.length,
     rulesVersion: "1",

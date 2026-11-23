@@ -52,6 +52,8 @@ Nezavisna provera: mock/fault ugovorni testovi; posle odobrenja zaseban živi do
 2. Starost/pol iz strukturisanog izvora postaju pravila bez modela; nepouzdana podela je `needs_manual_split`; neproverljivi kriterijumi ostaju `manual_review/unknown`.
 3. Promena izvora ili pravila poništava primenljivost starog odobrenja. Nepregledana studija se ne ocenjuje.
 
+Aktivni paket od 18 studija sada ima 300 kriterijuma: 27 `auto` i 273 `manual_review`. Od 18 naknadno razmatranih numeričkih mapiranja, 17 je ljudski odobreno 2026-11-23, dok `NCT07775846#inc-5` ostaje `manual_review` jer izvor ne određuje verziju CKD-EPI formule. Aktuelni `review-report.json` i svih 18 `dataVersion` identifikatora poklapaju se; izveštaj od 2026-11-19 ostaje istorijski dokaz prethodne verzije sa 10 automatskih pravila. Za `NCT07350967#inc-2` koristi se projektna pretpostavka da trenutna starost predstavlja starost pri pristanku, ne verifikovan datum pristanka. Mešoviti kriterijumi zadržavaju `manual_review` dok se njihovi delovi ne razdvoje uz očuvane citate i indeks.
+
 ### US4 — Povezan postojeći interfejs (P2; A)
 
 Korisnik vidi jedinice i poreklo, status/fazu studije, datum, isključenja i kontrolisane greške bez promene postojećeg dizajna. Nezavisna provera: UI integracioni testovi ugovora, zatim stvarni pregled u pregledaču.

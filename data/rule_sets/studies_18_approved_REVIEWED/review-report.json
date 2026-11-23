@@ -3,17 +3,17 @@
     {
       "trialId": "NCT05439226",
       "reviewer": "Jovana",
-      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
       "sourceHash": "9d982f64c22b431ec419260d7a188c583c3f784976761801d2539ae8efc91b8a",
-      "rulesHash": "509ab19399ab1858b3e0a8d0487010ab41a8ba122fce5cbee6e352eae718a987",
+      "rulesHash": "32c17b2951553695c4b64a4685d41701b0e053145162d0358e4fc1276295c016",
       "rulesVersion": "1"
     },
     {
       "trialId": "NCT05838287",
       "reviewer": "Jovana",
-      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
       "sourceHash": "f62277be5419f6243797c1989207bdea23fa32c80368eb5e4cb4cff071a503d8",
-      "rulesHash": "032daa7ce6291ade32aa8d45a9931ba9a1a961b850451b88c9010659f0c9c9d8",
+      "rulesHash": "d5618966dea1c05ff99a018780054a3753c49abe338d97b22e29ce7ed688f061",
       "rulesVersion": "1"
     },
     {
@@ -51,9 +51,9 @@
     {
       "trialId": "NCT06449833",
       "reviewer": "Jovana",
-      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
       "sourceHash": "0799e651de2d32d66f7638cb56659a85309b31193781daf6033024953213ca38",
-      "rulesHash": "18eec5fcf0cd1d26c9b08001bc93ec41d031b495f274c7abc8179d8af82d3fc3",
+      "rulesHash": "2e386c8f543145fe9b2c783c653df5cecfad3bc92f2e2678fb90e729d29e2ba0",
       "rulesVersion": "1"
     },
     {
@@ -67,25 +67,25 @@
     {
       "trialId": "NCT06862739",
       "reviewer": "Jovana",
-      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
       "sourceHash": "bdb044e3ef2c67f0b970ae4a43b01bf8ff4638284d9e6b82a70e1ad437894026",
-      "rulesHash": "139c829a7d76aaa77fa2316c5b1ee89bae2ac4888208645f7685d2790213192b",
+      "rulesHash": "7db8795133407e0e58ea9b8d941804997de8649746eee347a6b9aecbf664249f",
       "rulesVersion": "1"
     },
     {
       "trialId": "NCT06875193",
       "reviewer": "Jovana",
-      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
       "sourceHash": "5ea42d7321bf0ffd52626b128d0f8b8f6d2c9bf596ef651568f3672752690566",
-      "rulesHash": "e28b40b639facab0a9e6af7ef46cacfb5bb6f871ae94e5cef545c7206dd4142a",
+      "rulesHash": "f55809b15f1e6cbf9213df48d93020f09fa71c010bbcf213a2fc62019298460d",
       "rulesVersion": "1"
     },
     {
       "trialId": "NCT06888050",
       "reviewer": "Jovana",
-      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
       "sourceHash": "11e70bd63194ce83fdcbcf1ff3f100a3045714f7accf3c525d46b4ef15608df7",
-      "rulesHash": "58420abcf6dfdffc77a1806048a87d5166fd8ded1eb8ad85ec10021447cb66d7",
+      "rulesHash": "346d2a8b04a28bb2523173d7298116dfd1996324bde7e6f41f9ad813a224259c",
       "rulesVersion": "1"
     },
     {
@@ -99,25 +99,25 @@
     {
       "trialId": "NCT07350967",
       "reviewer": "Jovana",
-      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
       "sourceHash": "8194c9e3c830b2072cb01b3e2598c2afef82c7db98e624283419831496fbf913",
-      "rulesHash": "d7a3c1af4997f012e7691140076c22847d302301cc58fd29a408dd3dfc7c19a5",
+      "rulesHash": "0dc3e06d1a44ae02d1a2b6157efc5abfac08284730d225452f3a45f291bb7b7e",
       "rulesVersion": "1"
     },
     {
       "trialId": "NCT07574138",
       "reviewer": "Jovana",
-      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
       "sourceHash": "534013420afc484b07a540ceef7538af157e0d16dd920ec5357eb1a42015affc",
-      "rulesHash": "456220a9f33560d3bf064f4542bf093a822ebdad5c4e375cac5f4a59f8db127f",
+      "rulesHash": "85f54de599c67c5c2a299cd54cf4fb0fe2d05320b3bb95433f0b3d8865f6c449",
       "rulesVersion": "1"
     },
     {
       "trialId": "NCT07676773",
       "reviewer": "Jovana",
-      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
       "sourceHash": "52468506c9caf7e81e92a1e07a19ba4c702d8ab6a502e485b953d2319f8cc5d3",
-      "rulesHash": "a5a8a94ca54770003b77f2e27ef67beae5a6c6d4a4f02462912e7afb2f035421",
+      "rulesHash": "cc32cc80ee4b839299efd6057ee678b56b32f0fc27ebc0bf7761a12d86e28d97",
       "rulesVersion": "1"
     },
     {
@@ -131,17 +131,17 @@
     {
       "trialId": "NCT07775846",
       "reviewer": "Jovana",
-      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
       "sourceHash": "bc1afde82ac5ee70463a6dd5b611d79aad594d28fce375f998a5330d86bf44bd",
-      "rulesHash": "7fd52f0c35992e1a7f2d686f4d1762a42019e888a9b6aa75b55974c07393caaf",
+      "rulesHash": "8c5cbbc14e0726a9694d5773ecae1912ff610f88dbe736c425ca705ec6be8012",
       "rulesVersion": "1"
     },
     {
       "trialId": "NCT07919236",
       "reviewer": "Jovana",
-      "reviewedAt": "2026-11-19T18:28:37+01:00",
+      "reviewedAt": "2026-11-22T23:36:29+00:00",
       "sourceHash": "040b58b4dfa1ebc226987628fae830a3569a477a912f03755dfe275f6e9623d5",
-      "rulesHash": "e7a9b42782c6e010d74d93c475c8fd3f53a40a894796a570573089d9b4226243",
+      "rulesHash": "5ef9889fe67304f6f0b994b70935589de58970bac0b3b911aaffe06e5de0da1d",
       "rulesVersion": "1"
     }
   ],

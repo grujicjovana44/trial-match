@@ -1,6 +1,6 @@
 {
   "name": "lokalni-pregledani-korpus",
-  "version": "rules-3a1a7583cad1",
+  "version": "rules-524f33766f98",
   "date": "2026-11-16",
   "origin": "Official ClinicalTrials.gov API v2 records retrieved individually; per-record URLs, retrieval dates, status dates and hashes are in data/raw/studies_20_api_provenance_2026-11-16.json.",
   "synthetic": false,
@@ -11,7 +11,7 @@
     "Some records describe mixed or system-level populations and may not be individual patient-matching candidates.",
     "ClinicalTrials.gov attribution is retained; third-party rights may apply; no separate license is asserted.",
     "Nepregledana pravila ne ulaze u matcher.",
-    "Od 300 kriterijuma u ovom paketu, 10 su odobrena za automatsku proveru; 290 ostaje manual_review/unknown."
+    "Od 300 kriterijuma u ovom paketu, 27 je odobreno za automatsku proveru; 273 ostaje manual_review/unknown."
   ],
   "queryParameters": {
     "api": "ClinicalTrials.gov API v2",
