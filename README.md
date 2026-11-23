@@ -105,14 +105,15 @@ Formule za eGFR, BMI i konverzije imaju izvore u kodu i potvrđene su u [docs/pr
 
 ## Stanje i dokazi za završnu predaju
 
-Istorijsko stanje provereno 22. 11. 2026: aktivna grana bila je `main`, bazni HEAD `9cf7fc68e1c41b1efbe0f9d3d8e0c80516a6495c`, a tag `capstone-v1` nije postojao. Lokalna grana `security-audit-fixes` i lokalne remote reference tada su pokazivale na isti commit; remote nije osvežavan. Odobrenje novih live provera i dalje nije zabeleženo.
+Istorijsko stanje provereno 22. 11. 2026: aktivna grana bila je `main`, bazni HEAD `9cf7fc68e1c41b1efbe0f9d3d8e0c80516a6495c`, a tag `capstone-v1` tada nije postojao. Lokalna grana `security-audit-fixes` i lokalne remote reference tada su pokazivale na isti commit; remote nije osvežavan. Predajna verzija projekta označava se Git tagom `capstone-v1`, koji upućuje na završni provereni commit grane `main`. Tačan commit i dostupnost taga proveravaju se u Git istoriji.
 
-**CAP-08 stanje 23. 11. 2026:** [Jovana](docs/team/jovana.md) i [Jelena](docs/team/jelena.md) — **POPUNJENO I POTVRĐENO** od strane članica. [Igorova](docs/team/igor.md) postojeća beleška je popunjena; [Aleksina](docs/team/aleksa.md) beleška je popunjena, ali posebna potvrda člana nije zabeležena. Kratka podela doprinosa i statusi su u [team.md](docs/team.md). Zajednički tag još nije postavljen.
+**CAP-08 stanje 23. 11. 2026:** [Jovana](docs/team/jovana.md) i [Jelena](docs/team/jelena.md) — **POPUNJENO I POTVRĐENO** od strane članica. [Igorova](docs/team/igor.md) postojeća beleška je popunjena; [Aleksina](docs/team/aleksa.md) beleška je popunjena, ali posebna potvrda člana nije zabeležena. Kratka podela doprinosa i statusi su u [team.md](docs/team.md).
 
 Faze 1–3 su završene. Faza 3 je dodala živu evaluaciju, ciljane izmene posle baseline-a i proveru kroz interfejs sa stvarnim modelom. Glavni dokazi:
 
 - **Istorijski live EV rezultat:** `baseline` 13/16 → `final` 16/16 → `predaja-3` 16/16 na commit-u `a62df6b` ([eval/results/](eval/results/), [postupak](docs/evaluation.md)); nije ponovljen u današnjoj proveri.
 - **Sačuvan glavni tok kroz web sa stvarnim modelom:** profil → dopunsko pitanje → rezultat sa citatom i linkom ka registru → „Šta ako?“ u istom `runId` ([eval/results/ui-live/predaja-ui-3/](eval/results/ui-live/predaja-ui-3/), snimci i `run.json`; istorijski run na commit-u `2a4e71d`).
+- **Ručni LIVE test 23. 11. 2026:** Jelena Kantarević potvrdila je uspešan kompletan tok sa stvarnim AI pozivom: obradu unetog profila, pronalaženje studija, prikaz kriterijuma, rezultata i izvornih citata, bez uočene greške. Izvor je izveštaj članice; za ovo konkretno izvršavanje nije pronađen sačuvan reproduktivan trace ili log. To nije automatski Playwright test, nezavisna medicinska validacija niti garancija uspeha drugih scenarija. DEMO (`DEMO_MODE=true`) koristi mock adapter, dok LIVE (`DEMO_MODE=false`) koristi stvarni AI adapter.
 - **Mapa dokaza** sa režimom i korpusom svakog prolaza: [docs/evidence-map.md](docs/evidence-map.md).
 
 ### Offline provera na checkout-u zasnovanom na `9cf7fc6` (22. 11. 2026)

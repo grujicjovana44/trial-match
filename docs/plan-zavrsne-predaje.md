@@ -2,6 +2,8 @@
 
 Rokovi: **24. 11.** predaja označene verzije, **25. 11.** demo. Stanje provereno 22. 11. 2026: aktivna grana `main`, bazni HEAD `9cf7fc68e1c41b1efbe0f9d3d8e0c80516a6495c`, bez tagova. Lokalna `security-audit-fixes` i lokalni `origin/main`/`origin/security-audit-fixes` pokazuju na isti commit; nije rađen `git fetch` niti pristup remote-u.
 
+**Dopuna 23. 11. 2026:** pre završnih dokumentacionih izmena `main` i osveženi `origin/main` bili su na `2ce1142`, a tag `capstone-v1` nije postojao lokalno ni na `origin`. Jovana i Jelena su potvrdile svoje popunjene CAP-08 beleške. Jelena je potvrdila uspešan ručni LIVE tok sa stvarnim AI pozivom; za to izvršavanje nema sačuvanog reproduktivnog trace-a. Novi plaćeni pozivi nisu deo ove završne dokumentacione provere. Kompletan lokalni test paket je prijavio 418/419 prolaznih testova; detalj je u [mapi dokaza](evidence-map.md). Predajna verzija označava se tagom `capstone-v1` na završnom proverenom commitu grane `main`; tačan commit proverava se u Git istoriji.
+
 Feedback je pregledao `main` na `2ed092f` i `phase-3-eval` na `93a4d5f`. Posle prepisivanja istorije 21. 11. ti commit-ovi su `b64098d` i `cc13c91`. Tabela svih starih i novih SHA nalazi se u [mapi dokaza](evidence-map.md).
 
 ## Urađeno
@@ -24,17 +26,17 @@ Usput nađeno i zabeleženo: EV-10 je u dva runa pao na minutnom limitu provajde
 
 | #   | Zadatak                                             | Ko         | Gotovo kada                                                                                                                                   |
 | --- | --------------------------------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Provera grane i lokalnih Git referenci              | Igor       | `main` i lokalne `security-audit-fixes` reference su na `9cf7fc6`; remote nije osvežavan zbog offline ograničenja                             |
-| 2   | **Tag `capstone-v1`**                               | tim        | ne praviti dok ne stignu CAP-08 izjave, odobrenja za žive provere i završne provere; raspodela uloga je potvrđena                             |
+| 1   | Provera grane i lokalnih Git referenci              | Igor       | istorijska provera je na `9cf7fc6`; nova provera `main`/`origin/main` na `2ce1142` zabeležena je u dopuni iznad                               |
+| 2   | **Tag `capstone-v1`**                               | tim        | nakon pregleda završnih lokalnih provera i završnog commita, tag uputiti na provereni commit grane `main`                                     |
 | 3   | **Provera iz čistog checkout-a**, prema README-ju   | Igor       | lokalni klon na `9cf7fc6` napravljen; offline instalacija blokirana nedostajućim tarball-om `@types/react@19.3.0`; ponovljeno u radnoj kopiji |
 | 4   | `docs/team.md`: uloge A–D i pregledači              | tim        | potvrđeno od vlasnika projekta 23. 11. 2026; mapa je u `docs/team.md`                                                                         |
-| 5   | CAP-08 beleška `docs/team/<ime>.md` za svakog člana | svaki član | Igorova beleška postoji; Jovana, Jelena i Aleksa imaju prazne šablone koji čekaju njihove izjave                                              |
+| 5   | CAP-08 beleška `docs/team/<ime>.md` za svakog člana | svaki član | sve četiri beleške su popunjene; Jovana i Jelena su potvrdile svoje, a posebna Aleksina potvrda nije zabeležena                               |
 
 ## Otvoreno za ljudsku proveru
 
-- Jovana, Jelena i Aleksa treba da popune CAP-08 šablone svojim doprinosima, odlukom i proverom, vezom sa glavnim tokom, ograničenjem, primerom pregleda rada drugog člana i AI primerom (ili potvrdom da AI nije korišćen).
-- Jovana, Jelena i Aleksa treba sami da dostave CAP-08 izjave; korisnik ne potvrđuje doprinose u njihovo ime.
-- Vlasnik projekta treba da odobri konkretne live komande i brojčanu/provider-enforced budžetsku granicu. Gemini `3.5 Flash Lite` free tier i kvote 15 RPM / 250K TPM / 500 RPD su prijavljeni, ali nisu novčani plafon; OpenAI kvota/budžet nije poznata. Nijedna nova live provera nije odobrena niti pokrenuta.
+- Aleksa treba da potvrdi svoju već popunjenu CAP-08 belešku ako tim želi zasebno evidentiranu potvrdu člana.
+- Tim treba da pregleda pad vremenski ograničenog UI testa u kompletnom paketu (418/419); zasebno ponavljanje tog fajla prošlo je 19/19.
+- Za svaki eventualni dodatni plaćeni LIVE run potrebno je zasebno odobrenje konkretne komande i budžetskog ograničenja. Jelenin uspešan ručni LIVE test od 23. 11. već je potvrđen izveštajem članice.
 - Uslove korišćenja/licencu podataka treba ljudski proveriti pre javnog objavljivanja. Nije data tvrdnja da je licenca potvrđena.
 
 ## Van opsega

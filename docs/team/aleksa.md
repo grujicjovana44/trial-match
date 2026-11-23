@@ -1,6 +1,6 @@
 # CAP-08 — Aleksa Durutović
 
-Stanje na 23. 11. 2026. Planirani zajednički tag za predaju je `capstone-v1`; tag još nije napravljen. Ovde navedeni SHA su posle prepisivanja istorije od 21. 11. 2026.
+Predajna verzija označava se tagom `capstone-v1`; tačan commit i dostupnost taga proveravaju se u Git istoriji. Ovde navedeni SHA su posle prepisivanja istorije od 21. 11. 2026.
 
 ## Uloga
 

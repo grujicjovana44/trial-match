@@ -1,6 +1,6 @@
 # Jovana Grujić — CAP-08
 
-Stanje na 23. 11. 2026. Planirani zajednički tag za predaju je `capstone-v1`; njegovo kreiranje još nije potvrđeno.
+CAP-08 beleška je popunjena i potvrđena od strane članice 23. 11. 2026. Predajna verzija označava se tagom `capstone-v1`; tačan commit i dostupnost taga proveravaju se u Git istoriji.
 
 ## Tehnički doprinos u Fazama 1 i 2
 
