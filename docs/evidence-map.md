@@ -1,12 +1,28 @@
 # Mapa dokaza CAP-01–CAP-08 — završna predaja
 
+## Ciljana provera kandidata — 23. 11. 2026.
+
+Polazni kandidat je lokalni `main` na `74a9b2da080a364cd2ef7f612197668fae654953` (isto i `origin/main` pre provere); radno stablo je bilo čisto. Provere su pokrenute sa Node `v24.20.0` i Corepack pnpm `12.16.1`. Ovaj odeljak je naknadna dokumentaciona izmena, pa navedeni commit nije commit koji je sadrži. Tag za predaju nije postavljen.
+
+| Komanda                                                                                                                                                            | Opseg                                                                                                           | Stvarni ishod                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `corepack pnpm exec vitest run apps/server/src/matcher/reviewed-studies.test.ts apps/server/src/retrieval/corpus.test.ts apps/server/test/smoke/api-smoke.test.ts` | Odobrena pravila za 18 dodatnih studija, učitavanje korpusa i lokalni API; testni profili, bez modelskog poziva | PASS, 3 fajla, 13/13 testova                                                                                  |
+| `corepack pnpm typecheck`                                                                                                                                          | TypeScript                                                                                                      | PASS, exit 0                                                                                                  |
+| `corepack pnpm lint`                                                                                                                                               | ESLint                                                                                                          | PASS, exit 0                                                                                                  |
+| `corepack pnpm build`                                                                                                                                              | Serverski i UI build                                                                                            | PASS, 554 UI modula                                                                                           |
+| `corepack pnpm test:e2e:phase2`                                                                                                                                    | Mock UI/API, `clinicaltrials-20`, sintetički profil; lokalni lexical retrieval                                  | PASS, 3/3 Playwright testa; rezultat, vidljiv kriterijum/`unknown`, tehnički metapodaci i kontrolisana greška |
+
+E2E test je ponovo generisao četiri postojeća screenshot-a; vraćeni su na sadržaj kandidata jer nisu predmet ove provere. Paket za 18 dodatnih studija ostaje `data/rule_sets/studies_18_approved_REVIEWED/` (`rules-524f33766f98`, 27 `auto` i 273 `manual_review`); dve ranije odobrene studije čine ostatak demo korpusa od 20. Testovi ne potvrđuju kliničku podobnost. T323 pripremni manifest (`rules-713d7b1f382f`) nije evaluacija aktuelnog paketa.
+
+Za zajedničku predaju tim treba da potvrdi finalni commit/tag, ponovi ključne provere na njemu i upiše rezultate sa istim identifikatorom verzije. Živi UI prolaz sa dopunom, hipotezom i citatom na aktuelnom paketu zahteva serverski `GEMINI_API_KEY` i pozive koji mogu biti naplaćeni; ovde nije pokrenut. `corepack pnpm index:build` takođe može pozvati plaćeni embeddings API i nije pokrenut. CAP-08 beleške Jovane i Jelene su popunjene i potvrđene; Igorova i Aleksina beleška su popunjene, a posebna Aleksina potvrda nije zabeležena.
+
 Stanje na početku provere, 22. 11. 2026: aktivna grana `main`, HEAD `9cf7fc68e1c41b1efbe0f9d3d8e0c80516a6495c`, čisto radno stablo i bez tagova. Lokalna grana `security-audit-fixes` i lokalni `origin/main`/`origin/security-audit-fixes` takođe pokazuju na taj commit. Provera nije osvežavala remote reference. Prethodna mapa (Faza 1 i 2) je u [evidence-map-faze-1-2.md](evidence-map-faze-1-2.md) i služi kao istorijski zapis.
 
-**Predaja nije završena.** Tag `capstone-v1` nije napravljen. Vlasnik projekta je 23. 11. 2026. potvrdio raspodelu A–D u [team.md](team.md). CAP-08 izjave Jovane, Jelene i Alekse i odobrenje za eventualne plaćene provere i dalje nedostaju. Izmene u ovoj radnoj kopiji su necommitovane; ne označavaju završnu verziju.
+**Predaja nije završena.** Tag `capstone-v1` nije napravljen. Vlasnik projekta je 23. 11. 2026. potvrdio raspodelu A–D u [team.md](team.md), a Jovana i Jelena su potvrdile svoje popunjene CAP-08 beleške. Aleksina beleška je popunjena, bez zasebno zabeležene potvrde člana. Odobrenje za eventualne plaćene provere i dalje nedostaje. Izmene u ovoj radnoj kopiji su necommitovane; ne označavaju završnu verziju.
 
 **Dopuna 23. 11. 2026 — aktuelna pravila:** demo profil spaja dve ranije odobrene i 18 dodatnih studija. Paket pravila za tih 18 dodatnih studija, `data/rule_sets/studies_18_approved_REVIEWED/` (`rules-524f33766f98`), ima 300 kriterijuma: 27 `auto`, 273 `manual_review`; `review-report.json` potvrđuje aktuelni `dataVersion` svih 18 studija. Izveštaj od 19. 11. ostaje istorijski. T323 manifest/predikcije odnose se na `rules-713d7b1f382f`, ne na ovaj paket. Odobrenje mapiranja nije nezavisni dokaz kliničkog kvaliteta ili podobnosti pacijenta.
 
-**Verzija za predaju.** Planirani zajednički tag je **`capstone-v1`**. Još nije napravljen jer beleške ostalih članova nisu u repozitorijumu. Clean-checkout E2E je prošao 3/3 nakon instalacije Linux Chromium browsera; README profil je prošao kroz `pnpm demo` u headless Chromium-u. Ta provera i Igorova beleška nastale su na `security-audit-fixes`; tag treba da pokazuje na commit koji sadrži sve četiri beleške i rezultate.
+**Verzija za predaju.** Planirani zajednički tag je **`capstone-v1`**. Još nije napravljen; potrebno je prvo odrediti završni commit sa sve četiri beleške i rezultatima provera. Clean-checkout E2E je prošao 3/3 nakon instalacije Linux Chromium browsera; README profil je prošao kroz `pnpm demo` u headless Chromium-u. Ta provera i Igorova beleška nastale su na `security-audit-fixes`.
 
 **Prepisana istorija.** Istorija na GitHub-u prepisana je 21. 11. 2026. Uklonjen je red o koautorstvu iz poruka commit-ova, dok su kod, autori i datumi ostali isti. Stariji dokumenti i nepromenljivi manifesti zato navode stare SHA. Tabela stari → novi SHA je na kraju ove mape.
 
@@ -205,7 +221,16 @@ Ograničenje: nalazi TM-01–TM-05 iz audita odnose se na javnu dostupnost. Apli
 
 ## CAP-08 · Individualni doprinos
 
-Igorova beleška je u [team/igor.md](team/igor.md); sadrži Fazu 2, proverenu zastupljenost commit-a u `main`, odluku/proveru, lokalni zapis pregleda i AI primer. Vlasnik projekta potvrdio je raspodelu uloga A–D i pregledače u [team.md](team.md) 23. 11. 2026. CAP-08 šabloni za [Jovanu](team/jovana.md), [Jelenu](team/jelena.md) i [Aleksu](team/aleksa.md) postoje; njihove lične izjave još nisu popunjene i treba da ih dostave sami članovi.
+Vlasnik projekta potvrdio je raspodelu uloga A–D i pregledače u [team.md](team.md) 23. 11. 2026. Lične beleške i statusi su:
+
+| Član              | Status i kratak opis                                                                                                                        | Beleška                  |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| Jovana Grujić     | **POPUNJENO I POTVRĐENO** od strane članice; osnova DEMO aplikacije, hibridni RAG, evaluacioni okvir i pregled Jelenine integracije.        | [CAP-08](team/jovana.md) |
+| Jelena Kantarević | **POPUNJENO I POTVRĐENO** od strane članice; 18 studija, priprema i integracija kriterijuma, RAG provere i pregled Aleksinog voice input-a. | [CAP-08](team/jelena.md) |
+| Igor Nenadović    | Popunjena postojeća beleška; specifikacija Faze 2, serverski Gemini/API, workflow i pouzdanost.                                             | [CAP-08](team/igor.md)   |
+| Aleksa Durutović  | Popunjena beleška, posebna potvrda člana nije zabeležena; UI, korisnički tok i implementacija voice input-a.                                | [CAP-08](team/aleksa.md) |
+
+Jelena je pripremila i integrisala 17 novih matcher mapiranja u commitu `74a9b2d`, dok formalni approval artefakt kao `reviewer` navodi Jovanu. To odobrenje ne znači zasebnu potvrdu svih 300 tekstualnih kriterijuma niti kliničke podobnosti.
 
 ## Stari → novi SHA (prepisana istorija, 21. 11. 2026)
 
